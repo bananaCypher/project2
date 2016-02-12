@@ -4,6 +4,12 @@ var User = function(name){
   this.accountBalance = 500
 }
 
+User.prototype = {
+  buyShares: function(investment, number){
+    var outlay = investment.currentPrice * number;
 
+    this.accountBalance -= outlay;
+  },
+}
 
 module.exports = User;
