@@ -23,6 +23,13 @@ Investment.prototype = {
     else if(measurement === "percentage"){
       return (priceChange / this.buyDateValue()) * 100;
     }
+  },
+  sevenDayAverage: function(){
+    var total = 0;
+    for(price of this.pastCloseOfDayPrices){
+      total += price;
+    }
+    return total / 7;
   }
 };
 

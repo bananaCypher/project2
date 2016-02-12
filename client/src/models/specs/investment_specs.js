@@ -1,5 +1,6 @@
 var Investment = require('../investment.js');
 var assert = require('assert');
+var sampleData = require('../../shareSample.json');
 
 describe('Investment', function(){
   beforeEach(function(){
@@ -39,17 +40,19 @@ describe('Investment', function(){
 
   // MODEL FUNCTIONALITY
   it('should be able to return its current value', function(){
-    assert.equal(301000, newInvestment.currentValue())
+    assert.equal(301000, newInvestment.currentValue());
   });
   it('should be able to return the value when originally bought', function(){
-    assert.equal(209400, newInvestment.buyDateValue())
+    assert.equal(209400, newInvestment.buyDateValue());
   }); 
   it('should be able to return the change in value by price', function(){
-    assert.equal(91600, newInvestment.valueChange("price"))
+    assert.equal(91600, newInvestment.valueChange("price"));
   }); 
   it('should be able to return the change in value by percentage', function(){
-    assert.equal("43.74", newInvestment.valueChange("percentage").toFixed(2))
+    assert.equal("43.74", newInvestment.valueChange("percentage").toFixed(2));
   }); 
-
+  it('should be able to return a last 7 days average for the share price', function(){
+    assert.equal(229.94, newInvestment.sevenDayAverage().toFixed(2));
+  });
 
 })
