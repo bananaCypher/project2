@@ -1,4 +1,4 @@
-module.exports = [{
+[{
       "name": "Fusionex",
       "epic":"FXI",
       "price": 120.00,
@@ -88,4 +88,4 @@ module.exports = [{
       "pastCloseOfDayPrices": [115.00, 115.00, 115.50, 115.90, 116.30, 116.40, 116.80],
       "buyDate":"2014-04-04"
     }
-  ];
+  ]
