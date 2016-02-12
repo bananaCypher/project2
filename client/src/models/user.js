@@ -4,4 +4,6 @@ var User = function(name){
   this.accountBalance = 500
 }
 
+
+
 module.exports = User;
