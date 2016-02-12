@@ -1,6 +1,5 @@
 var Investment = require('../investment.js');
 var assert = require('assert');
-var sampleData = require('../../shareSample.json');
 
 describe('Investment', function(){
   beforeEach(function(){
