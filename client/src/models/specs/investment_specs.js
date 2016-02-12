@@ -13,6 +13,8 @@ describe('Investment', function(){
         buyDate:"2015-12-22"
       });
   });
+
+  // BASIC MODEL ATTRIBUTES
   it('should have a share name', function(){
     assert.equal('Worldpay', newInvestment.shareName);
   });
@@ -34,5 +36,20 @@ describe('Investment', function(){
   it('should have a buy date', function(){
     assert.equal("2015-12-22", newInvestment.buyDate);
   });
+
+  // MODEL FUNCTIONALITY
+  it('should be able to return its current value', function(){
+    assert.equal(301000, newInvestment.currentValue())
+  });
+  it('should be able to return the value when originally bought', function(){
+    assert.equal(209400, newInvestment.buyDateValue())
+  }); 
+  it('should be able to return the change in value by price', function(){
+    assert.equal(91600, newInvestment.valueChange("price"))
+  }); 
+  it('should be able to return the change in value by percentage', function(){
+    assert.equal("43.74", newInvestment.valueChange("percentage").toFixed(2))
+  }); 
+
 
 })
