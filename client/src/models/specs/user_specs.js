@@ -19,6 +19,8 @@ describe('User', function(){
     });
     testPortfolio.investments = [testInvestment];
     testUser.portfolio = testPortfolio;
+    testBalance = testUser.accountBalance;
+    testInvestmentPrice = testInvestment.currentPrice;
   });
 
   it('should have a name', function(){
@@ -26,7 +28,7 @@ describe('User', function(){
   });
 
   it('should have an account with money', function(){
-    expect(testUser.accountBalance).to.equal(500);
+    expect(testUser.accountBalance).to.equal(testBalance);
   });
 
   it('should be able to buy shares', function(){
@@ -36,7 +38,7 @@ describe('User', function(){
 
   it('should lose money appropriately on purchase', function(){
     testUser.buyShares(testInvestment, 1);
-    expect(testUser.accountBalance).to.equal(500 - 210.75);
+    expect(testUser.accountBalance).to.equal(testBalance - testInvestmentPrice);
   });
 
   it('should be able to sell shares', function(){
@@ -46,6 +48,6 @@ describe('User', function(){
 
   it('should gain money appropriately on sale', function(){
     testUser.sellShares(testInvestment, 1);
-    expect(testUser.accountBalance).to.equal(500 + 210.75);
-  })
+    expect(testUser.accountBalance).to.equal(testBalance + testInvestmentPrice);
+  });
 })

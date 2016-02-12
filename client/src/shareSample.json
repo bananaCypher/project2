@@ -1,4 +1,4 @@
-module.exports = [{
+    [{
       "name": "Fusionex",
       "epic":"FXI",
       "price": 120.00,
