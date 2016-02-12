@@ -75,6 +75,6 @@ describe('Portfolio', function(){
     assert.equal('Royal Bank of Scotland Group', portfolio.largestInvestment().shareName);
   });
   it('should be able to find the investment with the largest change in value', function(){
-
+    assert.equal(portfolio.findLargestChange('percentage').toFixed(2), 1198.89);
   });
 });

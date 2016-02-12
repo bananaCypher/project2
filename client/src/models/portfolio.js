@@ -61,6 +61,15 @@ Portfolio.prototype = {
       }
     }
     return largest; 
+  },
+  findLargestChange: function(measurement){
+    for (investment of this.investments) {
+      var highestChange = 0;
+      if(investment.valueChange(measurement) > highestChange){
+        highestChange = investment.valueChange(measurement);
+      }
+    }
+    return highestChange;
   }
 };
 
