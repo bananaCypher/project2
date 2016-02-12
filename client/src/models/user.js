@@ -1,6 +1,6 @@
 var User = function(name){
   this.name = name,
-  this.portfolio = [],
+  this.portfolio = undefined,
   this.accountBalance = 500
 }
 

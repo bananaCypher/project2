@@ -31,6 +31,10 @@ describe('User', function(){
     expect(testUser.accountBalance).to.equal(testBalance);
   });
 
+  it('should be able to have a portfolio', function(){
+    expect(testUser.portfolio).to.equal(testPortfolio);
+  })
+
   it('should be able to buy shares', function(){
     testUser.buyShares(testInvestment, 1);
     expect(testUser.portfolio.investments[1]).to.equal(testInvestment)
