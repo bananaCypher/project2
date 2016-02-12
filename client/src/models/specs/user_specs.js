@@ -34,4 +34,14 @@ describe('User', function(){
     testUser.buyShares(testInvestment, 1);
     expect(testUser.accountBalance).to.equal(500 - 210.75);
   });
+
+  it('should be able to sell shares', function(){
+    // THIS AWAITS INTEGRATION OF MODELS
+    expect(true).to.equal(false);
+  });
+
+  it('should gain money appropriately on sale', function(){
+    testUser.sellShares(testInvestment, 1);
+    expect(testUser.accountBalance).to.equal(500 + 210.75);
+  })
 })

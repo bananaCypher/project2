@@ -7,9 +7,14 @@ var User = function(name){
 User.prototype = {
   buyShares: function(investment, number){
     var outlay = investment.currentPrice * number;
-
+    // this.portfolio.addInvestment(investment);
     this.accountBalance -= outlay;
   },
+  sellShares: function(investment, number){
+    var outlay = investment.currentPrice * number;
+    // this.portfolio.removeInvestment(investment);
+    this.accountBalance += outlay;
+  }
 }
 
 module.exports = User;
