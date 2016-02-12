@@ -1,5 +1,6 @@
 var User = require('../user.js');
-var Investment = require('../Investment.js');
+var Portfolio = require('../portfolio');
+var Investment = require('../investment.js');
 
 var chai = require('chai')
 var assert = chai.assert;
@@ -8,6 +9,7 @@ var expect = chai.expect;
 describe('User', function(){
   beforeEach(function(){
     testUser = new User('Barry');
+    testPortfolio = new Portfolio();
     testInvestment = new Investment({
       "name": 'BarryCorp',
       "epic": "BRC",
@@ -15,6 +17,8 @@ describe('User', function(){
       "quantity": 1000,
       "buyPrice": 198.22,
     });
+    testPortfolio.investments = [testInvestment];
+    testUser.portfolio = testPortfolio;
   });
 
   it('should have a name', function(){
@@ -26,8 +30,8 @@ describe('User', function(){
   });
 
   it('should be able to buy shares', function(){
-    // THIS AWAITS INTEGRATION OF MODELS
-    expect(true).to.equal(false);
+    testUser.buyShares(testInvestment, 1);
+    expect(testUser.portfolio.investments[1]).to.equal(testInvestment)
   });
 
   it('should lose money appropriately on purchase', function(){
@@ -36,8 +40,8 @@ describe('User', function(){
   });
 
   it('should be able to sell shares', function(){
-    // THIS AWAITS INTEGRATION OF MODELS
-    expect(true).to.equal(false);
+    testUser.sellShares(testInvestment, 1);
+    expect(testUser.portfolio.investments[1]).to.equal(undefined);
   });
 
   it('should gain money appropriately on sale', function(){
