@@ -8,4 +8,22 @@ var Investment = function(params){
   this.buyDate = params.buyDate;
 };
 
+Investment.prototype = {
+  currentValue: function(){
+    return this.currentPrice * this.quantity;
+  },
+  buyDateValue: function(){
+    return this.buyPrice * this.quantity;
+  },
+  valueChange: function(measurement){
+    var priceChange = this.currentValue() - this.buyDateValue();
+    if(measurement === "price"){
+      return priceChange;
+    }
+    else if(measurement === "percentage"){
+      return (priceChange / this.buyDateValue()) * 100;
+    }
+  }
+};
+
 module.exports = Investment;
