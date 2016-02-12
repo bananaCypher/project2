@@ -75,6 +75,6 @@ describe('Portfolio', function(){
     assert.equal('', largestInvestment().shareName);
   });
   it('should be able to find the investment with the largest change in value', function(){
-
+    assert.equal(portfolio.findLargestChange('percentage').toFixed(2), 1198.89);
   });
 });
