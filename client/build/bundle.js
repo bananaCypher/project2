@@ -44,7 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Barry = __webpack_require__(4)
+	var Barry = __webpack_require__(1)
 	
 	var init = function(){
 	  console.log('I have loaded');
@@ -53,7 +53,7 @@
 	  console.log(Barry);
 	
 	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Current Total Value</h1>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
+	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
 	  basicInfo.appendChild(p);
 	
 	  
@@ -64,6 +64,31 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var User = __webpack_require__(2);
+	var Portfolio = __webpack_require__(3);
+	var Investment = __webpack_require__(4);
+	var investmentsSample = __webpack_require__(5);
+	
+	
+	var Barry = new User("Barry Manilow");
+	
+	var barryPortfolio = new Portfolio();
+	
+	console.log(investmentsSample);
+	for(investment of investmentsSample){
+	  var newInvestment = new Investment(investment);
+	  barryPortfolio.addInvestment(newInvestment); 
+	}
+	
+	Barry.portfolio = barryPortfolio;
+	
+	module.exports = Barry;
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports) {
 
 	var User = function(name){
@@ -90,7 +115,7 @@
 	module.exports = User;
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports) {
 
 	var Portfolio = function(){
@@ -172,7 +197,7 @@
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	var Investment = function(params){
@@ -211,31 +236,6 @@
 	};
 	
 	module.exports = Investment;
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var User = __webpack_require__(1);
-	var Portfolio = __webpack_require__(2);
-	var Investment = __webpack_require__(3);
-	var investmentsSample = __webpack_require__(5);
-	
-	
-	var Barry = new User("Barry Manilow");
-	
-	var barryPortfolio = new Portfolio();
-	
-	console.log(investmentsSample);
-	for(investment of investmentsSample){
-	  var newInvestment = new Investment(investment);
-	  barryPortfolio.addInvestment(newInvestment); 
-	}
-	
-	Barry.portfolio = barryPortfolio;
-	
-	module.exports = Barry;
-
 
 /***/ },
 /* 5 */
