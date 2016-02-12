@@ -72,7 +72,7 @@ describe('Portfolio', function(){
     assert.equal('Softcat', foundInvestment.shareName);
   });
   it('should be able to find the largest investment', function(){
-    assert.equal('', largestInvestment().shareName);
+    assert.equal('Royal Bank of Scotland Group', portfolio.largestInvestment().shareName);
   });
   it('should be able to find the investment with the largest change in value', function(){
 

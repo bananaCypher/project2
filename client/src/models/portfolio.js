@@ -52,6 +52,15 @@ Portfolio.prototype = {
   },
   findByEpic: function(epic){
     return this.find({epic: epic})
+  },
+  largestInvestment: function(){
+    var largest = this.investments[0];
+    for (var investment of this.investments) {
+      if (investment.currentValue() > largest.currentValue()) { 
+        largest = investment;
+      }
+    }
+    return largest; 
   }
 };
 
