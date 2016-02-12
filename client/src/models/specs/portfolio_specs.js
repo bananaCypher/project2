@@ -1,22 +1,15 @@
 var assert = require('assert');
 var Portfolio = require('../portfolio.js')
 var Investment = require('../investment.js');
+var investmentsSample = require('../../shareSample.json');
 
 describe('Portfolio', function(){
   beforeEach(function(){
     portfolio = new Portfolio();
-    var investment = new Investment(
-        {
-          "name": "Pets At Home",
-          "epic":"PETS",
-          "price": 247.40,
-          "quantity": 2500,
-          "buyPrice": 250.50,
-          "pastCloseOfDayPrices": [230.00, 232.30, 235.90, 236.60, 237.00, 240.00, 242.70],
-          "buyDate":"2014-08-23"
-        }    
-    );
-    portfolio.addInvestment(investment);
+    for (var investment of investmentsSample) {
+      var newInvestment = new Investment(investment);
+      portfolio.addInvestment(newInvestment); 
+    }
   });
   it('should have an array of Investments', function(){
     assert.notEqual(portfolio.investments[0].shareName, undefined);
@@ -68,19 +61,18 @@ describe('Portfolio', function(){
     assert.equal(portfolio.findInvestmentIndex(investment), portfolio.investments.length - 1);
   });
   it('should display the total value of all investments', function(){
-
-  });
-  it('should have an owner', function(){
-
+    assert.equal(portfolio.totalValue(), 6648800);
   });
   it('should be able to find investments by name', function(){
-
+    var foundInvestment = portfolio.findByName('Softcat');
+    assert.equal('SCT', foundInvestment.epic);
   });
   it('should be able to find investments by epic', function(){
-
+    var foundInvestment = portfolio.findByEpic('SCT');
+    assert.equal('Softcat', foundInvestment.shareName);
   });
   it('should be able to find the largest investment', function(){
-
+    assert.equal('', largestInvestment().shareName);
   });
   it('should be able to find the investment with the largest change in value', function(){
 

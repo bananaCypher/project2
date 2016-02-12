@@ -5,6 +5,7 @@ Portfolio.prototype = {
   addInvestment: function(investment){
     this.investments.push(investment);
   },
+
   removeInvestment: function(investment){
     var index = this.findInvestmentIndex(investment);
     this.investments.splice(index, 1);
@@ -25,6 +26,32 @@ Portfolio.prototype = {
       } 
       return i;
     }
+  },
+  totalValue: function(){
+    var sum = 0;
+    for (var investment of this.investments) {
+      sum += investment.currentValue();
+    }
+    return sum;
+  },
+  find: function(search){
+    // accepts an object where the key is the search field and the value is the search term
+    // e.g. find({name: 'My Investment'});
+    arrayLoop:
+    for (var investment of this.investments) {
+      for (var key in search){
+        if (investment[key] != search[key]) {
+          continue arrayLoop;
+        }
+      }   
+      return investment
+    }
+  },
+  findByName: function(name){
+    return this.find({shareName: name})
+  },
+  findByEpic: function(epic){
+    return this.find({epic: epic})
   }
 };
 
