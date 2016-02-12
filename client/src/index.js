@@ -7,7 +7,7 @@ var init = function(){
   console.log(Barry);
 
   var p = document.createElement('p');
-  p.innerHTML = "<h2>Current Total Value</h1>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
+  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
   basicInfo.appendChild(p);
 
   
