@@ -31,6 +31,9 @@ describe('Share', function(){
   it('should have an array of past close of day prices', function(){
     assert.equal(232.60, newShare.pastCloseOfDayPrices[0]);
   });
+
+  // FUNCTIONALITY
+  
   it('should be able to crash in price', function(){
     var newSharePrice = newShare.currentPrice;
     newShare.crashValue(15);

@@ -1,9 +1,9 @@
-var Investment = function(share, quantity, buyPrice, buyDate){
+var Investment = function(share, params){
   this.share = share;
   this.shareName = share.shareName;
-  this.quantity = quantity;
-  this.buyPrice = buyPrice;
-  this.buyDate = buyDate;
+  this.quantity = params.quantity;
+  this.buyPrice = params.buyPrice;
+  this.buyDate = params.buyDate;
 };
 
 Investment.prototype = {

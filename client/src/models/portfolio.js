@@ -37,7 +37,7 @@ Portfolio.prototype = {
   pastTotalValue: function(day){
     var sum = 0;
     for(var investment of this.investments) {
-      var dayTotal = investment.quantity * investment.pastCloseOfDayPrices[7 - day];
+      var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
       sum += dayTotal;
     }
     return sum;
@@ -48,7 +48,7 @@ Portfolio.prototype = {
     arrayLoop:
     for (var investment of this.investments) {
       for (var key in search){
-        if (investment[key] != search[key]) {
+        if (investment.share[key] != search[key]) {
           continue arrayLoop;
         }
       }   

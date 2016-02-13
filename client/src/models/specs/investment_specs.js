@@ -4,16 +4,20 @@ var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
 
+var investmentSample = {
+  "name": "Worldpay",
+  "epic":"WGP",
+  "price": 301.00,
+  "quantity": 1000,
+  "buyPrice": 209.40,
+  "pastCloseOfDayPrices": [232.60, 220.00, 222.00, 221.60, 240.00, 238.00, 235.40],
+  "buyDate":"2015-12-22"
+}
+
 describe('Investment', function(){
   beforeEach(function(){
-    newShare = new Share({
-      "name": "Worldpay",
-      "epic":"WGP",
-      "price": 301.00,
-      "pastCloseOfDayPrices": [232.60, 220.00, 222.00, 221.60, 240.00, 238.00, 235.40],
-    });
-    newInvestment = new Investment(newShare, 1000, 209.40, "2015-12-22");
-
+    newShare = new Share(investmentSample);
+    newInvestment = new Investment(newShare, investmentSample);
   });
 
   // BASIC MODEL ATTRIBUTES
