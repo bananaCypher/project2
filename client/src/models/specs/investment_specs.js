@@ -1,39 +1,29 @@
 var Investment = require('../investment.js');
+var Share = require('../share.js');
 var chai = require('chai');
 var assert = chai.assert;
 var expect = chai.expect;
 
 describe('Investment', function(){
   beforeEach(function(){
-   newInvestment = new Investment({
-        name: "Worldpay",
-        epic:"WGP",
-        price: 301.00,
-        quantity: 1000,
-        buyPrice: 209.40,
-        pastCloseOfDayPrices: [232.60, 220.00, 222.00, 221.60, 240.00, 238.00, 235.40],
-        buyDate:"2015-12-22"
-      });
+    newShare = new Share({
+      "name": "Worldpay",
+      "epic":"WGP",
+      "price": 301.00,
+      "quantity": 1000,
+      "buyPrice": 209.40,
+      "pastCloseOfDayPrices": [232.60, 220.00, 222.00, 221.60, 240.00, 238.00, 235.40],
+      "buyDate":"2015-12-22"
+    })
+    newInvestment = new Investment(newShare);
   });
 
   // BASIC MODEL ATTRIBUTES
-  it('should have a share name', function(){
-    assert.equal('Worldpay', newInvestment.shareName);
-  });
-  it('should have an epic', function(){
-    assert.equal('WGP', newInvestment.epic);
-  });
-  it('should have current price', function(){
-    assert.equal(301.00, newInvestment.currentPrice);
-  });
   it('should have a quantity', function(){
     assert.equal(1000, newInvestment.quantity);
   });
   it('should have a buy price', function(){
     assert.equal(209.40, newInvestment.buyPrice);
-  });
-  it('should have an array of past close of day prices', function(){
-    assert.equal(232.60, newInvestment.pastCloseOfDayPrices[0]);
   });
   it('should have a buy date', function(){
     assert.equal("2015-12-22", newInvestment.buyDate);
@@ -54,16 +44,6 @@ describe('Investment', function(){
   }); 
   it('should be able to return a last 7 days average for the share price', function(){
     assert.equal(229.94, newInvestment.sevenDayAverage().toFixed(2));
-  });
-  it('should be able to crash in price', function(){
-    var newInvestmentPrice = newInvestment.currentPrice;
-    newInvestment.crashValue(15);
-    expect(newInvestment.currentPrice).to.equal(newInvestmentPrice * 0.85);
-  });
-  it('should be able to inflate in price', function(){
-    var newInvestmentPrice = newInvestment.currentPrice;
-    newInvestment.inflateValue(15);
-    expect(newInvestment.currentPrice).to.equal(newInvestmentPrice * 1.15);
   });
 
 })
