@@ -44,23 +44,36 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Barry = __webpack_require__(1)
+	var Barry = __webpack_require__(1);
+	var scatterChart = __webpack_require__(6);
 	
-	var init = function(){
-	  console.log('I have loaded');
-	
+	var displayLargestPercChange = function(){
 	  var basicInfo = document.getElementById('basicInfo');
-	  console.log(Barry);
+	  var p = document.createElement('p');
+	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
+	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
+	  p.innerHTML = "<h2>Largest percentage stock change</h2>"
+	  p.innerHTML += largestPercChangeInvestment.shareName + ": " + Number(largestPercChangeValue).toLocaleString() + "%";
+	  basicInfo.appendChild(p);
+	}
 	
+	var displayCurrentPortfolioValue = function(){
+	  var basicInfo = document.getElementById('basicInfo');
 	  var p = document.createElement('p');
 	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
 	  basicInfo.appendChild(p);
+	}
 	
-	  
+	var init = function(){
+	  console.log('I have loaded');
+	  console.log(Barry);
+	  displayCurrentPortfolioValue();
+	  displayLargestPercChange();
+	  new scatterChart();
 	};
 	
-	
 	window.onload = init;
+
 
 /***/ },
 /* 1 */
@@ -154,6 +167,14 @@
 	    }
 	    return sum;
 	  },
+	  pastTotalValue: function(day){
+	    var sum = 0;
+	    for(var investment of this.investments) {
+	      var dayTotal = investment.quantity * investment.pastCloseOfDayPrices[7 - day];
+	      sum += dayTotal;
+	    }
+	    return sum;
+	  },
 	  find: function(search){
 	    // accepts an object where the key is the search field and the value is the search term
 	    // e.g. find({name: 'My Investment'});
@@ -164,7 +185,7 @@
 	          continue arrayLoop;
 	        }
 	      }   
-	      return investment
+	      return investment;
 	    }
 	  },
 	  findByName: function(name){
@@ -183,13 +204,19 @@
 	    return largest; 
 	  },
 	  findLargestChange: function(measurement){
+	    var highestInvestment = this.investments[0];
 	    for (investment of this.investments) {
-	      var highestChange = 0;
-	      if(investment.valueChange(measurement) > highestChange){
-	        highestChange = investment.valueChange(measurement);
+	      if(investment.valueChange(measurement) > highestInvestment.valueChange(measurement)){
+	        highestInvestment = investment;
 	      }
 	    }
-	    return highestChange;
+	    return highestInvestment;
+	  },
+	  findLargestPriceChange: function(){
+	    return this.findLargestChange('price');
+	  },
+	  findLargestPercentageChange: function(){
+	    return this.findLargestChange('percentage');
 	  }
 	};
 	
@@ -332,6 +359,52 @@
 	  "buyDate":"2014-04-04"
 	}
 	]
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Barry = __webpack_require__(1)
+	
+	var ScatterChart = function(){
+	  var container = document.getElementById("scatterChart");
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'scatter',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "7 Day Performance - Total Portfolio Value",
+	      style: {
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    xAxis: {
+	    
+	    },
+	    yAxis: {
+	      title: {
+	        text: "Total Value"
+	      }
+	    },
+	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  'rgba(223, 83, 83, .9)',
+	        dashStyle: 'ShortDash'
+	        },
+	        type: "line",
+	      name: "Portfolio",
+	      data: [ [1, Barry.portfolio.pastTotalValue(7) / 100], [2, Barry.portfolio.pastTotalValue(6) / 100], [3, Barry.portfolio.pastTotalValue(5) / 100], [4, Barry.portfolio.pastTotalValue(4) / 100], [5, Barry.portfolio.pastTotalValue(3) / 100], [6, Barry.portfolio.pastTotalValue(2) / 100], [7, Barry.portfolio.pastTotalValue(1) / 100] ],
+	    }],
+	
+	  });
+	}
+	
+	module.exports = ScatterChart;
 
 
 /***/ }
