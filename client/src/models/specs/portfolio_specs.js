@@ -164,7 +164,12 @@ describe('Portfolio', function(){
     assert.equal('Royal Bank of Scotland Group', portfolio.largestInvestment().shareName);
   });
   it('should be able to find the investment with the largest change in value', function(){
-    assert.equal(portfolio.findLargestChange('percentage').toFixed(2), 1198.89);
+    var investment = portfolio.findLargestPriceChange();
+    assert.equal(investment.shareName, 'Robinson');
+  });
+  it('should be able to find out the investment with the largest percentage change', function(){
+    var investment = portfolio.findLargestPercentageChange();
+    assert.equal(investment.shareName, 'Stadium');
   });
   it('should be able to show total portfolio value for any day of the last week', function(){
     assert.equal(portfolio.pastTotalValue(1), 6547000)

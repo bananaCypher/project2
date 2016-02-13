@@ -71,13 +71,19 @@ Portfolio.prototype = {
     return largest; 
   },
   findLargestChange: function(measurement){
+    var highestInvestment = this.investments[0];
     for (investment of this.investments) {
-      var highestChange = 0;
-      if(investment.valueChange(measurement) > highestChange){
-        highestChange = investment.valueChange(measurement);
+      if(investment.valueChange(measurement) > highestInvestment.valueChange(measurement)){
+        highestInvestment = investment;
       }
     }
-    return highestChange;
+    return highestInvestment;
+  },
+  findLargestPriceChange: function(){
+    return this.findLargestChange('price');
+  },
+  findLargestPercentageChange: function(){
+    return this.findLargestChange('percentage');
   }
 };
 

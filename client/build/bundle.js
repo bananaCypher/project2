@@ -45,23 +45,35 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1);
-	var scatterChart = __webpack_require__(7);
+	var scatterChart = __webpack_require__(6);
 	
-	var init = function(){
-	  console.log('I have loaded');
-	
+	var displayLargestPercChange = function(){
 	  var basicInfo = document.getElementById('basicInfo');
-	  console.log(Barry);
+	  var p = document.createElement('p');
+	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
+	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
+	  p.innerHTML = "<h2>Largest percentage stock change</h2>"
+	  p.innerHTML += largestPercChangeInvestment.shareName + ": " + Number(largestPercChangeValue).toLocaleString() + "%";
+	  basicInfo.appendChild(p);
+	}
 	
+	var displayCurrentPortfolioValue = function(){
+	  var basicInfo = document.getElementById('basicInfo');
 	  var p = document.createElement('p');
 	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
 	  basicInfo.appendChild(p);
+	}
 	
+	var init = function(){
+	  console.log('I have loaded');
+	  console.log(Barry);
+	  displayCurrentPortfolioValue();
+	  displayLargestPercChange();
 	  new scatterChart();
 	};
 	
-	
 	window.onload = init;
+
 
 /***/ },
 /* 1 */
@@ -192,13 +204,19 @@
 	    return largest; 
 	  },
 	  findLargestChange: function(measurement){
+	    var highestInvestment = this.investments[0];
 	    for (investment of this.investments) {
-	      var highestChange = 0;
-	      if(investment.valueChange(measurement) > highestChange){
-	        highestChange = investment.valueChange(measurement);
+	      if(investment.valueChange(measurement) > highestInvestment.valueChange(measurement)){
+	        highestInvestment = investment;
 	      }
 	    }
-	    return highestChange;
+	    return highestInvestment;
+	  },
+	  findLargestPriceChange: function(){
+	    return this.findLargestChange('price');
+	  },
+	  findLargestPercentageChange: function(){
+	    return this.findLargestChange('percentage');
 	  }
 	};
 	
@@ -344,8 +362,7 @@
 
 
 /***/ },
-/* 6 */,
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1)
