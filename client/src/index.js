@@ -1,6 +1,7 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
 var singleScatterChart = require('./charts/singleScatterChart.js');
+var pieChart = require('./charts/pieChart.js');
 
 var displayLargestPercChange = function(){
   var basicInfo = document.getElementById('basicInfo');
@@ -45,6 +46,7 @@ var init = function(){
   sharePerformanceSelect.onchange = function(){
     showSharePerformanceChart(sharePerformanceSelect.value);
   };
+  new pieChart(Barry.portfolio);
   
 };
 

@@ -45,8 +45,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1);
-	var scatterChart = __webpack_require__(6);
-	var singleScatterChart = __webpack_require__(7);
+	var scatterChart = __webpack_require__(7);
+	var singleScatterChart = __webpack_require__(8);
+	var pieChart = __webpack_require__(9);
 	
 	var displayLargestPercChange = function(){
 	  var basicInfo = document.getElementById('basicInfo');
@@ -91,6 +92,7 @@
 	  sharePerformanceSelect.onchange = function(){
 	    showSharePerformanceChart(sharePerformanceSelect.value);
 	  };
+	  new pieChart(Barry.portfolio);
 	  
 	};
 	
@@ -104,8 +106,8 @@
 	var User = __webpack_require__(2);
 	var Portfolio = __webpack_require__(4);
 	var Investment = __webpack_require__(3);
-	var Share = __webpack_require__(8);
-	var investmentsSample = __webpack_require__(5);
+	var Share = __webpack_require__(5);
+	var investmentsSample = __webpack_require__(6);
 	
 	
 	
@@ -341,6 +343,35 @@
 /* 5 */
 /***/ function(module, exports) {
 
+	var Share = function(params){
+	  this.shareName = params.name;
+	  this.epic = params.epic;
+	  this.currentPrice = params.price;
+	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
+	};
+	
+	Share.prototype = {
+	  crashValue: function(percentage){
+	    if(percentage >= 100){
+	      console.log('cannot reduce a shareprice below zero');
+	    }
+	    else{
+	      var newPrice = this.currentPrice * ((100 - percentage)/ 100);
+	      this.currentPrice = newPrice;
+	    }
+	  },
+	  inflateValue: function(percentage){
+	    var newPrice = this.currentPrice * ((100 + percentage) / 100);
+	    this.currentPrice = newPrice;
+	  }
+	}
+	
+	module.exports = Share;
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
 	module.exports = [{
 	  "name": "Fusionex",
 	  "epic":"FXI",
@@ -435,7 +466,7 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1)
@@ -485,7 +516,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1)
@@ -536,33 +567,43 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
-	var Share = function(params){
-	  this.shareName = params.name;
-	  this.epic = params.epic;
-	  this.currentPrice = params.price;
-	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
-	};
 	
-	Share.prototype = {
-	  crashValue: function(percentage){
-	    if(percentage >= 100){
-	      console.log('cannot reduce a shareprice below zero');
+	var PieChart = function(portfolio){
+	  var container = document.getElementById("pieChart");
+	  var investmentData = []
+	
+	  for(investment of portfolio.investments){
+	    var dataItem = {
+	    name: investment.share.epic,
+	    y: investment.currentValue(),
 	    }
-	    else{
-	      var newPrice = this.currentPrice * ((100 - percentage)/ 100);
-	      this.currentPrice = newPrice;
-	    }
-	  },
-	  inflateValue: function(percentage){
-	    var newPrice = this.currentPrice * ((100 + percentage) / 100);
-	    this.currentPrice = newPrice;
+	    investmentData.push(dataItem);
 	  }
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'pie',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "Investments as proportion of total portfolio value",
+	      style: {
+	        "color": "rebeccapurple",
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    series: [{
+	      name: "Investment",
+	      data: investmentData,
+	    }],
+	
+	  });
 	}
 	
-	module.exports = Share;
+	module.exports = PieChart;
 
 /***/ }
 /******/ ]);
