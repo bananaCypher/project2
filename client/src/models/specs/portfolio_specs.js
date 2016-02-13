@@ -1,6 +1,7 @@
 var assert = require('assert');
 var Portfolio = require('../portfolio.js')
 var Investment = require('../investment.js');
+var Share = require('../share.js');
 var investmentsSample = [{
   "name": "Fusionex",
   "epic":"FXI",

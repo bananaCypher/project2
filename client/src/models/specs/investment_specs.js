@@ -10,17 +10,16 @@ describe('Investment', function(){
       "name": "Worldpay",
       "epic":"WGP",
       "price": 301.00,
-      "quantity": 1000,
-      "buyPrice": 209.40,
       "pastCloseOfDayPrices": [232.60, 220.00, 222.00, 221.60, 240.00, 238.00, 235.40],
-      "buyDate":"2015-12-22"
-    })
-    newInvestment = new Investment(newShare);
+    });
+    newInvestment = new Investment(newShare, 1000, 209.40, "2015-12-22");
+
   });
 
   // BASIC MODEL ATTRIBUTES
   it('should have a quantity', function(){
     assert.equal(1000, newInvestment.quantity);
+
   });
   it('should have a buy price', function(){
     assert.equal(209.40, newInvestment.buyPrice);

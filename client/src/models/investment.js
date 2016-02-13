@@ -1,16 +1,14 @@
-var Investment = function(share){
-  this.shareName = share.name;
-  this.epic = share.epic;
-  this.currentPrice = share.price;
-  this.quantity = share.quantity;
-  this.buyPrice = share.buyPrice;
-  this.pastCloseOfDayPrices = share.pastCloseOfDayPrices;
-  this.buyDate = share.buyDate;
+var Investment = function(share, quantity, buyPrice, buyDate){
+  this.share = share;
+  this.shareName = share.shareName;
+  this.quantity = quantity;
+  this.buyPrice = buyPrice;
+  this.buyDate = buyDate;
 };
 
 Investment.prototype = {
   currentValue: function(){
-    return this.currentPrice * this.quantity;
+    return this.share.currentPrice * this.quantity;
   },
   buyDateValue: function(){
     return this.buyPrice * this.quantity;
@@ -26,7 +24,7 @@ Investment.prototype = {
   },
   sevenDayAverage: function(){
     var total = 0;
-    for(price of this.pastCloseOfDayPrices){
+    for(price of this.share.pastCloseOfDayPrices){
       total += price;
     }
     return total / 7;
