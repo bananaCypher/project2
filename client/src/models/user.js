@@ -47,7 +47,7 @@ User.prototype = {
     }
   },
   pumpStock: function(investment, percentage){
-    if(this.insideTrader == false){
+    if(!this.insideTrader){
       console.log('this action is illegal!');
     }
     else{
