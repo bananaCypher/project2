@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1);
-	var lineChart = __webpack_require__(6);
+	var scatterChart = __webpack_require__(7);
 	
 	var init = function(){
 	  console.log('I have loaded');
@@ -57,7 +57,7 @@
 	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
 	  basicInfo.appendChild(p);
 	
-	  new lineChart();
+	  new scatterChart();
 	};
 	
 	
@@ -344,16 +344,17 @@
 
 
 /***/ },
-/* 6 */
+/* 6 */,
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1)
 	
-	var LineChart = function(){
-	  var container = document.getElementById("lineChart");
+	var ScatterChart = function(){
+	  var container = document.getElementById("scatterChart");
 	  var chart = new Highcharts.Chart({
 	    chart: {
-	      type: 'line',
+	      type: 'scatter',
 	      renderTo: container
 	    },
 	    title: {
@@ -364,7 +365,7 @@
 	      }
 	    },
 	    xAxis: {
-	      categories: ["1", "2", "3", "4", "5", "6", "7"]
+	    
 	    },
 	    yAxis: {
 	      title: {
@@ -372,14 +373,22 @@
 	      }
 	    },
 	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  'rgba(223, 83, 83, .9)',
+	        dashStyle: 'ShortDash'
+	        },
+	        type: "line",
 	      name: "Portfolio",
-	      data: [ Barry.portfolio.pastTotalValue(7) / 100, Barry.portfolio.pastTotalValue(6) / 100, Barry.portfolio.pastTotalValue(5) / 100, Barry.portfolio.pastTotalValue(4) / 100, Barry.portfolio.pastTotalValue(3) / 100, Barry.portfolio.pastTotalValue(2) / 100, Barry.portfolio.pastTotalValue(1) / 100 ],
+	      data: [ [1, Barry.portfolio.pastTotalValue(7) / 100], [2, Barry.portfolio.pastTotalValue(6) / 100], [3, Barry.portfolio.pastTotalValue(5) / 100], [4, Barry.portfolio.pastTotalValue(4) / 100], [5, Barry.portfolio.pastTotalValue(3) / 100], [6, Barry.portfolio.pastTotalValue(2) / 100], [7, Barry.portfolio.pastTotalValue(1) / 100] ],
 	    }],
 	
 	  });
 	}
 	
-	module.exports = LineChart;
+	module.exports = ScatterChart;
+
 
 /***/ }
 /******/ ]);

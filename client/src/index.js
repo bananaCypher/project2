@@ -1,5 +1,5 @@
 var Barry = require('./seedObjects.js');
-var lineChart = require('./charts/lineChart.js');
+var scatterChart = require('./charts/scatterChart.js');
 
 var init = function(){
   console.log('I have loaded');
@@ -11,7 +11,7 @@ var init = function(){
   p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
   basicInfo.appendChild(p);
 
-  new lineChart();
+  new scatterChart();
 };
 
 
