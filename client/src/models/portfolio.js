@@ -34,6 +34,14 @@ Portfolio.prototype = {
     }
     return sum;
   },
+  pastTotalValue: function(day){
+    var sum = 0;
+    for(var investment of this.investments) {
+      var dayTotal = investment.quantity * investment.pastCloseOfDayPrices[7 - day];
+      sum += dayTotal;
+    }
+    return sum;
+  },
   find: function(search){
     // accepts an object where the key is the search field and the value is the search term
     // e.g. find({name: 'My Investment'});
@@ -44,7 +52,7 @@ Portfolio.prototype = {
           continue arrayLoop;
         }
       }   
-      return investment
+      return investment;
     }
   },
   findByName: function(name){

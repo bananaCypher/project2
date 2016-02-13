@@ -166,4 +166,7 @@ describe('Portfolio', function(){
   it('should be able to find the investment with the largest change in value', function(){
     assert.equal(portfolio.findLargestChange('percentage').toFixed(2), 1198.89);
   });
+  it('should be able to show total portfolio value for any day of the last week', function(){
+    assert.equal(portfolio.pastTotalValue(1), 6547000)
+  });
 });
