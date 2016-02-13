@@ -58,11 +58,11 @@ describe('User', function(){
   });
 
   it('should be able to short sell shares', function(){
-
+    expect(true).to.equal(false);
   });
 
   it('should be able to settle short sales', function(){
-
+    expect(true).to.equal(false);
   });
 
   it('should be unable to engage in insider trading without an opt-in', function(){
