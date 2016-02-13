@@ -129,7 +129,8 @@
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500
+	  this.accountBalance = 500,
+	  this.insideTrader = false
 	}
 	
 	User.prototype = {
@@ -144,6 +145,22 @@
 	    investment.quantity = number;
 	    this.portfolio.removeInvestment(investment);
 	    this.accountBalance += outlay;
+	  },
+	  spreadRumours: function(investment, percentage){
+	    if(this.insideTrader == false){
+	      console.log('this action is illegal!');
+	    }
+	    else{
+	      investment.crashValue(percentage);
+	    }
+	  },
+	  pumpStock: function(investment, percentage){
+	    if(this.insideTrader == false){
+	      console.log('this action is illegal!');
+	    }
+	    else{
+	      investment.inflateValue(percentage);
+	    }
 	  }
 	}
 	
@@ -281,6 +298,19 @@
 	      total += price;
 	    }
 	    return total / 7;
+	  },
+	  crashValue: function(percentage){
+	    if(percentage >= 100){
+	      console.log('cannot reduce a shareprice below zero');
+	    }
+	    else{
+	      var newPrice = this.currentPrice * ((100 - percentage)/ 100);
+	      this.currentPrice = newPrice;
+	    }
+	  },
+	  inflateValue: function(percentage){
+	    var newPrice = this.currentPrice * ((100 + percentage) / 100);
+	    this.currentPrice = newPrice;
 	  }
 	};
 	
