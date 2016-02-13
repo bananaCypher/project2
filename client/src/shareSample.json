@@ -2,6 +2,7 @@ module.exports = [
     {
       "name": "Fusionex",
       "epic":"FXI",
+      "location": "USA",
       "price": 120.00,
       "quantity": 2000,
       "buyPrice": 80.00,
@@ -11,6 +12,7 @@ module.exports = [
     {
       "name": "Empiric Student Prop",
       "epic":"ESP",
+      "location": "UK",
       "price": 112.00,
       "quantity": 3500,
       "buyPrice": 100.00,
@@ -20,6 +22,7 @@ module.exports = [
     {
       "name": "Worldpay",
       "epic":"WGP",
+      "location": "China",
       "price": 301.00,
       "quantity": 1000,
       "buyPrice": 209.40,
@@ -29,6 +32,7 @@ module.exports = [
     {
       "name": "Pets At Home",
       "epic":"PETS",
+      "location": "USA",
       "price": 247.40,
       "quantity": 2500,
       "buyPrice": 250.50,
@@ -38,6 +42,7 @@ module.exports = [
     {
       "name": "Cyprotex",
       "epic":"CRX",
+      "location": "UK",
       "price": 87.00,
       "quantity": 5000,
       "buyPrice": 90.00,
@@ -47,6 +52,7 @@ module.exports = [
     {
       "name": "Robinson",
       "epic":"RBN",
+      "location": "China",
       "price": 202.00,
       "quantity": 5000,
       "buyPrice": 80.50,
@@ -56,6 +62,7 @@ module.exports = [
     {
       "name": "Softcat",
       "epic":"SCT",
+      "location": "USA",
       "price": 322.90,
       "quantity": 2000,
       "buyPrice": 420.00,
@@ -65,6 +72,7 @@ module.exports = [
     {
       "name": "Royal Bank of Scotland Group",
       "epic":"RBS",
+      "location": "UK",
       "price": 233.00,
       "quantity": 8000,
       "buyPrice": 790.00,
@@ -74,6 +82,7 @@ module.exports = [
     {
       "name": "NCC",
       "epic":"NCC",
+      "location": "USA",
       "price": 279.00,
       "quantity": 2000,
       "buyPrice": 500.00,
@@ -83,6 +92,7 @@ module.exports = [
     {
       "name": "Stadium",
       "epic":"SDM",
+      "location": "China",
       "price": 116.90,
       "quantity": 5000,
       "buyPrice": 9.00,
