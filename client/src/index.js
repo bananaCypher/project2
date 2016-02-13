@@ -10,7 +10,9 @@ var init = function(){
   p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
   basicInfo.appendChild(p);
 
-  
+  var p = document.createElement('p');
+  p.innerHTML = "<h2>Largest percentage stock change</h2>" + Number(Barry.portfolio.largestPercentageChange().toLocaleString()) + "%";
+  basicInfo.appendChild(p);
 };
 
 

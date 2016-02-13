@@ -56,11 +56,14 @@
 	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
 	  basicInfo.appendChild(p);
 	
-	  
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Largest percentage stock change</h2>" + Number(Barry.portfolio.largestPercentageChange().toLocaleString()) + "%";
+	  basicInfo.appendChild(p);
 	};
 	
 	
 	window.onload = init;
+
 
 /***/ },
 /* 1 */
@@ -183,13 +186,19 @@
 	    return largest; 
 	  },
 	  findLargestChange: function(measurement){
+	    var highestInvestment = this.investments[0];
 	    for (investment of this.investments) {
-	      var highestChange = 0;
-	      if(investment.valueChange(measurement) > highestChange){
-	        highestChange = investment.valueChange(measurement);
+	      if(investment.valueChange(measurement) > highestInvestment.valueChange(measurement)){
+	        highestInvestment = investment;
 	      }
 	    }
-	    return highestChange;
+	    return highestInvestment;
+	  },
+	  findLargestPriceChange: function(){
+	    return this.findLargestChange('price');
+	  },
+	  findLargestPercentageChange: function(){
+	    return this.findLargestChange('percentage');
 	  }
 	};
 	
