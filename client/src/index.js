@@ -1,5 +1,6 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
+var singleScatterChart = require('./charts/singleScatterChart.js');
 
 var displayLargestPercChange = function(){
   var basicInfo = document.getElementById('basicInfo');
@@ -24,6 +25,7 @@ var init = function(){
   displayCurrentPortfolioValue();
   displayLargestPercChange();
   new scatterChart();
+  new singleScatterChart(Barry.portfolio.investments[1]);
 };
 
 window.onload = init;
