@@ -1,4 +1,5 @@
-var http = require('http');
+var http = require('https');
+var cheerio = require('cheerio');
 var sampleData = [{
   "name": "Fusionex",
   "epic":"FXI",
@@ -92,25 +93,26 @@ var sampleData = [{
 ]
 
 var getLatestData = function(symbol, callback) {
-  var url = 'http://finance.yahoo.com/webservice/v1/symbols/' + symbol + '/quote?format=json&view=detail';
+  var url = 'https://uk.finance.yahoo.com/q?s=' + symbol + '&ql=1'
   http.get(url, function(response){
     var body = '';                                                                                                                        
     response.on('data', function(d){
       body += d;                                                                                                                          
     });
     response.on('end', function(){                                                                                                        
-      callback(JSON.parse(body));
+      callback(body);
     });
   });
 }
 
-for (var share of sampleData) {
+var updateShare = function(share){
   getLatestData(share.epic, function(data){
-    console.log(share);
-    console.log(data);
-    if(new Date(data.resource[0].fields.utctime) == Date()){
-      console.log('sup');
-    }
-  });
+    $ = cheerio.load(data);
+    share.price = $(".time_rtq_ticker").children()[0].children[0].data;
+    console.log(share.name, " ", share.price);
+  })
 }
-console.log(sampleData);
+
+for (var share of sampleData) {
+  updateShare(share);
+};
