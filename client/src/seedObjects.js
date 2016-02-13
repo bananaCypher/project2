@@ -4,13 +4,17 @@ var Investment = require('./models/investment.js');
 var investmentsSample = require('./shareSample.json');
 
 
+
+
 var Barry = new User("Barry Manilow");
 
 var barryPortfolio = new Portfolio();
 
 console.log(investmentsSample);
-for(investment of investmentsSample){
-  var newInvestment = new Investment(investment);
+
+for (share of investmentsSample){
+  var newShare = new Share(share);
+  var newInvestment = new Investment(share, params);
   barryPortfolio.addInvestment(newInvestment); 
 }
 
