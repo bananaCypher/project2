@@ -46,6 +46,7 @@
 
 	var Barry = __webpack_require__(1);
 	var scatterChart = __webpack_require__(6);
+	var singleScatterChart = __webpack_require__(7);
 	
 	var displayLargestPercChange = function(){
 	  var basicInfo = document.getElementById('basicInfo');
@@ -64,12 +65,33 @@
 	  basicInfo.appendChild(p);
 	}
 	
+	var showSharePerformanceChart = function(inputName){
+	  var investment = Barry.portfolio.find({shareName: inputName });
+	  new singleScatterChart(investment);
+	}
+	
+	var populateSelect = function(){
+	  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+	  for(investment of Barry.portfolio.investments){
+	    var option = document.createElement('option');
+	    option.innerText = investment.shareName;
+	    sharePerformanceSelect.appendChild(option);
+	  }
+	}
 	var init = function(){
 	  console.log('I have loaded');
 	  console.log(Barry);
+	
+	  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+	
+	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
 	  new scatterChart();
+	  sharePerformanceSelect.onchange = function(){
+	    showSharePerformanceChart(sharePerformanceSelect.value);
+	  };
+	  
 	};
 	
 	window.onload = init;
@@ -382,11 +404,15 @@
 	      }
 	    },
 	    xAxis: {
-	    
+	      title: {
+	        text: "Previous Week's Days"
+	      },
+	      tickAmount: 7,
+	      tickInterval: 1
 	    },
 	    yAxis: {
 	      title: {
-	        text: "Total Value"
+	        text: "Total Value (GBP)"
 	      }
 	    },
 	    series: [{
@@ -405,6 +431,57 @@
 	}
 	
 	module.exports = ScatterChart;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Barry = __webpack_require__(1)
+	
+	
+	var SingleScatterChart = function(investment){
+	  var container = document.getElementById("singleScatterChart");
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'scatter',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "7 Day Performance - " + investment.shareName,
+	      style: {
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    xAxis: {
+	      title: {
+	        text: "Previous Week's Days"
+	      },
+	      tickAmount: 7,
+	      tickInterval: 1
+	    },
+	    yAxis: {
+	      title: {
+	        text: "Value of Share (GBX)"
+	      }
+	    },
+	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  'rgba(223, 83, 83, .9)',
+	        dashStyle: 'ShortDash'
+	        },
+	        type: "line",
+	      name: "Portfolio",
+	      data: [ [1, investment.pastCloseOfDayPrices[0]], [2, investment.pastCloseOfDayPrices[1]], [3, investment.pastCloseOfDayPrices[2]], [4, investment.pastCloseOfDayPrices[3]], [5, investment.pastCloseOfDayPrices[4]], [6, investment.pastCloseOfDayPrices[5]], [7, investment.pastCloseOfDayPrices[6]]  ],
+	    }],
+	
+	  });
+	}
+	
+	module.exports = SingleScatterChart;
 
 
 /***/ }

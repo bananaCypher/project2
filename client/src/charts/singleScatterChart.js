@@ -1,14 +1,15 @@
 var Barry = require('../seedObjects.js')
 
-var ScatterChart = function(){
-  var container = document.getElementById("scatterChart");
+
+var SingleScatterChart = function(investment){
+  var container = document.getElementById("singleScatterChart");
   var chart = new Highcharts.Chart({
     chart: {
       type: 'scatter',
       renderTo: container
     },
     title: {
-      text: "7 Day Performance - Total Portfolio Value",
+      text: "7 Day Performance - " + investment.shareName,
       style: {
         "text-decoration": "underline",
         "font-weight": "700"
@@ -23,7 +24,7 @@ var ScatterChart = function(){
     },
     yAxis: {
       title: {
-        text: "Total Value (GBP)"
+        text: "Value of Share (GBX)"
       }
     },
     series: [{
@@ -35,10 +36,10 @@ var ScatterChart = function(){
         },
         type: "line",
       name: "Portfolio",
-      data: [ [1, Barry.portfolio.pastTotalValue(7) / 100], [2, Barry.portfolio.pastTotalValue(6) / 100], [3, Barry.portfolio.pastTotalValue(5) / 100], [4, Barry.portfolio.pastTotalValue(4) / 100], [5, Barry.portfolio.pastTotalValue(3) / 100], [6, Barry.portfolio.pastTotalValue(2) / 100], [7, Barry.portfolio.pastTotalValue(1) / 100] ],
+      data: [ [1, investment.pastCloseOfDayPrices[0]], [2, investment.pastCloseOfDayPrices[1]], [3, investment.pastCloseOfDayPrices[2]], [4, investment.pastCloseOfDayPrices[3]], [5, investment.pastCloseOfDayPrices[4]], [6, investment.pastCloseOfDayPrices[5]], [7, investment.pastCloseOfDayPrices[6]]  ],
     }],
 
   });
 }
 
-module.exports = ScatterChart;
+module.exports = SingleScatterChart;
