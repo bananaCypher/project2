@@ -24,7 +24,7 @@ var SingleScatterChart = function(investment){
     },
     yAxis: {
       title: {
-        text: "Value of Share"
+        text: "Value of Share (GBX)"
       }
     },
     series: [{

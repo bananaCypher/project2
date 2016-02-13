@@ -23,7 +23,7 @@ var ScatterChart = function(){
     },
     yAxis: {
       title: {
-        text: "Total Value"
+        text: "Total Value (GBP)"
       }
     },
     series: [{
