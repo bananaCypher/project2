@@ -1,0 +1,92 @@
+header {
+  width: 100%;
+  text-align: center;
+  background-color: #C4E0F1;
+  margin: 0 0 20px 0;
+  padding: 8px;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+}
+
+select {
+  font-size: 1em;
+  padding: 5px;
+}
+
+/* GRID FRAMEWORK */
+
+.container {
+  width: 85%;
+  margin: 0 auto;
+}
+
+.row {
+  display: block;
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.grid {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: -4px;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.grid-1 {
+  width: 8.3333333%;
+}
+
+.grid-2 {
+  width: 16.666666%;
+}
+
+.grid-3 {
+  width: 25%;
+}
+
+.grid-4 {
+  width: 33.3333333%;
+}
+
+.grid-5 {
+  width: 41.6666666%;
+}
+
+.grid-6 {
+  width: 50%;
+}
+
+.grid-7 {
+  width: 58.3333333%;
+}
+
+.grid-8 {
+  width: 66.6666666%;
+}
+
+.grid-9 {
+  width: 75%;
+}
+
+.grid-10 {
+  width: 83.3333333%;
+}
+
+.grid-11 {
+  width: 91.6666666%;
+}
+
+.grid-12 {
+  width: 100%;
+}
+ 
+ /* CHARTS */
+
+#scatterChart {
+
+}
