@@ -20,6 +20,7 @@ describe('User', function(){
     testPortfolio.investments = [testInvestment];
     testUser.portfolio = testPortfolio;
     testBalance = testUser.accountBalance;
+    testPortfolioBalance = testUser.portfolio.totalValue();
     testInvestmentPrice = testInvestment.currentPrice;
   });
 
@@ -53,5 +54,13 @@ describe('User', function(){
   it('should gain money appropriately on sale', function(){
     testUser.sellShares(testInvestment, 1);
     expect(testUser.accountBalance).to.equal(testBalance + testInvestmentPrice);
+  });
+
+  it('should be able to short sell shares', function(){
+
+  });
+
+  it('should be able to settle short sales', function(){
+
   });
 })

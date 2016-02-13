@@ -1,5 +1,7 @@
 var Investment = require('../investment.js');
-var assert = require('assert');
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
 
 describe('Investment', function(){
   beforeEach(function(){
@@ -52,6 +54,16 @@ describe('Investment', function(){
   }); 
   it('should be able to return a last 7 days average for the share price', function(){
     assert.equal(229.94, newInvestment.sevenDayAverage().toFixed(2));
+  });
+  it('should be able to crash an Investment stock price', function(){
+    var newInvestmentPrice = newInvestment.currentPrice;
+    newInvestment.crashValue(15);
+    expect(newInvestment.currentPrice).to.equal(newInvestmentPrice * 0.15);
+  });
+  it('should be able to inflate an Investment stock price', function(){
+    var newInvestmentPrice = newInvestment.currentPrice;
+    newInvestment.inflateValue(15);
+    expect(newInvestment.currentPrice).to.equal(newInvestmentPrice * 1.15);
   });
 
 })

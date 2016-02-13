@@ -16,7 +16,8 @@ User.prototype = {
     investment.quantity = number;
     this.portfolio.removeInvestment(investment);
     this.accountBalance += outlay;
-  }
+  },
+
 }
 
 module.exports = User;

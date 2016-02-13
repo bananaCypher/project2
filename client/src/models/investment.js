@@ -30,6 +30,19 @@ Investment.prototype = {
       total += price;
     }
     return total / 7;
+  },
+  crashValue: function(percentage){
+    if(percentage >= 100){
+      console.log('cannot reduce a shareprice below zero');
+    }
+    else{
+      var newPrice = this.currentPrice * (percentage / 100);
+      this.currentPrice = newPrice;
+    }
+  },
+  inflateValue: function(percentage){
+    var newPrice = this.currentPrice * ((percentage + 100) / 100);
+    this.currentPrice = newPrice;
   }
 };
 
