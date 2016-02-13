@@ -36,12 +36,12 @@ Investment.prototype = {
       console.log('cannot reduce a shareprice below zero');
     }
     else{
-      var newPrice = this.currentPrice * (percentage / 100);
+      var newPrice = this.currentPrice * ((100 - percentage)/ 100);
       this.currentPrice = newPrice;
     }
   },
   inflateValue: function(percentage){
-    var newPrice = this.currentPrice * ((percentage + 100) / 100);
+    var newPrice = this.currentPrice * ((100 + percentage) / 100);
     this.currentPrice = newPrice;
   }
 };

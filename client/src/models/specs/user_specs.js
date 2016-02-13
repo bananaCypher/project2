@@ -19,6 +19,7 @@ describe('User', function(){
     });
     testPortfolio.investments = [testInvestment];
     testUser.portfolio = testPortfolio;
+    testUser.insideTrader = false;
     testBalance = testUser.accountBalance;
     testPortfolioBalance = testUser.portfolio.totalValue();
     testInvestmentPrice = testInvestment.currentPrice;
@@ -63,4 +64,22 @@ describe('User', function(){
   it('should be able to settle short sales', function(){
 
   });
+
+  it('should be unable to engage in insider trading without an opt-in', function(){
+    testUser.spreadRumours(testInvestment, 10);
+    expect(testInvestment.currentPrice).to.not.equal(testInvestmentPrice * 0.9);
+  });
+
+  it('should be able to engage in insider trading after opting in', function (){
+    testUser.insideTrader = true;
+    testUser.spreadRumours(testInvestment, 10);
+    expect(testInvestment.currentPrice).to.equal(testInvestmentPrice * 0.9);
+  });
+
+  it('should be able to inflate stocks', function(){
+    testUser.insideTrader = true;
+    testUser.pumpStock(testInvestment, 10);
+    expect(testInvestment.currentPrice).to.equal(testInvestmentPrice * 1.1);
+  })
+
 })

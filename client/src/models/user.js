@@ -1,7 +1,8 @@
 var User = function(name){
   this.name = name,
   this.portfolio = undefined,
-  this.accountBalance = 500
+  this.accountBalance = 500,
+  this.insideTrader = false
 }
 
 User.prototype = {
@@ -17,7 +18,22 @@ User.prototype = {
     this.portfolio.removeInvestment(investment);
     this.accountBalance += outlay;
   },
-
+  spreadRumours: function(investment, percentage){
+    if(this.insideTrader == false){
+      console.log('this action is illegal!');
+    }
+    else{
+      investment.crashValue(percentage);
+    }
+  },
+  pumpStock: function(investment, percentage){
+    if(this.insideTrader == false){
+      console.log('this action is illegal!');
+    }
+    else{
+      investment.inflateValue(percentage);
+    }
+  }
 }
 
 module.exports = User;
