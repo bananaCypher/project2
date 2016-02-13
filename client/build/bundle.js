@@ -104,7 +104,10 @@
 	var User = __webpack_require__(2);
 	var Portfolio = __webpack_require__(4);
 	var Investment = __webpack_require__(3);
+	var Share = __webpack_require__(8);
 	var investmentsSample = __webpack_require__(5);
+	
+	
 	
 	
 	var Barry = new User("Barry Manilow");
@@ -112,8 +115,20 @@
 	var barryPortfolio = new Portfolio();
 	
 	console.log(investmentsSample);
-	for(investment of investmentsSample){
-	  var newInvestment = new Investment(investment);
+	
+	for (investment of investmentsSample){
+	  var newShare = new Share({
+	    name: investment.name,
+	    epic: investment.epic,
+	    price: investment.price,
+	    pastCloseOfDayPrices: investment.pastCloseOfDayPrices,
+	  });
+	  var params = {
+	    quantity: investment.quantity,
+	    buyPrice: investment.buyPrice,
+	    buyDate: investment.buyDate
+	  };
+	  var newInvestment = new Investment(newShare, params);
 	  barryPortfolio.addInvestment(newInvestment); 
 	}
 	
@@ -175,7 +190,7 @@
 	    }
 	  },
 	  pumpStock: function(investment, percentage){
-	    if(this.insideTrader == false){
+	    if(!this.insideTrader){
 	      console.log('this action is illegal!');
 	    }
 	    else{
@@ -511,7 +526,7 @@
 	        },
 	        type: "line",
 	      name: "Portfolio",
-	      data: [ [1, investment.pastCloseOfDayPrices[0]], [2, investment.pastCloseOfDayPrices[1]], [3, investment.pastCloseOfDayPrices[2]], [4, investment.pastCloseOfDayPrices[3]], [5, investment.pastCloseOfDayPrices[4]], [6, investment.pastCloseOfDayPrices[5]], [7, investment.pastCloseOfDayPrices[6]]  ],
+	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]]  ],
 	    }],
 	
 	  });
@@ -519,6 +534,35 @@
 	
 	module.exports = SingleScatterChart;
 
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	var Share = function(params){
+	  this.shareName = params.name;
+	  this.epic = params.epic;
+	  this.currentPrice = params.price;
+	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
+	};
+	
+	Share.prototype = {
+	  crashValue: function(percentage){
+	    if(percentage >= 100){
+	      console.log('cannot reduce a shareprice below zero');
+	    }
+	    else{
+	      var newPrice = this.currentPrice * ((100 - percentage)/ 100);
+	      this.currentPrice = newPrice;
+	    }
+	  },
+	  inflateValue: function(percentage){
+	    var newPrice = this.currentPrice * ((100 + percentage) / 100);
+	    this.currentPrice = newPrice;
+	  }
+	}
+	
+	module.exports = Share;
 
 /***/ }
 /******/ ]);
