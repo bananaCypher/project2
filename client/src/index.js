@@ -1,5 +1,6 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
+var Notification = require('./notification.js');
 
 var displayLargestPercChange = function(){
   var basicInfo = document.getElementById('basicInfo');
