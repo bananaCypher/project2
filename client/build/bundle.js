@@ -102,8 +102,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var User = __webpack_require__(2);
-	var Portfolio = __webpack_require__(3);
-	var Investment = __webpack_require__(4);
+	var Portfolio = __webpack_require__(4);
+	var Investment = __webpack_require__(3);
 	var investmentsSample = __webpack_require__(5);
 	
 	
@@ -124,26 +124,45 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var Investment = __webpack_require__(3)
+	
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500
+	  this.accountBalance = 500,
+	  this.insideTrader = false
 	}
 	
 	User.prototype = {
-	  buyShares: function(investment, number){
-	    var outlay = investment.currentPrice * number;
-	    investment.quantity = number;
+	  buyShares: function(share, quantity, params){
+	    var outlay = share.currentPrice * quantity;
+	    var investment = new Investment(share, params);
+	    investment.quantity = quantity
 	    this.portfolio.addInvestment(investment);
 	    this.accountBalance -= outlay;
 	  },
-	  sellShares: function(investment, number){
-	    var outlay = investment.currentPrice * number;
-	    investment.quantity = number;
+	  sellShares: function(investment){
+	    var outlay = investment.share.currentPrice * investment.quantity;
 	    this.portfolio.removeInvestment(investment);
 	    this.accountBalance += outlay;
+	  },
+	  spreadRumours: function(investment, percentage){
+	    if(this.insideTrader == false){
+	      console.log('this action is illegal!');
+	    }
+	    else{
+	      investment.crashValue(percentage);
+	    }
+	  },
+	  pumpStock: function(investment, percentage){
+	    if(this.insideTrader == false){
+	      console.log('this action is illegal!');
+	    }
+	    else{
+	      investment.inflateValue(percentage);
+	    }
 	  }
 	}
 	
@@ -151,6 +170,45 @@
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	var Investment = function(share, params){
+	  this.share = share;
+	  this.shareName = share.shareName;
+	  this.quantity = params.quantity;
+	  this.buyPrice = params.buyPrice;
+	  this.buyDate = params.buyDate;
+	};
+	
+	Investment.prototype = {
+	  currentValue: function(){
+	    return this.share.currentPrice * this.quantity;
+	  },
+	  buyDateValue: function(){
+	    return this.buyPrice * this.quantity;
+	  },
+	  valueChange: function(measurement){
+	    var priceChange = this.currentValue() - this.buyDateValue();
+	    if(measurement === "price"){
+	      return priceChange;
+	    }
+	    else if(measurement === "percentage"){
+	      return (priceChange / this.buyDateValue()) * 100;
+	    }
+	  },
+	  sevenDayAverage: function(){
+	    var total = 0;
+	    for(price of this.share.pastCloseOfDayPrices){
+	      total += price;
+	    }
+	    return total / 7;
+	  },
+	};
+	
+	module.exports = Investment;
+
+/***/ },
+/* 4 */
 /***/ function(module, exports) {
 
 	var Portfolio = function(){
@@ -192,7 +250,7 @@
 	  pastTotalValue: function(day){
 	    var sum = 0;
 	    for(var investment of this.investments) {
-	      var dayTotal = investment.quantity * investment.pastCloseOfDayPrices[7 - day];
+	      var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
 	      sum += dayTotal;
 	    }
 	    return sum;
@@ -203,7 +261,7 @@
 	    arrayLoop:
 	    for (var investment of this.investments) {
 	      for (var key in search){
-	        if (investment[key] != search[key]) {
+	        if (investment.share[key] != search[key]) {
 	          continue arrayLoop;
 	        }
 	      }   
@@ -244,47 +302,6 @@
 	
 	module.exports = Portfolio;
 
-
-/***/ },
-/* 4 */
-/***/ function(module, exports) {
-
-	var Investment = function(params){
-	  this.shareName = params.name;
-	  this.epic = params.epic;
-	  this.currentPrice = params.price;
-	  this.quantity = params.quantity;
-	  this.buyPrice = params.buyPrice;
-	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
-	  this.buyDate = params.buyDate;
-	};
-	
-	Investment.prototype = {
-	  currentValue: function(){
-	    return this.currentPrice * this.quantity;
-	  },
-	  buyDateValue: function(){
-	    return this.buyPrice * this.quantity;
-	  },
-	  valueChange: function(measurement){
-	    var priceChange = this.currentValue() - this.buyDateValue();
-	    if(measurement === "price"){
-	      return priceChange;
-	    }
-	    else if(measurement === "percentage"){
-	      return (priceChange / this.buyDateValue()) * 100;
-	    }
-	  },
-	  sevenDayAverage: function(){
-	    var total = 0;
-	    for(price of this.pastCloseOfDayPrices){
-	      total += price;
-	    }
-	    return total / 7;
-	  }
-	};
-	
-	module.exports = Investment;
 
 /***/ },
 /* 5 */
