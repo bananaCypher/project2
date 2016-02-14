@@ -1,11 +1,11 @@
-var Barry = require('../seedObjects.js')
+var Barry = require('../seedObjects.js');
 
 var ScatterChart = function(){
   var container = document.getElementById("scatterChart");
 
   var lineColor = function(){
     if(Barry.portfolio.pastTotalValue(1) > Barry.portfolio.pastTotalValue(7)) {
-      return  "green"
+      return  "rgb(110,216,84)"
       }
     else { 
       return'rgba(223, 83, 83, .9)'

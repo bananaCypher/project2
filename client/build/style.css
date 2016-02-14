@@ -1,7 +1,6 @@
 header {
   width: 100%;
-  text-align: center;
-  background-color: #C4E0F1;
+  background-color: rgba(110,216,84, 0.5);
   margin: 0 0 20px 0;
   padding: 8px;
 }
@@ -9,6 +8,8 @@ header {
 body {
   font-family: "Arial", sans-serif;
   margin: 0;
+  color: white;
+  background-color: #323232;
 }
 
 select {
@@ -16,8 +17,14 @@ select {
   padding: 5px;
 }
 
-#portfolioInfo {
-  display: none;
+h1, h2 {
+  font-family: "Unica One", sans-serif;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
 }
 
 /* GRID FRAMEWORK */
@@ -33,12 +40,19 @@ select {
   margin-right: -10px;
 }
 
-.grid {
+.grid, .chart {
   display: inline-block;
   vertical-align: top;
   margin-right: -4px;
-  padding: 0 10px;
   box-sizing: border-box;
+}
+
+.grid {
+  padding: 0 10px;
+}
+
+.chart {
+  padding: 0;
 }
 
 .grid-1 {
@@ -89,8 +103,22 @@ select {
   width: 100%;
 }
  
- /* CHARTS */
+/* BUTTONS */
+button, select {
+  font-size: 16px;
+  font-family: "Unica One";
+  text-transform: uppercase;
+  font-weight: bold;
+  background-color: rgba(110,216,84, 0.5);
+  border: 0;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 10px 10px 20px 0;
+  padding: 2px 5px;
+}
 
-#scatterChart {
+button:focus, select:focus {
+  outline: none;
+  background-color: rgba(110,216,84, 0.8);
 
 }

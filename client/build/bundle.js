@@ -48,15 +48,16 @@
 	var scatterChart = __webpack_require__(6);
 	var singleScatterChart = __webpack_require__(7);
 	var pieChart = __webpack_require__(8);
+	var chartStyles = __webpack_require__(9);
 	
 	var displayLargestPercChange = function(){
-	  var basicInfo = document.getElementById('basicInfo');
+	  var moreInfo = document.getElementById('moreInfo');
 	  var p = document.createElement('p');
 	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
 	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
 	  p.innerHTML = "<h2>Best performing stock</h2>"
 	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
-	  basicInfo.appendChild(p);
+	  moreInfo.appendChild(p);
 	}
 	
 	var displayCurrentPortfolioValue = function(){
@@ -98,10 +99,12 @@
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
 	
+	  Highcharts.setOptions(chartStyles);
+	
 	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
-	  new scatterChart();
+	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
 	    investmentInfo.style.display = "block";
@@ -109,8 +112,10 @@
 	  };
 	  portfolioButton.onclick = function(){
 	  investmentInfo.style.display = "none";
+	  portfolioInfo.style.display = "block"
 	  new pieChart(Barry.portfolio);
-	  portfolioInfo.style.display = "block";
+	  new scatterChart();
+	  ;
 	  }
 	  
 	};
@@ -488,14 +493,14 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Barry = __webpack_require__(1)
+	var Barry = __webpack_require__(1);
 	
 	var ScatterChart = function(){
 	  var container = document.getElementById("scatterChart");
 	
 	  var lineColor = function(){
 	    if(Barry.portfolio.pastTotalValue(1) > Barry.portfolio.pastTotalValue(7)) {
-	      return  "green"
+	      return  "rgb(110,216,84)"
 	      }
 	    else { 
 	      return'rgba(223, 83, 83, .9)'
@@ -556,7 +561,7 @@
 	
 	  var lineColor = function(){
 	    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
-	      return  "green"
+	      return  "rgb(110,216,84)"
 	      }
 	    else { 
 	      return'rgba(223, 83, 83, .9)'
@@ -629,10 +634,6 @@
 	    },
 	    title: {
 	      text: "Investments as proportion of total portfolio value",
-	      style: {
-	        "text-decoration": "underline",
-	        "font-weight": "700"
-	      }
 	    },
 	    series: [{
 	      name: "Investment",
@@ -643,6 +644,214 @@
 	}
 	
 	module.exports = PieChart;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	  var chartStyles = {
+	    colors: ["#2b908f", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+	      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+	    chart: {
+	      backgroundColor: {
+	        linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+	        stops: [
+	          [0, '#2a2a2b'],
+	          [1, '#3e3e40']
+	        ]
+	      },
+	      style: {
+	        fontFamily: "'Unica One', sans-serif",
+	        textTransform: 'uppercase',
+	      },
+	      plotBorderColor: '#606063'
+	    },
+	    title: {
+	      style: {
+	        color: '#E0E0E3',
+	        textTransform: 'uppercase',
+	        fontSize: '20px'
+	      }
+	    },
+	    subtitle: {
+	      style: {
+	        color: '#E0E0E3',
+	        textTransform: 'uppercase'
+	      }
+	    },
+	    xAxis: {
+	      gridLineColor: '#707073',
+	      labels: {
+	        style: {
+	          color: '#E0E0E3'
+	        }
+	      },
+	      lineColor: '#707073',
+	      minorGridLineColor: '#505053',
+	      tickColor: '#707073',
+	      title: {
+	        style: {
+	          color: '#A0A0A3'
+	
+	        }
+	      }
+	    },
+	    yAxis: {
+	      gridLineColor: '#707073',
+	      labels: {
+	        style: {
+	          color: '#E0E0E3'
+	        }
+	      },
+	      lineColor: '#707073',
+	      minorGridLineColor: '#505053',
+	      tickColor: '#707073',
+	      tickWidth: 1,
+	      title: {
+	        style: {
+	          color: '#A0A0A3'
+	        }
+	      }
+	    },
+	    tooltip: {
+	      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+	      style: {
+	        color: '#F0F0F0'
+	      }
+	    },
+	    plotOptions: {
+	      series: {
+	        dataLabels: {
+	          color: '#B0B0B3'
+	        },
+	        marker: {
+	          lineColor: '#333'
+	        },
+	        color: "#FAFA98"
+	      },
+	      boxplot: {
+	        fillColor: '#505053'
+	      },
+	      candlestick: {
+	        lineColor: 'white'
+	      },
+	      errorbar: {
+	        color: 'white'
+	      }
+	    },
+	    legend: {
+	      itemStyle: {
+	        color: '#E0E0E3'
+	      },
+	      itemHoverStyle: {
+	        color: '#FFF'
+	      },
+	      itemHiddenStyle: {
+	        color: '#606063'
+	      }
+	    },
+	    credits: {
+	      style: {
+	        color: '#666'
+	      }
+	    },
+	    labels: {
+	      style: {
+	        color: '#707073'
+	      }
+	    },
+	
+	    drilldown: {
+	      activeAxisLabelStyle: {
+	        color: '#F0F0F3'
+	      },
+	      activeDataLabelStyle: {
+	        color: '#F0F0F3'
+	      }
+	    },
+	
+	    navigation: {
+	      buttonOptions: {
+	        symbolStroke: '#DDDDDD',
+	        theme: {
+	          fill: '#505053'
+	        }
+	      }
+	    },
+	
+	    // scroll charts
+	    rangeSelector: {
+	      buttonTheme: {
+	        fill: '#505053',
+	        stroke: '#000000',
+	        style: {
+	          color: '#CCC'
+	        },
+	        states: {
+	          hover: {
+	            fill: '#707073',
+	            stroke: '#000000',
+	            style: {
+	              color: 'white'
+	            }
+	          },
+	          select: {
+	            fill: '#000003',
+	            stroke: '#000000',
+	            style: {
+	              color: 'white'
+	            }
+	          }
+	        }
+	      },
+	      inputBoxBorderColor: '#505053',
+	      inputStyle: {
+	        backgroundColor: '#333',
+	        color: 'silver'
+	      },
+	      labelStyle: {
+	        color: 'silver'
+	      }
+	    },
+	
+	    navigator: {
+	      handles: {
+	        backgroundColor: '#666',
+	        borderColor: '#AAA'
+	      },
+	      outlineColor: '#CCC',
+	      maskFill: 'rgba(255,255,255,0.1)',
+	      series: {
+	        color: '#7798BF',
+	        lineColor: '#A6C7ED'
+	      },
+	      xAxis: {
+	        gridLineColor: '#505053'
+	      }
+	    },
+	
+	    scrollbar: {
+	      barBackgroundColor: '#808083',
+	      barBorderColor: '#808083',
+	      buttonArrowColor: '#CCC',
+	      buttonBackgroundColor: '#606063',
+	      buttonBorderColor: '#606063',
+	      rifleColor: '#FFF',
+	      trackBackgroundColor: '#404043',
+	      trackBorderColor: '#404043'
+	    },
+	
+	    // special colors for some of the
+	    legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+	    background2: '#505053',
+	    dataLabelsColor: '#B0B0B3',
+	    textColor: '#C0C0C0',
+	    contrastTextColor: '#F0F0F3',
+	    maskColor: 'rgba(255,255,255,0.3)'
+	}
+	
+	
+	module.exports = chartStyles;
 
 /***/ }
 /******/ ]);

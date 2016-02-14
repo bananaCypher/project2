@@ -17,10 +17,6 @@ var PieChart = function(portfolio){
     },
     title: {
       text: "Investments as proportion of total portfolio value",
-      style: {
-        "text-decoration": "underline",
-        "font-weight": "700"
-      }
     },
     series: [{
       name: "Investment",

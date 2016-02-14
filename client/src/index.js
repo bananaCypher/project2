@@ -2,15 +2,16 @@ var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
 var singleScatterChart = require('./charts/singleScatterChart.js');
 var pieChart = require('./charts/pieChart.js');
+var chartStyles = require('./charts/chartStyles.js');
 
 var displayLargestPercChange = function(){
-  var basicInfo = document.getElementById('basicInfo');
+  var moreInfo = document.getElementById('moreInfo');
   var p = document.createElement('p');
   var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
   var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
   p.innerHTML = "<h2>Best performing stock</h2>"
   p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
-  basicInfo.appendChild(p);
+  moreInfo.appendChild(p);
 }
 
 var displayCurrentPortfolioValue = function(){
@@ -52,10 +53,12 @@ var init = function(){
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
 
+  Highcharts.setOptions(chartStyles);
+
   populateSelect();
   displayCurrentPortfolioValue();
   displayLargestPercChange();
-  new scatterChart();
+
   shareSelect.onchange = function(){
     portfolioInfo.style.display = "none";
     investmentInfo.style.display = "block";
@@ -63,8 +66,10 @@ var init = function(){
   };
   portfolioButton.onclick = function(){
   investmentInfo.style.display = "none";
+  portfolioInfo.style.display = "block"
   new pieChart(Barry.portfolio);
-  portfolioInfo.style.display = "block";
+  new scatterChart();
+  ;
   }
   
 };
