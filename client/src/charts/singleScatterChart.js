@@ -35,7 +35,7 @@ var SingleScatterChart = function(investment){
         dashStyle: 'ShortDash'
         },
         type: "line",
-      name: "Portfolio",
+      name: "Share Price",
       data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]]  ],
     }],
 

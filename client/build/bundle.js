@@ -47,7 +47,7 @@
 	var Barry = __webpack_require__(1);
 	var scatterChart = __webpack_require__(6);
 	var singleScatterChart = __webpack_require__(7);
-	var pieChart = __webpack_require__(8);
+	var pieChart = __webpack_require__(9);
 	
 	var displayLargestPercChange = function(){
 	  var basicInfo = document.getElementById('basicInfo');
@@ -556,7 +556,7 @@
 	        dashStyle: 'ShortDash'
 	        },
 	        type: "line",
-	      name: "Portfolio",
+	      name: "Share Price",
 	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]]  ],
 	    }],
 	
@@ -567,7 +567,8 @@
 
 
 /***/ },
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ function(module, exports) {
 
 	
