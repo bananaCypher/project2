@@ -1,37 +1,57 @@
+var Investment = require('./investment.js')
+
 var User = function(name){
   this.name = name,
   this.portfolio = undefined,
   this.accountBalance = 500,
   this.insideTrader = false
-}
+};
 
 User.prototype = {
-  buyShares: function(investment, number){
-    var outlay = investment.currentPrice * number;
-    investment.quantity = number;
+  buyShares: function(share, quantity, params){
+    var outlay = share.currentPrice * quantity;
+    var investment = new Investment(share, params);
+    investment.quantity = quantity
     this.portfolio.addInvestment(investment);
     this.accountBalance -= outlay;
   },
-  sellShares: function(investment, number){
-    var outlay = investment.currentPrice * number;
-    investment.quantity = number;
+  sellShares: function(investment){
+    var outlay = investment.share.currentPrice * investment.quantity;
     this.portfolio.removeInvestment(investment);
     this.accountBalance += outlay;
   },
-  spreadRumours: function(investment, percentage){
-    if(this.insideTrader == false){
+  sellShort: function(share, quantity, params){
+    var outlay = share.currentPrice * quantity;
+    var investment = new Investment(share, params);
+    investment.quantity = quantity;
+    investment.short = true;
+    this.portfolio.addInvestment(investment);
+    this.accountBalance += outlay;
+  },
+  buyShort: function(investment){
+    if(!investment.short){
       console.log('this action is illegal!');
     }
     else{
-      investment.crashValue(percentage);
+      var outlay = investment.share.currentPrice * investment.quantity;
+      this.portfolio.removeInvestment(investment);
+      this.accountBalance -= outlay;
     }
   },
-  pumpStock: function(investment, percentage){
-    if(this.insideTrader == false){
+  spreadRumours: function(share, percentage){
+    if(!this.insideTrader){
       console.log('this action is illegal!');
     }
     else{
-      investment.inflateValue(percentage);
+      share.crashValue(percentage);
+    }
+  },
+  pumpStock: function(share, percentage){
+    if(!this.insideTrader){
+      console.log('this action is illegal!');
+    }
+    else{
+      share.inflateValue(percentage);
     }
   }
 }
