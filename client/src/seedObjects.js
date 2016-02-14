@@ -2,9 +2,11 @@ var User = require('./models/user.js');
 var Portfolio = require('./models/portfolio.js');
 var Investment = require('./models/investment.js');
 var Share = require('./models/share.js');
-var investmentsSample = [{
+var investmentsSample = [
+{
   "name": "Fusionex",
   "epic":"FXI",
+  "location": "USA",
   "price": 120.00,
   "quantity": 2000,
   "buyPrice": 80.00,
@@ -14,6 +16,7 @@ var investmentsSample = [{
 {
   "name": "Empiric Student Prop",
   "epic":"ESP",
+  "location": "UK",
   "price": 112.00,
   "quantity": 3500,
   "buyPrice": 100.00,
@@ -23,6 +26,7 @@ var investmentsSample = [{
 {
   "name": "Worldpay",
   "epic":"WGP",
+  "location": "China",
   "price": 301.00,
   "quantity": 1000,
   "buyPrice": 209.40,
@@ -32,6 +36,7 @@ var investmentsSample = [{
 {
   "name": "Pets At Home",
   "epic":"PETS",
+  "location": "USA",
   "price": 247.40,
   "quantity": 2500,
   "buyPrice": 250.50,
@@ -41,6 +46,7 @@ var investmentsSample = [{
 {
   "name": "Cyprotex",
   "epic":"CRX",
+  "location": "UK",
   "price": 87.00,
   "quantity": 5000,
   "buyPrice": 90.00,
@@ -50,6 +56,7 @@ var investmentsSample = [{
 {
   "name": "Robinson",
   "epic":"RBN",
+  "location": "China",
   "price": 202.00,
   "quantity": 5000,
   "buyPrice": 80.50,
@@ -59,6 +66,7 @@ var investmentsSample = [{
 {
   "name": "Softcat",
   "epic":"SCT",
+  "location": "USA",
   "price": 322.90,
   "quantity": 2000,
   "buyPrice": 420.00,
@@ -68,6 +76,7 @@ var investmentsSample = [{
 {
   "name": "Royal Bank of Scotland Group",
   "epic":"RBS",
+  "location": "UK",
   "price": 233.00,
   "quantity": 8000,
   "buyPrice": 790.00,
@@ -77,6 +86,7 @@ var investmentsSample = [{
 {
   "name": "NCC",
   "epic":"NCC",
+  "location": "USA",
   "price": 279.00,
   "quantity": 2000,
   "buyPrice": 500.00,
@@ -86,6 +96,7 @@ var investmentsSample = [{
 {
   "name": "Stadium",
   "epic":"SDM",
+  "location": "China",
   "price": 116.90,
   "quantity": 5000,
   "buyPrice": 9.00,

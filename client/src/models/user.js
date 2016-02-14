@@ -38,20 +38,20 @@ User.prototype = {
       this.accountBalance -= outlay;
     }
   },
-  spreadRumours: function(investment, percentage){
+  spreadRumours: function(share, percentage){
     if(!this.insideTrader){
       console.log('this action is illegal!');
     }
     else{
-      investment.crashValue(percentage);
+      share.crashValue(percentage);
     }
   },
-  pumpStock: function(investment, percentage){
+  pumpStock: function(share, percentage){
     if(!this.insideTrader){
       console.log('this action is illegal!');
     }
     else{
-      investment.inflateValue(percentage);
+      share.inflateValue(percentage);
     }
   }
 }

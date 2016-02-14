@@ -107,9 +107,11 @@
 	var Portfolio = __webpack_require__(4);
 	var Investment = __webpack_require__(3);
 	var Share = __webpack_require__(5);
-	var investmentsSample = [{
+	var investmentsSample = [
+	{
 	  "name": "Fusionex",
 	  "epic":"FXI",
+	  "location": "USA",
 	  "price": 120.00,
 	  "quantity": 2000,
 	  "buyPrice": 80.00,
@@ -119,6 +121,7 @@
 	{
 	  "name": "Empiric Student Prop",
 	  "epic":"ESP",
+	  "location": "UK",
 	  "price": 112.00,
 	  "quantity": 3500,
 	  "buyPrice": 100.00,
@@ -128,6 +131,7 @@
 	{
 	  "name": "Worldpay",
 	  "epic":"WGP",
+	  "location": "China",
 	  "price": 301.00,
 	  "quantity": 1000,
 	  "buyPrice": 209.40,
@@ -137,6 +141,7 @@
 	{
 	  "name": "Pets At Home",
 	  "epic":"PETS",
+	  "location": "USA",
 	  "price": 247.40,
 	  "quantity": 2500,
 	  "buyPrice": 250.50,
@@ -146,6 +151,7 @@
 	{
 	  "name": "Cyprotex",
 	  "epic":"CRX",
+	  "location": "UK",
 	  "price": 87.00,
 	  "quantity": 5000,
 	  "buyPrice": 90.00,
@@ -155,6 +161,7 @@
 	{
 	  "name": "Robinson",
 	  "epic":"RBN",
+	  "location": "China",
 	  "price": 202.00,
 	  "quantity": 5000,
 	  "buyPrice": 80.50,
@@ -164,6 +171,7 @@
 	{
 	  "name": "Softcat",
 	  "epic":"SCT",
+	  "location": "USA",
 	  "price": 322.90,
 	  "quantity": 2000,
 	  "buyPrice": 420.00,
@@ -173,6 +181,7 @@
 	{
 	  "name": "Royal Bank of Scotland Group",
 	  "epic":"RBS",
+	  "location": "UK",
 	  "price": 233.00,
 	  "quantity": 8000,
 	  "buyPrice": 790.00,
@@ -182,6 +191,7 @@
 	{
 	  "name": "NCC",
 	  "epic":"NCC",
+	  "location": "USA",
 	  "price": 279.00,
 	  "quantity": 2000,
 	  "buyPrice": 500.00,
@@ -191,6 +201,7 @@
 	{
 	  "name": "Stadium",
 	  "epic":"SDM",
+	  "location": "China",
 	  "price": 116.90,
 	  "quantity": 5000,
 	  "buyPrice": 9.00,
@@ -268,20 +279,20 @@
 	      this.accountBalance -= outlay;
 	    }
 	  },
-	  spreadRumours: function(investment, percentage){
+	  spreadRumours: function(share, percentage){
 	    if(!this.insideTrader){
 	      console.log('this action is illegal!');
 	    }
 	    else{
-	      investment.crashValue(percentage);
+	      share.crashValue(percentage);
 	    }
 	  },
-	  pumpStock: function(investment, percentage){
+	  pumpStock: function(share, percentage){
 	    if(!this.insideTrader){
 	      console.log('this action is illegal!');
 	    }
 	    else{
-	      investment.inflateValue(percentage);
+	      share.inflateValue(percentage);
 	    }
 	  }
 	}
@@ -433,6 +444,7 @@
 	  this.epic = params.epic;
 	  this.currentPrice = params.price;
 	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
+	  this.location = params.location;
 	};
 	
 	Share.prototype = {
