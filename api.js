@@ -92,18 +92,22 @@ var sampleData = [{
 }
 ]
 
-var getLatestData = function(symbol, callback) {
-  var url = 'https://uk.finance.yahoo.com/q?s=' + symbol + '&ql=1'
-  http.get(url, function(response){
-    var body = '';                                                                                                                        
-    response.on('data', function(d){
-      body += d;                                                                                                                          
+var API = {
+  getLatestData: function(symbol, callback) {
+    var url = 'https://uk.finance.yahoo.com/q?s=' + symbol + '&ql=1'
+    http.get(url, function(response){
+      var body = '';
+      response.on('data', function(d){
+        body += d;
+      });
+      response.on('end', function(){
+        $ = cheerio.load(body);
+        callback($(".time_rtq_ticker").children()[0].children[0].data);
+      });
     });
-    response.on('end', function(){                                                                                                        
-      callback(body);
-    });
-  });
+  }
 }
+module.exports = API;
 
 var updateShare = function(share){
   getLatestData(share.epic, function(data){
@@ -113,6 +117,6 @@ var updateShare = function(share){
   })
 }
 
-for (var share of sampleData) {
-  updateShare(share);
-};
+//for (var share of sampleData) {
+//  updateShare(share);
+//};

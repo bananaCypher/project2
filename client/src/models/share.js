@@ -3,6 +3,7 @@ var Share = function(params){
   this.epic = params.epic;
   this.currentPrice = params.price;
   this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
+  this.location = params.location;
 };
 
 Share.prototype = {

@@ -63,11 +63,14 @@ describe('User', function(){
   });
 
   it('should be able to short sell shares', function(){
-    expect(true).to.equal(false);
+    testUser.sellShort(testShare, 10, testData);
+    expect(testUser.accountBalance).to.equal(testBalance + (testSharePrice * 10));
   });
 
   it('should be able to settle short sales', function(){
-    expect(true).to.equal(false);
+    testUser.sellShort(testShare, 10, testData);
+    testUser.buyShort(testUser.portfolio.investments[1]);
+    expect(testUser.accountBalance).to.equal(testBalance);
   });
 
   it('should be unable to engage in insider trading without an opt-in', function(){

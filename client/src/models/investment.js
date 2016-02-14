@@ -4,6 +4,7 @@ var Investment = function(share, params){
   this.quantity = params.quantity;
   this.buyPrice = params.buyPrice;
   this.buyDate = params.buyDate;
+  this.short = false;
 };
 
 Investment.prototype = {

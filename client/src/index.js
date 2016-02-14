@@ -1,6 +1,7 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
 var singleScatterChart = require('./charts/singleScatterChart.js');
+var pieChart = require('./charts/pieChart.js');
 
 var displayLargestPercChange = function(){
   var basicInfo = document.getElementById('basicInfo');
@@ -32,6 +33,21 @@ var populateSelect = function(){
     sharePerformanceSelect.appendChild(option);
   }
 }
+
+var updateShare = function(share){
+  var request = new XMLHttpRequest();
+  request.open('GET', '/share/' + share.epic);
+  request.onload = function(){
+    if (request.status === 200) {
+      var newPrice = Number(request.responseText);
+      if (newPrice != share.currentPrice) {
+        share.currentPrice = newPrice;
+      }
+    }
+  };
+  request.send(null);
+}
+
 var init = function(){
   console.log('I have loaded');
   console.log(Barry);
@@ -45,7 +61,20 @@ var init = function(){
   sharePerformanceSelect.onchange = function(){
     showSharePerformanceChart(sharePerformanceSelect.value);
   };
-  
+  new pieChart(Barry.portfolio);
+
+  window.setInterval(function(){
+    var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+    var investment = Barry.portfolio.find({shareName: sharePerformanceSelect.value});
+    if (investment) { 
+      var share = investment.share;
+      updateShare(share);
+      Object.observe(share, function(){
+        console.log("price change on", share.epic); 
+        showSharePerformanceChart(sharePerformanceSelect.value);
+      })
+    };
+  }, 10000);
 };
 
 window.onload = init;
