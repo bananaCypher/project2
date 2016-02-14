@@ -16,6 +16,10 @@ select {
   padding: 5px;
 }
 
+#portfolioInfo {
+  display: none;
+}
+
 /* GRID FRAMEWORK */
 
 .container {

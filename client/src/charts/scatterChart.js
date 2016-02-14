@@ -2,6 +2,15 @@ var Barry = require('../seedObjects.js')
 
 var ScatterChart = function(){
   var container = document.getElementById("scatterChart");
+
+  var lineColor = function(){
+    if(Barry.portfolio.pastTotalValue(1) > Barry.portfolio.pastTotalValue(7)) {
+      return  "green"
+      }
+    else { 
+      return'rgba(223, 83, 83, .9)'
+    }
+  }
   var chart = new Highcharts.Chart({
     chart: {
       type: 'scatter',
@@ -30,8 +39,9 @@ var ScatterChart = function(){
       regression: true ,
       regressionSettings: {
         type: 'linear',
-        color:  'rgba(223, 83, 83, .9)',
-        dashStyle: 'ShortDash'
+        color:  lineColor(),
+        dashStyle: 'ShortDash',
+        name: "Line of Best Fit"
         },
         type: "line",
       name: "Portfolio",

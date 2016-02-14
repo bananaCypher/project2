@@ -3,6 +3,16 @@ var Barry = require('../seedObjects.js')
 
 var SingleScatterChart = function(investment){
   var container = document.getElementById("singleScatterChart");
+
+  var lineColor = function(){
+    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
+      return  "green"
+      }
+    else { 
+      return'rgba(223, 83, 83, .9)'
+    }
+  }
+
   var chart = new Highcharts.Chart({
     chart: {
       type: 'scatter',
@@ -31,11 +41,12 @@ var SingleScatterChart = function(investment){
       regression: true ,
       regressionSettings: {
         type: 'linear',
-        color:  'rgba(223, 83, 83, .9)',
-        dashStyle: 'ShortDash'
+        color:  lineColor(),
+        dashStyle: 'ShortDash',
+        name: "Line of Best Fit"
         },
         type: "line",
-      name: "Portfolio",
+      name: "Value of Share",
       data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]]  ],
     }],
 

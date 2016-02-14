@@ -54,8 +54,8 @@
 	  var p = document.createElement('p');
 	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
 	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
-	  p.innerHTML = "<h2>Largest percentage stock change</h2>"
-	  p.innerHTML += largestPercChangeInvestment.shareName + ": " + Number(largestPercChangeValue).toLocaleString() + "%";
+	  p.innerHTML = "<h2>Best performing stock</h2>"
+	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
 	  basicInfo.appendChild(p);
 	}
 	
@@ -70,12 +70,14 @@
 	  var investment = Barry.portfolio.find({shareName: inputName });
 	  new singleScatterChart(investment);
 	
+	
+	  var investmentView = document.getElementById('investmentView');
+	  investmentView.innerHTML = "";
+	
 	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + "</h2><h3>Current Price</h3>" + investment.share.currentPrice;
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + (investment.currentValue() / 100) + "<br><br>Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX";
 	
-	  var investmentInfo = document.getElementById('investmentInfo');
-	
-	  investmentInfo.appendChild(info); 
+	  investmentView.appendChild(info); 
 	
 	}
 	
@@ -92,15 +94,24 @@
 	  console.log(Barry);
 	
 	  var shareSelect = document.getElementById('shareSelect');
+	  var portfolioButton = document.getElementById('portfolioView');
+	  var portfolioInfo = document.getElementById('portfolioInfo');
+	  var investmentInfo = document.getElementById('investmentInfo');
 	
 	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
 	  new scatterChart();
 	  shareSelect.onchange = function(){
+	    portfolioInfo.style.display = "none";
+	    investmentInfo.style.display = "block";
 	    showInvestmentInfo(shareSelect.value);
 	  };
+	  portfolioButton.onclick = function(){
+	  investmentInfo.style.display = "none";
 	  new pieChart(Barry.portfolio);
+	  portfolioInfo.style.display = "block";
+	  }
 	  
 	};
 	
@@ -481,6 +492,15 @@
 	
 	var ScatterChart = function(){
 	  var container = document.getElementById("scatterChart");
+	
+	  var lineColor = function(){
+	    if(Barry.portfolio.pastTotalValue(1) > Barry.portfolio.pastTotalValue(7)) {
+	      return  "green"
+	      }
+	    else { 
+	      return'rgba(223, 83, 83, .9)'
+	    }
+	  }
 	  var chart = new Highcharts.Chart({
 	    chart: {
 	      type: 'scatter',
@@ -509,8 +529,9 @@
 	      regression: true ,
 	      regressionSettings: {
 	        type: 'linear',
-	        color:  'rgba(223, 83, 83, .9)',
-	        dashStyle: 'ShortDash'
+	        color:  lineColor(),
+	        dashStyle: 'ShortDash',
+	        name: "Line of Best Fit"
 	        },
 	        type: "line",
 	      name: "Portfolio",
@@ -532,6 +553,16 @@
 	
 	var SingleScatterChart = function(investment){
 	  var container = document.getElementById("singleScatterChart");
+	
+	  var lineColor = function(){
+	    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
+	      return  "green"
+	      }
+	    else { 
+	      return'rgba(223, 83, 83, .9)'
+	    }
+	  }
+	
 	  var chart = new Highcharts.Chart({
 	    chart: {
 	      type: 'scatter',
@@ -560,11 +591,12 @@
 	      regression: true ,
 	      regressionSettings: {
 	        type: 'linear',
-	        color:  'rgba(223, 83, 83, .9)',
-	        dashStyle: 'ShortDash'
+	        color:  lineColor(),
+	        dashStyle: 'ShortDash',
+	        name: "Line of Best Fit"
 	        },
 	        type: "line",
-	      name: "Portfolio",
+	      name: "Value of Share",
 	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]]  ],
 	    }],
 	
@@ -598,7 +630,6 @@
 	    title: {
 	      text: "Investments as proportion of total portfolio value",
 	      style: {
-	        "color": "rebeccapurple",
 	        "text-decoration": "underline",
 	        "font-weight": "700"
 	      }
