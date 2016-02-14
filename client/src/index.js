@@ -1,6 +1,8 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
-var Notification = require('./notification.js');
+var pieChart = require('./charts/pieChart.js');
+var NotificationArea = require('./notification.js');
+var notificationArea;
 
 var displayLargestPercChange = function(){
   var basicInfo = document.getElementById('basicInfo');
@@ -19,12 +21,34 @@ var displayCurrentPortfolioValue = function(){
   basicInfo.appendChild(p);
 }
 
+var showSharePerformanceChart = function(inputName){
+  var investment = Barry.portfolio.find({shareName: inputName });
+  new singleScatterChart(investment);
+}
+
+var populateSelect = function(){
+  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+  for(investment of Barry.portfolio.investments){
+    var option = document.createElement('option');
+    option.innerText = investment.shareName;
+    sharePerformanceSelect.appendChild(option);
+  }
+}
 var init = function(){
   console.log('I have loaded');
   console.log(Barry);
+
+  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+
+  populateSelect();
   displayCurrentPortfolioValue();
   displayLargestPercChange();
   new scatterChart();
+  sharePerformanceSelect.onchange = function(){
+    showSharePerformanceChart(sharePerformanceSelect.value);
+  };
+  new pieChart(Barry.portfolio);
+  notificationArea = new NotificationArea();  
 };
 
 window.onload = init;

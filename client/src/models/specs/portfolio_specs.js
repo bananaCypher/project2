@@ -1,6 +1,7 @@
 var assert = require('assert');
 var Portfolio = require('../portfolio.js')
 var Investment = require('../investment.js');
+var Share = require('../share.js');
 var investmentsSample = [{
   "name": "Fusionex",
   "epic":"FXI",
@@ -96,7 +97,8 @@ describe('Portfolio', function(){
   beforeEach(function(){
     portfolio = new Portfolio();
     for (var investment of investmentsSample) {
-      var newInvestment = new Investment(investment);
+      var newShare= new Share(investment);
+      var newInvestment = new Investment(newShare, investment);
       portfolio.addInvestment(newInvestment); 
     }
   });
@@ -104,48 +106,48 @@ describe('Portfolio', function(){
     assert.notEqual(portfolio.investments[0].shareName, undefined);
   }); 
   it('should be able to add a new Investment', function(){
-    var investment = new Investment(
-        {
-          "name": "Softcat",
-          "epic":"SCT",
-          "price": 322.90,
-          "quantity": 2000,
-          "buyPrice": 420.00,
-          "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
-          "buyDate":"2015-02-18"
-        }
-    );
+    var newData = {
+      "name": "Softcat",
+      "epic":"SCT",
+      "price": 322.90,
+      "quantity": 2000,
+      "buyPrice": 420.00,
+      "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
+      "buyDate":"2015-02-18"
+    }
+    var share = new Share(newData);
+    var investment = new Investment(share, newData);
     portfolio.addInvestment(investment);
     assert.equal(portfolio.investments[portfolio.investments.length - 1].shareName, 'Softcat');
   });
   it('should be able to remove an Investment', function(){
     var previousLength = portfolio.investments.length;
-    var investment = new Investment(
-        {
-          "name": "Pets At Home",
-          "epic":"PETS",
-          "price": 247.40,
-          "quantity": 2500,
-          "buyPrice": 250.50,
-          "pastCloseOfDayPrices": [230.00, 232.30, 235.90, 236.60, 237.00, 240.00, 242.70],
-          "buyDate":"2014-08-23"
-        }    
-    );
+    var newData = {
+      "name": "Pets At Home",
+      "epic":"PETS",
+      "price": 247.40,
+      "quantity": 2500,
+      "buyPrice": 250.50,
+      "pastCloseOfDayPrices": [230.00, 232.30, 235.90, 236.60, 237.00, 240.00, 242.70],
+      "buyDate":"2014-08-23"
+    }  
+    var share = new Share(newData);
+    var investment = new Investment(share, newData);
     portfolio.removeInvestment(investment);
     assert.equal(portfolio.investments.length, previousLength - 1);
   });
   it('should be able to get the array index of a given investment', function(){
-    var investment = new Investment(
-        {
-          "name": "Softcat",
-          "epic":"SCT",
-          "price": 322.90,
-          "quantity": 2000,
-          "buyPrice": 420.00,
-          "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
-          "buyDate":"2015-02-18"
-        }
-    );
+    var newData = {
+      "name": "Softcat",
+      "epic":"SCT",
+      "price": 322.90,
+      "quantity": 2000,
+      "buyPrice": 420.00,
+      "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
+      "buyDate":"2015-02-18"
+    }
+    var share = new Share(newData);
+    var investment = new Investment(share, newData);
     portfolio.addInvestment(investment);
     assert.equal(portfolio.findInvestmentIndex(investment), portfolio.investments.length - 1);
   });
@@ -154,7 +156,7 @@ describe('Portfolio', function(){
   });
   it('should be able to find investments by name', function(){
     var foundInvestment = portfolio.findByName('Softcat');
-    assert.equal('SCT', foundInvestment.epic);
+    assert.equal('SCT', foundInvestment.share.epic);
   });
   it('should be able to find investments by epic', function(){
     var foundInvestment = portfolio.findByEpic('SCT');

@@ -1,20 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>index</title>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
-    <script src="http://code.highcharts.com/modules/exporting.js"></script> 
-    <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
-    <script src="/bundle.js" type="text/javascript" charset="utf-8"></script> 
-    <link rel="stylesheet" href="./styles.css" type="text/css" media="screen" title="no title" charset="utf-8">
-  </head>
-  <body>
+<head>
+  <meta charset="utf-8">
+  <title>index</title>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script> 
+  <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
+  <script src="/bundle.js" type="text/javascript" charset="utf-8"></script> 
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Portfolio Homepage</h1>
+    <div id="notifications">
+      <img src="https://cdn4.iconfinder.com/data/icons/web-icons-19/711/notification-icon-tm-512.png" alt="Notifications"/>
+      <span></span>
+    </div>
+  </header>
 
-  <h1>Portfolio Homepage</h1>
+  <div class="container">
+    <div class="row">
 
-  <div id="basicInfo"></div>
-      
-  <div id="scatterChart"></div>  
-  </body>
+      <div id="basicInfo" class="grid grid-6"></div>
+
+      <div id="scatterChart" class="grid grid-6"></div> 
+
+    </div> 
+
+    <div class="row">
+      <select id="sharePerformanceSelect">
+        <option selected="selected">View 7 Day Performance by Share:</option>
+      </select><br>
+      <div id="singleScatterChart"></div> 
+      <div id="pieChart"></div> 
+
+    </div>
+  </div> 
+</body>
 </html>

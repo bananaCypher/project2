@@ -1,16 +1,15 @@
-var Investment = function(params){
-  this.shareName = params.name;
-  this.epic = params.epic;
-  this.currentPrice = params.price;
+var Investment = function(share, params){
+  this.share = share;
+  this.shareName = share.shareName;
   this.quantity = params.quantity;
   this.buyPrice = params.buyPrice;
-  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
   this.buyDate = params.buyDate;
+  this.short = false;
 };
 
 Investment.prototype = {
   currentValue: function(){
-    return this.currentPrice * this.quantity;
+    return this.share.currentPrice * this.quantity;
   },
   buyDateValue: function(){
     return this.buyPrice * this.quantity;
@@ -26,11 +25,11 @@ Investment.prototype = {
   },
   sevenDayAverage: function(){
     var total = 0;
-    for(price of this.pastCloseOfDayPrices){
+    for(price of this.share.pastCloseOfDayPrices){
       total += price;
     }
     return total / 7;
-  }
+  },
 };
 
 module.exports = Investment;
