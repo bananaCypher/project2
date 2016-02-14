@@ -89,10 +89,6 @@ var init = function(){
 
   window.setInterval(function(){
     //getLatestShareInfo();
-    notificationArea.newNotification({
-      title: share.epic + ' price changed',
-      content: share.epic + ' has changed price from ' + 'kek' + ' to ' + share.currentPrice,
-    });
   }, 10000);
 };
 
