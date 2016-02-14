@@ -65,31 +65,39 @@
 	  basicInfo.appendChild(p);
 	}
 	
-	var showSharePerformanceChart = function(inputName){
+	var showInvestmentInfo = function(inputName){
 	  var investment = Barry.portfolio.find({shareName: inputName });
 	  new singleScatterChart(investment);
+	
+	  var info = document.createElement('p');
+	  info.innerHTML = "<h2>" + investment.shareName + "</h2><h3>Current Price</h3>" + investment.share.currentPrice;
+	
+	  var investmentInfo = document.getElementById('investmentInfo');
+	
+	  investmentInfo.appendChild(info); 
+	
 	}
 	
 	var populateSelect = function(){
-	  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+	  var shareSelect = document.getElementById('shareSelect');
 	  for(investment of Barry.portfolio.investments){
 	    var option = document.createElement('option');
 	    option.innerText = investment.shareName;
-	    sharePerformanceSelect.appendChild(option);
+	    shareSelect.appendChild(option);
 	  }
 	}
 	var init = function(){
 	  console.log('I have loaded');
 	  console.log(Barry);
 	
-	  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+	  var shareSelect = document.getElementById('shareSelect');
 	
 	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
 	  new scatterChart();
-	  sharePerformanceSelect.onchange = function(){
-	    showSharePerformanceChart(sharePerformanceSelect.value);
+	  shareSelect.onchange = function(){
+	    showInvestmentInfo(shareSelect.value);
 	  };
 	  
 	};
