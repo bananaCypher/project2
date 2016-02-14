@@ -19,7 +19,7 @@ var SingleScatterChart = function(investment){
       title: {
         text: "Previous Week's Days"
       },
-      tickAmount: 7,
+      tickAmount: 8,
       tickInterval: 1
     },
     yAxis: {
@@ -36,7 +36,7 @@ var SingleScatterChart = function(investment){
         },
         type: "line",
       name: "Portfolio",
-      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]] ],
+      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
     }],
 
   });

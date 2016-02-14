@@ -1,7 +1,9 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
-var singleScatterChart = require('./charts/singleScatterChart.js');
 var pieChart = require('./charts/pieChart.js');
+var singleScatterChart = require('./charts/singleScatterChart.js');
+var NotificationArea = require('./notification.js');
+var notificationArea;
 
 var displayLargestPercChange = function(){
   var basicInfo = document.getElementById('basicInfo');
@@ -48,6 +50,27 @@ var updateShare = function(share){
   request.send(null);
 }
 
+var getLatestShareInfo = function(){
+  var investments = Barry.portfolio.investments;
+  for (var investment of investments) {
+    var share = investment.share;
+    updateShare(share);
+    Object.observe(share, function(changes){
+      for (var change of changes) {
+        if(change.name == 'currentPrice') {
+          var share = change.object;
+          if (change.oldValue > share.currentPrice) {var type = 'error'} else {var type = 'success'}
+          notificationArea.newNotification({
+            title: share.epic + ' price changed',
+            content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
+            type: type
+          });
+        }
+      }
+    })
+  }
+}
+
 var init = function(){
   console.log('I have loaded');
   console.log(Barry);
@@ -62,18 +85,14 @@ var init = function(){
     showSharePerformanceChart(sharePerformanceSelect.value);
   };
   new pieChart(Barry.portfolio);
+  notificationArea = new NotificationArea();  
 
   window.setInterval(function(){
-    var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
-    var investment = Barry.portfolio.find({shareName: sharePerformanceSelect.value});
-    if (investment) { 
-      var share = investment.share;
-      updateShare(share);
-      Object.observe(share, function(){
-        console.log("price change on", share.epic); 
-        showSharePerformanceChart(sharePerformanceSelect.value);
-      })
-    };
+    //getLatestShareInfo();
+    notificationArea.newNotification({
+      title: share.epic + ' price changed',
+      content: share.epic + ' has changed price from ' + 'kek' + ' to ' + share.currentPrice,
+    });
   }, 10000);
 };
 

@@ -46,8 +46,10 @@
 
 	var Barry = __webpack_require__(1);
 	var scatterChart = __webpack_require__(6);
-	var singleScatterChart = __webpack_require__(7);
-	var pieChart = __webpack_require__(8);
+	var pieChart = __webpack_require__(7);
+	var singleScatterChart = __webpack_require__(8);
+	var NotificationArea = __webpack_require__(9);
+	var notificationArea;
 	
 	var displayLargestPercChange = function(){
 	  var basicInfo = document.getElementById('basicInfo');
@@ -94,6 +96,27 @@
 	  request.send(null);
 	}
 	
+	var getLatestShareInfo = function(){
+	  var investments = Barry.portfolio.investments;
+	  for (var investment of investments) {
+	    var share = investment.share;
+	    updateShare(share);
+	    Object.observe(share, function(changes){
+	      for (var change of changes) {
+	        if(change.name == 'currentPrice') {
+	          var share = change.object;
+	          if (change.oldValue > share.currentPrice) {var type = 'error'} else {var type = 'success'}
+	          notificationArea.newNotification({
+	            title: share.epic + ' price changed',
+	            content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
+	            type: type
+	          });
+	        }
+	      }
+	    })
+	  }
+	}
+	
 	var init = function(){
 	  console.log('I have loaded');
 	  console.log(Barry);
@@ -108,18 +131,14 @@
 	    showSharePerformanceChart(sharePerformanceSelect.value);
 	  };
 	  new pieChart(Barry.portfolio);
+	  notificationArea = new NotificationArea();  
 	
 	  window.setInterval(function(){
-	    var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
-	    var investment = Barry.portfolio.find({shareName: sharePerformanceSelect.value});
-	    if (investment) { 
-	      var share = investment.share;
-	      updateShare(share);
-	      Object.observe(share, function(){
-	        console.log("price change on", share.epic); 
-	        showSharePerformanceChart(sharePerformanceSelect.value);
-	      })
-	    };
+	    //getLatestShareInfo();
+	    notificationArea.newNotification({
+	      title: share.epic + ' price changed',
+	      content: share.epic + ' has changed price from ' + 'kek' + ' to ' + share.currentPrice,
+	    });
 	  }, 10000);
 	};
 	
@@ -544,57 +563,6 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Barry = __webpack_require__(1)
-	
-	
-	var SingleScatterChart = function(investment){
-	  var container = document.getElementById("singleScatterChart");
-	  var chart = new Highcharts.Chart({
-	    chart: {
-	      type: 'scatter',
-	      renderTo: container
-	    },
-	    title: {
-	      text: "7 Day Performance - " + investment.shareName,
-	      style: {
-	        "text-decoration": "underline",
-	        "font-weight": "700"
-	      }
-	    },
-	    xAxis: {
-	      title: {
-	        text: "Previous Week's Days"
-	      },
-	      tickAmount: 7,
-	      tickInterval: 1
-	    },
-	    yAxis: {
-	      title: {
-	        text: "Value of Share (GBX)"
-	      }
-	    },
-	    series: [{
-	      regression: true ,
-	      regressionSettings: {
-	        type: 'linear',
-	        color:  'rgba(223, 83, 83, .9)',
-	        dashStyle: 'ShortDash'
-	        },
-	        type: "line",
-	      name: "Portfolio",
-	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]] ],
-	    }],
-	
-	  });
-	}
-	
-	module.exports = SingleScatterChart;
-
-
-/***/ },
-/* 8 */
 /***/ function(module, exports) {
 
 	
@@ -631,6 +599,160 @@
 	}
 	
 	module.exports = PieChart;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Barry = __webpack_require__(1)
+	
+	
+	var SingleScatterChart = function(investment){
+	  var container = document.getElementById("singleScatterChart");
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'scatter',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "7 Day Performance - " + investment.shareName,
+	      style: {
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    xAxis: {
+	      title: {
+	        text: "Previous Week's Days"
+	      },
+	      tickAmount: 8,
+	      tickInterval: 1
+	    },
+	    yAxis: {
+	      title: {
+	        text: "Value of Share (GBX)"
+	      }
+	    },
+	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  'rgba(223, 83, 83, .9)',
+	        dashStyle: 'ShortDash'
+	        },
+	        type: "line",
+	      name: "Portfolio",
+	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
+	    }],
+	
+	  });
+	}
+	
+	module.exports = SingleScatterChart;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	var Notification = function(notificationArea, params) {
+	  this.area = notificationArea;
+	  this.title = params.title || 'Notification';
+	  this.content = params.content || '';
+	  this.type = params.type || 'info';
+	  this.time = params.time || new Date();
+	  this.element = this.setupElement();
+	}
+	Notification.prototype = {
+	  setupElement: function(){
+	    var element = document.createElement('div');
+	    element.classList.add('notification-' + this.type);
+	    element.innerHTML += '<h2>' + this.title + '</h2>'
+	    element.innerHTML += '<p>' + this.content + '</p>' 
+	    element.appendChild(this.setupCloseButton());
+	    return element;
+	  },
+	  setupCloseButton: function(){
+	    var button = document.createElement('span');
+	    button.innerText = 'X'; 
+	    button.onclick = function(){
+	      this.destroy();
+	    }.bind(this);
+	    return button;
+	  },
+	  destroy: function(){
+	    this.area.container.removeChild(this.element);
+	    this.area.updateIcon();
+	  }
+	}
+	
+	var NotificationArea = function(){
+	  this.container = this.setupContainer();
+	  this.showing = false;
+	  this.notificationButton = this.setupNotificationButton();
+	  this.countContainer = this.notificationButton.getElementsByTagName('span')[0];
+	  this.setupScrolling();
+	}
+	NotificationArea.prototype = {
+	  setupContainer: function(){
+	    var container = document.createElement('div');
+	    container.id = 'notification-container';
+	    document.body.appendChild(container); 
+	    return container;
+	  },
+	  setupNotificationButton: function(){
+	    var button = document.getElementById('notifications');
+	    button.onclick = function(){
+	      if (this.showing == true){
+	        this.hide();
+	      } else {
+	        this.show();
+	      }
+	      this.countContainer.className = '';
+	    }.bind(this);
+	    return button;
+	  },
+	  setupScrolling: function(){
+	    document.onscroll = function(event){
+	      var newTop = 96 - window.pageYOffset; //will need changed if header height changes
+	      if (newTop < 0) {
+	        newTop = 0;
+	      }
+	      var newHeight = screen.height - newTop;
+	      this.container.style.height = newHeight + 'px';
+	      this.container.style.top = newTop + 'px';
+	    }.bind(this);
+	  },
+	  newNotification: function(params){
+	    var notification = new Notification(this, params);
+	    this.container.appendChild(notification.element);
+	    this.updateIcon();
+	  },
+	  updateIcon: function(){
+	    var notificationCount = this.container.childNodes.length;
+	    var prevCount = Number(this.countContainer.innerText);
+	    if (notificationCount > 0) {
+	      this.countContainer.innerText = notificationCount;
+	    } else {
+	      this.countContainer.innerText = '';
+	      this.hide();
+	    }
+	    if (prevCount < notificationCount && this.showing == false) {
+	      this.countContainer.className = 'pulse';
+	    }
+	  },
+	  show: function(){
+	    this.container.className = 'display-notification-container';
+	    this.showing = true;
+	  },
+	  hide: function(){
+	    this.container.className = 'hide-notification-container';
+	    this.showing = false;
+	  }
+	}
+	
+	module.exports = NotificationArea;
+
 
 /***/ }
 /******/ ]);
