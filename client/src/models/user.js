@@ -50,7 +50,7 @@ User.prototype = {
   pumpStock: function(share, percentage){
     if(!this.insideTrader){
       var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
-      return String(hypotheticalPrice);
+      return hypotheticalPrice;
     }
     else{
       share.inflateValue(percentage);
