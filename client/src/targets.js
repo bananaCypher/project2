@@ -18,7 +18,8 @@ var TargetChecker = function(user, investment){
     console.log(input);
 
     var calcPrice = function(){
-      return input / investment.quantity;
+      var price = input / investment.quantity;
+      return price.toFixed(2);
     }
     var calcDays = function(){
       if(parseInt(input) <= investment.currentValue()){
@@ -41,8 +42,6 @@ var TargetChecker = function(user, investment){
     var spanDays = document.getElementById('targetValueDays');
     spanDays.innerText = calcDays();
   }
-
-
 }
 
 module.exports = TargetChecker;

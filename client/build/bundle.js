@@ -134,6 +134,7 @@
 	  var portfolioButton = document.getElementById('portfolioView');
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
+	  var targetsView = document.getElementById('targetsView');
 	
 	  Highcharts.setOptions(chartStyles);
 	
@@ -149,7 +150,8 @@
 	  };
 	  portfolioButton.onclick = function(){
 	    investmentInfo.style.display = "none";
-	    portfolioInfo.style.display = "block"
+	    portfolioInfo.style.display = "block";
+	    targetsView.innerHTML = "";
 	    new pieChart(Barry.portfolio);
 	    new scatterChart();
 	  }
@@ -1000,7 +1002,7 @@
 	    var value = ""
 	  }
 	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
 	
 	  investmentView.appendChild(info); 
 	
@@ -1154,7 +1156,8 @@
 	    console.log(input);
 	
 	    var calcPrice = function(){
-	      return input / investment.quantity;
+	      var price = input / investment.quantity;
+	      return price.toFixed(2);
 	    }
 	    var calcDays = function(){
 	      if(parseInt(input) <= investment.currentValue()){
@@ -1177,8 +1180,6 @@
 	    var spanDays = document.getElementById('targetValueDays');
 	    spanDays.innerText = calcDays();
 	  }
-	
-	
 	}
 	
 	module.exports = TargetChecker;

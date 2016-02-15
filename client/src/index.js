@@ -88,6 +88,7 @@ var init = function(){
   var portfolioButton = document.getElementById('portfolioView');
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
+  var targetsView = document.getElementById('targetsView');
 
   Highcharts.setOptions(chartStyles);
 
@@ -103,7 +104,8 @@ var init = function(){
   };
   portfolioButton.onclick = function(){
     investmentInfo.style.display = "none";
-    portfolioInfo.style.display = "block"
+    portfolioInfo.style.display = "block";
+    targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
     new scatterChart();
   }
