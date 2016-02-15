@@ -3,8 +3,13 @@ var app = express();
 var path = require('path')
 var api = require('./api.js');
 
+var User = require('./client/src/models/user.js');
+var Portfolio = require('./client/src/models/portfolio.js');
+var Investment = require('./client/src/models/investment.js');
+var Share = require('./client/src/models/share.js');
+var userID = '56c0f16a61c1654319c185ac';
 var mongoose = require('mongoose');
-var User = require('./client/src/mongooseSchema');
+var UserModel = require('./client/src/models/mongooseSchema');
 mongoose.connect('mongodb://localhost/project2');
 
 app.get('/', function (req, res) {
@@ -14,6 +19,13 @@ app.get('/', function (req, res) {
 app.get('/share/:symbol', function(req, res) {
   api.getLatestData(req.params.symbol, function(latestPrice){
     res.send(latestPrice);
+  }); 
+});
+
+app.get('/user/:id', function(req, res) {
+  UserModel.findById(userID, function(err, user){
+    if(err){ console.log(err) }
+    res.json(user);
   }); 
 });
 

@@ -1,4 +1,8 @@
-var Barry = require('./seedObjects.js');
+//var Barry = require('./seedObjects.js');
+var Barry;
+require('./seedObjects.js')(function(user) {
+  Barry = user;
+});
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
