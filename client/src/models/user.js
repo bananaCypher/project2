@@ -21,18 +21,18 @@ User.prototype = {
       investment.buyPrice = share.currentPrice;
       this.portfolio.addInvestment(investment);
     }
-    this.accountBalance -= (outlay / 100);
+    this.accountBalance -= outlay;
   },
   sellShares: function(investment, quantity){
     var outlay = investment.share.currentPrice * quantity;
-
+    console.log(outlay);
     if(investment.quantity >= quantity){
       investment.quantity -= quantity;
     }
     else {
       this.portfolio.removeInvestment(investment);
     }
-    this.accountBalance += (outlay / 100);
+    this.accountBalance += outlay;
   },
   sellShort: function(share, quantity, params){
     var outlay = share.currentPrice * quantity;

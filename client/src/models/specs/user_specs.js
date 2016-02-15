@@ -50,7 +50,7 @@ describe('User', function(){
 
   it('should lose money appropriately on purchase', function(){
     testUser.buyShares(testShare, 1, testData);
-    expect(testUser.accountBalance).to.equal(testBalance - testSharePrice / 100);
+    expect(testUser.accountBalance).to.equal(testBalance - testSharePrice);
   });
 
   it('should be able to sell shares', function(){
@@ -59,9 +59,9 @@ describe('User', function(){
   });
 
   it('should gain money appropriately on sale', function(){
-    testUser.sellShares(testInvestment);
+    testUser.sellShares(testInvestment, 1000);
     expect(testUser.accountBalance).to.equal(testBalance +
-     (testSharePrice * testInvestment.quantity) / 100 );
+     (testSharePrice * 1000));
   });
 
   it('should be able to short sell shares', function(){
