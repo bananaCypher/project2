@@ -71,10 +71,12 @@ User.prototype = {
     }
   },
   pumpRegion: function(region, percentage){
-    for(investment of this.portfolio.investments){
-      var share = investment.share;
-      if(share.location === region){
-        this.pumpStock(share, percentage);
+    if(isRegion){
+      for(investment of this.portfolio.investments){
+        var share = investment.share;
+        if(share.location === region){
+          this.pumpStock(share, percentage);
+        }
       }
     }
   },
@@ -85,7 +87,7 @@ User.prototype = {
         this.spreadRumours(share, percentage);
       }
     }
-  }
+  },
 }
 
 module.exports = User;

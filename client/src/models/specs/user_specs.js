@@ -31,6 +31,8 @@ describe('User', function(){
     testSharePrice = testShare.currentPrice;
   });
 
+  // BASIC INITIAL SETUP
+
   it('should have a name', function(){
     expect(testUser.name).to.equal('Barry');
   });
@@ -41,7 +43,9 @@ describe('User', function(){
 
   it('should be able to have a portfolio', function(){
     expect(testUser.portfolio).to.equal(testPortfolio);
-  })
+  });
+
+  // FUNCTIONALITY
 
   it('should be able to buy shares', function(){
     testUser.buyShares(testShare, 1, testData);
@@ -109,5 +113,12 @@ describe('User', function(){
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
+  });
+
+  // EDGE-CASES
+
+  it('should not be able to buy negative number of shares', function(){
+    testUser.buyShares(testShare, -1, testData);
+    expect(testUser.portfolio.investments[1]).to.equal(undefined);
   });
 })
