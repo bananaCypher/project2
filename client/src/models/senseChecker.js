@@ -22,6 +22,18 @@ var senseChecker = {
     if(quantity <= 0){
       return false;
     }
+    else{
+      return true;
+    }
+  },
+
+  isBelowMax: function(quantity, investment){
+    if(quantity > investment.quantity){
+      return false;
+    }
+    else{
+      return true;
+    }
   },
 
   isInvestment: function(investment, user){

@@ -54,7 +54,7 @@ describe('senseChecker', function(){
     expect(senseChecker.isNotNegative(-5)).to.equal(false);
   });
   it('should reject positive numbers higher than target quantity', function(){
-
-  })
+    expect(senseChecker.isBelowMax(3000, testInvestment)).to.equal(false);
+  });
 
 })
