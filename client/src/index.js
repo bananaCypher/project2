@@ -4,7 +4,7 @@ var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
 var showInvestmentInfo = require('./buy_sell.js');
-var senseChecker = require('../src/models/senseChecker.js');
+var senseChecker = require('./models/senseChecker.js');
 var notificationArea;
 
 var displayLargestPercChange = function(){
@@ -70,11 +70,11 @@ var setUpPriceWatchers = function(){
         if(change.name == 'currentPrice') {
           var share = change.object;
           if (change.oldValue > share.currentPrice) {var type = 'error'} else {var type = 'success'}
-          notificationArea.newNotification({
-            title: share.epic + ' price changed',
-            content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
-            type: type
-          });
+            notificationArea.newNotification({
+              title: share.epic + ' price changed',
+              content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
+              type: type
+            });
         }
       }
     });
@@ -85,10 +85,29 @@ var init = function(){
   console.log('I have loaded');
   console.log(Barry);
 
+
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
+  var errorList = document.getElementById('errorList');
+
+// ERRORLIST POPULATION
+
+  // Object.observe(senseChecker, function(changes){
+  //   for(change of changes){
+  //     if(change.name == 'errorList'){
+  //       errorList.innerHTML = '';
+  //       for(error of change.object.errorList){
+  //         var li = document.createElement('li');
+  //         li.innerText = error;
+  //         errorList.appendChild(li);
+  //       }
+  //     }
+  //   }
+  // });
+
+  senseChecker.errorList.push('seriously, nothing works in Firefox');
 
   Highcharts.setOptions(chartStyles);
 

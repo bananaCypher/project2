@@ -1,5 +1,5 @@
 var senseChecker = {
-  errorList: [],
+  errorList: ['shit be broke son'],
   validRegions: ['China', 'UK', 'USA'],
   validShares: ["Fusionex", "Empiric Student Prop", "Worldpay", "Pets At Home", "Cyprotex", "Robinson", "Softcat", "Royal Bank of Scotland Group", "NCC", "Stadium"],
   validInvestments: function(user){
