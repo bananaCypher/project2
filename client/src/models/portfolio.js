@@ -14,35 +14,45 @@ Portfolio.prototype = {
     arrayLoop:
     for (var i = 0, len = this.investments.length; i < len; i++) {
      var investment = this.investments[i];
-      for (var key in investmentToFind) {
-        if (investmentToFind[key] != investment[key]) {
-          continue arrayLoop;
-        }
-      } 
-      for (var key in investment) {
-        if (investmentToFind[key] != investment[key]) {
-          continue arrayLoop;
-        }
-      } 
-      return i;
+     for (var key in investmentToFind) {
+      if (investmentToFind[key] != investment[key]) {
+        continue arrayLoop;
+      }
+    } 
+    for (var key in investment) {
+      if (investmentToFind[key] != investment[key]) {
+        continue arrayLoop;
+      }
+    } 
+    return i;
+  }
+},
+totalValue: function(){
+  var sum = 0;
+  for (var investment of this.investments) {
+    sum += investment.currentValue();
+  }
+  return sum;
+},
+pastTotalValue: function(day){
+  var sum = 0;
+  for(var investment of this.investments) {
+    var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
+    sum += dayTotal;
+  }
+  return sum;
+},
+totalValueOfRegion: function(region){
+  var sum = 0;
+  for(var investment of this.investments){
+    if(investment.share.location === region){
+      var total = investment.quantity * investment.share.currentPrice;
+      sum += total;
     }
-  },
-  totalValue: function(){
-    var sum = 0;
-    for (var investment of this.investments) {
-      sum += investment.currentValue();
-    }
-    return sum;
-  },
-  pastTotalValue: function(day){
-    var sum = 0;
-    for(var investment of this.investments) {
-      var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
-      sum += dayTotal;
-    }
-    return sum;
-  },
-  find: function(search){
+  }
+  return sum;
+},
+find: function(search){
     // accepts an object where the key is the search field and the value is the search term
     // e.g. find({name: 'My Investment'});
     arrayLoop:

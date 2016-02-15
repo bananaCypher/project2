@@ -46,17 +46,20 @@
 
 	var Barry = __webpack_require__(1);
 	var scatterChart = __webpack_require__(6);
-	var singleScatterChart = __webpack_require__(7);
-	var pieChart = __webpack_require__(9);
+	var pieChart = __webpack_require__(7);
+	var chartStyles = __webpack_require__(8);
+	var NotificationArea = __webpack_require__(9);
+	var showInvestmentInfo = __webpack_require__(10);
+	var notificationArea;
 	
 	var displayLargestPercChange = function(){
-	  var basicInfo = document.getElementById('basicInfo');
+	  var moreInfo = document.getElementById('moreInfo');
 	  var p = document.createElement('p');
 	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
 	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
-	  p.innerHTML = "<h2>Largest percentage stock change</h2>"
-	  p.innerHTML += largestPercChangeInvestment.shareName + ": " + Number(largestPercChangeValue).toLocaleString() + "%";
-	  basicInfo.appendChild(p);
+	  p.innerHTML = "<h2>Best performing stock</h2>"
+	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
+	  moreInfo.appendChild(p);
 	}
 	
 	var displayCurrentPortfolioValue = function(){
@@ -66,34 +69,95 @@
 	  basicInfo.appendChild(p);
 	}
 	
-	var showSharePerformanceChart = function(inputName){
-	  var investment = Barry.portfolio.find({shareName: inputName });
-	  new singleScatterChart(investment);
+	var displayAccountBalance = function(){
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+	  balanceInfo.appendChild(p);
 	}
 	
 	var populateSelect = function(){
-	  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+	  var shareSelect = document.getElementById('shareSelect');
 	  for(investment of Barry.portfolio.investments){
 	    var option = document.createElement('option');
 	    option.innerText = investment.shareName;
-	    sharePerformanceSelect.appendChild(option);
+	    shareSelect.appendChild(option);
 	  }
 	}
+	
+	var updateShare = function(share){
+	  var request = new XMLHttpRequest();
+	  request.open('GET', '/share/' + share.epic);
+	  request.onload = function(){
+	    if (request.status === 200) {
+	      var newPrice = Number(request.responseText);
+	      if (newPrice != share.currentPrice) {
+	        share.currentPrice = newPrice;
+	      }
+	    }
+	  };
+	  request.send(null);
+	}
+	
+	var getLatestShareInfo = function(){
+	  var investments = Barry.portfolio.investments;
+	  for (var investment of investments) {
+	    var share = investment.share;
+	    updateShare(share);
+	  }
+	}
+	
+	var setUpPriceWatchers = function(){
+	  for (var investment of Barry.portfolio.investments) {
+	    var share = investment.share
+	    Object.observe(share, function(changes){
+	      for (var change of changes) {
+	        if(change.name == 'currentPrice') {
+	          var share = change.object;
+	          if (change.oldValue > share.currentPrice) {var type = 'error'} else {var type = 'success'}
+	          notificationArea.newNotification({
+	            title: share.epic + ' price changed',
+	            content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
+	            type: type
+	          });
+	        }
+	      }
+	    });
+	  }
+	}
+	
 	var init = function(){
 	  console.log('I have loaded');
 	  console.log(Barry);
 	
-	  var sharePerformanceSelect = document.getElementById('sharePerformanceSelect');
+	  var shareSelect = document.getElementById('shareSelect');
+	  var portfolioButton = document.getElementById('portfolioView');
+	  var portfolioInfo = document.getElementById('portfolioInfo');
+	  var investmentInfo = document.getElementById('investmentInfo');
+	
+	  Highcharts.setOptions(chartStyles);
 	
 	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
-	  new scatterChart();
-	  sharePerformanceSelect.onchange = function(){
-	    showSharePerformanceChart(sharePerformanceSelect.value);
+	  displayAccountBalance();
+	
+	  shareSelect.onchange = function(){
+	    portfolioInfo.style.display = "none";
+	    investmentInfo.style.display = "block";
+	    showInvestmentInfo(shareSelect.value, Barry);
 	  };
-	  new pieChart(Barry.portfolio);
-	  
+	  portfolioButton.onclick = function(){
+	    investmentInfo.style.display = "none";
+	    portfolioInfo.style.display = "block"
+	    new pieChart(Barry.portfolio);
+	    new scatterChart();
+	  }
+	  notificationArea = new NotificationArea();  
+	  setUpPriceWatchers();
+	  window.setInterval(function(){
+	    getLatestShareInfo();
+	  }, 10000);
 	};
 	
 	window.onload = init;
@@ -130,7 +194,7 @@
 	},
 	{
 	  "name": "Worldpay",
-	  "epic":"WGP",
+	  "epic":"WPG",
 	  "location": "China",
 	  "price": 301.00,
 	  "quantity": 1000,
@@ -244,22 +308,36 @@
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500,
+	  this.accountBalance = 5000,
 	  this.insideTrader = false
 	};
 	
 	User.prototype = {
 	  buyShares: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
-	    var investment = new Investment(share, params);
-	    investment.quantity = quantity
-	    this.portfolio.addInvestment(investment);
-	    this.accountBalance -= outlay;
+	
+	    if(this.portfolio.find({shareName: share.shareName})){
+	      var investment = this.portfolio.find({shareName: share.shareName})
+	      investment.quantity += quantity;
+	    }
+	    else {
+	      var investment = new Investment(share, params);
+	      investment.quantity = quantity;
+	      investment.buyPrice = share.currentPrice;
+	      this.portfolio.addInvestment(investment);
+	    }
+	    this.accountBalance -= (outlay / 100);
 	  },
-	  sellShares: function(investment){
-	    var outlay = investment.share.currentPrice * investment.quantity;
-	    this.portfolio.removeInvestment(investment);
-	    this.accountBalance += outlay;
+	  sellShares: function(investment, quantity){
+	    var outlay = investment.share.currentPrice * quantity;
+	
+	    if(investment.quantity >= quantity){
+	      investment.quantity -= quantity;
+	    }
+	    else {
+	      this.portfolio.removeInvestment(investment);
+	    }
+	    this.accountBalance += (outlay / 100);
 	  },
 	  sellShort: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
@@ -281,7 +359,8 @@
 	  },
 	  spreadRumours: function(share, percentage){
 	    if(!this.insideTrader){
-	      console.log('this action is illegal!');
+	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
+	      return hypotheticalPrice;
 	    }
 	    else{
 	      share.crashValue(percentage);
@@ -289,10 +368,27 @@
 	  },
 	  pumpStock: function(share, percentage){
 	    if(!this.insideTrader){
-	      console.log('this action is illegal!');
+	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
+	      return hypotheticalPrice;
 	    }
 	    else{
 	      share.inflateValue(percentage);
+	    }
+	  },
+	  pumpRegion: function(region, percentage){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.pumpStock(share, percentage);
+	      }
+	    }
+	  },
+	  crashRegion: function(region, percentage){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.spreadRumours(share, percentage);
+	      }
 	    }
 	  }
 	}
@@ -359,35 +455,45 @@
 	    arrayLoop:
 	    for (var i = 0, len = this.investments.length; i < len; i++) {
 	     var investment = this.investments[i];
-	      for (var key in investmentToFind) {
-	        if (investmentToFind[key] != investment[key]) {
-	          continue arrayLoop;
-	        }
-	      } 
-	      for (var key in investment) {
-	        if (investmentToFind[key] != investment[key]) {
-	          continue arrayLoop;
-	        }
-	      } 
-	      return i;
+	     for (var key in investmentToFind) {
+	      if (investmentToFind[key] != investment[key]) {
+	        continue arrayLoop;
+	      }
+	    } 
+	    for (var key in investment) {
+	      if (investmentToFind[key] != investment[key]) {
+	        continue arrayLoop;
+	      }
+	    } 
+	    return i;
+	  }
+	},
+	totalValue: function(){
+	  var sum = 0;
+	  for (var investment of this.investments) {
+	    sum += investment.currentValue();
+	  }
+	  return sum;
+	},
+	pastTotalValue: function(day){
+	  var sum = 0;
+	  for(var investment of this.investments) {
+	    var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
+	    sum += dayTotal;
+	  }
+	  return sum;
+	},
+	totalValueOfRegion: function(region){
+	  var sum = 0;
+	  for(var investment of this.investments){
+	    if(investment.share.location === region){
+	      var total = investment.quantity * investment.share.currentPrice;
+	      sum += total;
 	    }
-	  },
-	  totalValue: function(){
-	    var sum = 0;
-	    for (var investment of this.investments) {
-	      sum += investment.currentValue();
-	    }
-	    return sum;
-	  },
-	  pastTotalValue: function(day){
-	    var sum = 0;
-	    for(var investment of this.investments) {
-	      var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
-	      sum += dayTotal;
-	    }
-	    return sum;
-	  },
-	  find: function(search){
+	  }
+	  return sum;
+	},
+	find: function(search){
 	    // accepts an object where the key is the search field and the value is the search term
 	    // e.g. find({name: 'My Investment'});
 	    arrayLoop:
@@ -442,6 +548,7 @@
 	var Share = function(params){
 	  this.shareName = params.name;
 	  this.epic = params.epic;
+	  this.location = params.location;
 	  this.currentPrice = params.price;
 	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
 	  this.location = params.location;
@@ -469,10 +576,19 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Barry = __webpack_require__(1)
+	var Barry = __webpack_require__(1);
 	
 	var ScatterChart = function(){
 	  var container = document.getElementById("scatterChart");
+	
+	  var lineColor = function(){
+	    if(Barry.portfolio.pastTotalValue(1) > Barry.portfolio.pastTotalValue(7)) {
+	      return  "rgb(110,216,84)"
+	      }
+	    else { 
+	      return'rgba(223, 83, 83, .9)'
+	    }
+	  }
 	  var chart = new Highcharts.Chart({
 	    chart: {
 	      type: 'scatter',
@@ -501,8 +617,9 @@
 	      regression: true ,
 	      regressionSettings: {
 	        type: 'linear',
-	        color:  'rgba(223, 83, 83, .9)',
-	        dashStyle: 'ShortDash'
+	        color:  lineColor(),
+	        dashStyle: 'ShortDash',
+	        name: "Line of Best Fit"
 	        },
 	        type: "line",
 	      name: "Portfolio",
@@ -517,58 +634,6 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Barry = __webpack_require__(1)
-	
-	
-	var SingleScatterChart = function(investment){
-	  var container = document.getElementById("singleScatterChart");
-	  var chart = new Highcharts.Chart({
-	    chart: {
-	      type: 'scatter',
-	      renderTo: container
-	    },
-	    title: {
-	      text: "7 Day Performance - " + investment.shareName,
-	      style: {
-	        "text-decoration": "underline",
-	        "font-weight": "700"
-	      }
-	    },
-	    xAxis: {
-	      title: {
-	        text: "Previous Week's Days"
-	      },
-	      tickAmount: 7,
-	      tickInterval: 1
-	    },
-	    yAxis: {
-	      title: {
-	        text: "Value of Share (GBX)"
-	      }
-	    },
-	    series: [{
-	      regression: true ,
-	      regressionSettings: {
-	        type: 'linear',
-	        color:  'rgba(223, 83, 83, .9)',
-	        dashStyle: 'ShortDash'
-	        },
-	        type: "line",
-	      name: "Share Price",
-	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]]  ],
-	    }],
-	
-	  });
-	}
-	
-	module.exports = SingleScatterChart;
-
-
-/***/ },
-/* 8 */,
-/* 9 */
 /***/ function(module, exports) {
 
 	
@@ -590,11 +655,6 @@
 	    },
 	    title: {
 	      text: "Investments as proportion of total portfolio value",
-	      style: {
-	        "color": "rebeccapurple",
-	        "text-decoration": "underline",
-	        "font-weight": "700"
-	      }
 	    },
 	    series: [{
 	      name: "Investment",
@@ -605,6 +665,467 @@
 	}
 	
 	module.exports = PieChart;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	  var chartStyles = {
+	    colors: ["#2b908f", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+	      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+	    chart: {
+	      backgroundColor: {
+	        linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+	        stops: [
+	          [0, '#2a2a2b'],
+	          [1, '#3e3e40']
+	        ]
+	      },
+	      style: {
+	        fontFamily: "'Unica One', sans-serif",
+	        textTransform: 'uppercase',
+	      },
+	      plotBorderColor: '#606063'
+	    },
+	    title: {
+	      style: {
+	        color: '#E0E0E3',
+	        textTransform: 'uppercase',
+	        fontSize: '20px'
+	      }
+	    },
+	    subtitle: {
+	      style: {
+	        color: '#E0E0E3',
+	        textTransform: 'uppercase'
+	      }
+	    },
+	    xAxis: {
+	      gridLineColor: '#707073',
+	      labels: {
+	        style: {
+	          color: '#E0E0E3'
+	        }
+	      },
+	      lineColor: '#707073',
+	      minorGridLineColor: '#505053',
+	      tickColor: '#707073',
+	      title: {
+	        style: {
+	          color: '#A0A0A3'
+	
+	        }
+	      }
+	    },
+	    yAxis: {
+	      gridLineColor: '#707073',
+	      labels: {
+	        style: {
+	          color: '#E0E0E3'
+	        }
+	      },
+	      lineColor: '#707073',
+	      minorGridLineColor: '#505053',
+	      tickColor: '#707073',
+	      tickWidth: 1,
+	      title: {
+	        style: {
+	          color: '#A0A0A3'
+	        }
+	      }
+	    },
+	    tooltip: {
+	      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+	      style: {
+	        color: '#F0F0F0'
+	      }
+	    },
+	    plotOptions: {
+	      series: {
+	        dataLabels: {
+	          color: '#B0B0B3'
+	        },
+	        marker: {
+	          lineColor: '#333'
+	        },
+	        color: "#FAFA98"
+	      },
+	      boxplot: {
+	        fillColor: '#505053'
+	      },
+	      candlestick: {
+	        lineColor: 'white'
+	      },
+	      errorbar: {
+	        color: 'white'
+	      }
+	    },
+	    legend: {
+	      itemStyle: {
+	        color: '#E0E0E3'
+	      },
+	      itemHoverStyle: {
+	        color: '#FFF'
+	      },
+	      itemHiddenStyle: {
+	        color: '#606063'
+	      }
+	    },
+	    credits: {
+	      style: {
+	        color: '#666'
+	      }
+	    },
+	    labels: {
+	      style: {
+	        color: '#707073'
+	      }
+	    },
+	
+	    drilldown: {
+	      activeAxisLabelStyle: {
+	        color: '#F0F0F3'
+	      },
+	      activeDataLabelStyle: {
+	        color: '#F0F0F3'
+	      }
+	    },
+	
+	    navigation: {
+	      buttonOptions: {
+	        symbolStroke: '#DDDDDD',
+	        theme: {
+	          fill: '#505053'
+	        }
+	      }
+	    },
+	
+	    // scroll charts
+	    rangeSelector: {
+	      buttonTheme: {
+	        fill: '#505053',
+	        stroke: '#000000',
+	        style: {
+	          color: '#CCC'
+	        },
+	        states: {
+	          hover: {
+	            fill: '#707073',
+	            stroke: '#000000',
+	            style: {
+	              color: 'white'
+	            }
+	          },
+	          select: {
+	            fill: '#000003',
+	            stroke: '#000000',
+	            style: {
+	              color: 'white'
+	            }
+	          }
+	        }
+	      },
+	      inputBoxBorderColor: '#505053',
+	      inputStyle: {
+	        backgroundColor: '#333',
+	        color: 'silver'
+	      },
+	      labelStyle: {
+	        color: 'silver'
+	      }
+	    },
+	
+	    navigator: {
+	      handles: {
+	        backgroundColor: '#666',
+	        borderColor: '#AAA'
+	      },
+	      outlineColor: '#CCC',
+	      maskFill: 'rgba(255,255,255,0.1)',
+	      series: {
+	        color: '#7798BF',
+	        lineColor: '#A6C7ED'
+	      },
+	      xAxis: {
+	        gridLineColor: '#505053'
+	      }
+	    },
+	
+	    scrollbar: {
+	      barBackgroundColor: '#808083',
+	      barBorderColor: '#808083',
+	      buttonArrowColor: '#CCC',
+	      buttonBackgroundColor: '#606063',
+	      buttonBorderColor: '#606063',
+	      rifleColor: '#FFF',
+	      trackBackgroundColor: '#404043',
+	      trackBorderColor: '#404043'
+	    },
+	
+	    // special colors for some of the
+	    legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+	    background2: '#505053',
+	    dataLabelsColor: '#B0B0B3',
+	    textColor: '#C0C0C0',
+	    contrastTextColor: '#F0F0F3',
+	    maskColor: 'rgba(255,255,255,0.3)'
+	}
+	
+	
+	module.exports = chartStyles;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	var Notification = function(notificationArea, params) {
+	  this.area = notificationArea;
+	  this.title = params.title || 'Notification';
+	  this.content = params.content || '';
+	  this.type = params.type || 'info';
+	  this.time = params.time || new Date();
+	  this.element = this.setupElement();
+	}
+	Notification.prototype = {
+	  setupElement: function(){
+	    var element = document.createElement('div');
+	    element.classList.add('notification-' + this.type);
+	    var title = document.createElement('h2');
+	    title.innerText = this.title;
+	    var content = document.createElement('p');
+	    content.innerText = this.content; 
+	    element.appendChild(this.setupCloseButton());
+	    element.appendChild(title);
+	    element.appendChild(content);
+	    return element;
+	  },
+	  setupCloseButton: function(){
+	    var button = document.createElement('span');
+	    button.innerText = 'X'; 
+	    button.onclick = function(){
+	      this.destroy();
+	    }.bind(this);
+	    return button;
+	  },
+	  destroy: function(){
+	    this.area.container.removeChild(this.element);
+	    this.area.updateIcon();
+	  }
+	}
+	
+	var NotificationArea = function(){
+	  this.container = this.setupContainer();
+	  this.showing = false;
+	  this.notificationButton = this.setupNotificationButton();
+	  this.countContainer = this.notificationButton.getElementsByTagName('span')[0];
+	  this.setupScrolling();
+	}
+	NotificationArea.prototype = {
+	  setupContainer: function(){
+	    var container = document.createElement('div');
+	    container.id = 'notification-container';
+	    document.body.appendChild(container); 
+	    return container;
+	  },
+	  setupNotificationButton: function(){
+	    var button = document.getElementById('notifications');
+	    button.onclick = function(){
+	      if (this.showing == true){
+	        this.hide();
+	      } else {
+	        this.show();
+	      }
+	      this.countContainer.className = '';
+	    }.bind(this);
+	    return button;
+	  },
+	  setupScrolling: function(){
+	    document.onscroll = function(event){
+	      var newTop = 53 - window.pageYOffset; //will need changed if header height changes
+	      if (newTop < 0) {
+	        newTop = 0;
+	      }
+	      var newHeight = screen.height - newTop;
+	      this.container.style.height = newHeight + 'px';
+	      this.container.style.top = newTop + 'px';
+	    }.bind(this);
+	  },
+	  newNotification: function(params){
+	    var notification = new Notification(this, params);
+	    this.container.appendChild(notification.element);
+	    this.updateIcon();
+	  },
+	  updateIcon: function(){
+	    var notificationCount = this.container.childNodes.length;
+	    var prevCount = Number(this.countContainer.innerText);
+	    if (notificationCount > 0) {
+	      this.countContainer.innerText = notificationCount;
+	    } else {
+	      this.countContainer.innerText = '';
+	      this.hide();
+	    }
+	    if (prevCount < notificationCount && this.showing == false) {
+	      this.countContainer.className = 'pulse';
+	    }
+	  },
+	  show: function(){
+	    this.container.className = 'display-notification-container';
+	    this.showing = true;
+	  },
+	  hide: function(){
+	    this.container.className = 'hide-notification-container';
+	    this.showing = false;
+	  }
+	}
+	
+	module.exports = NotificationArea;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var singleScatterChart = __webpack_require__(11);
+	
+	var loadInfo = function(investment, user){
+	  new singleScatterChart(investment);
+	  var investmentView = document.getElementById('investmentView');
+	  investmentView.innerHTML = "";
+	
+	  if(investment.valueChange("percentage")){
+	    var value = "Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>";
+	  }
+	  else {
+	    var value = ""
+	  }
+	  var info = document.createElement('p');
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	
+	  investmentView.appendChild(info); 
+	
+	  var basicInfo = document.getElementById('basicInfo');
+	  basicInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
+	  basicInfo.appendChild(p);
+	
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  balanceInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+	  balanceInfo.appendChild(p);
+	
+	}
+	
+	var TradeForm = function(option, user, investment){
+	
+	  if(option === "Buy"){
+	    var inputId = "buyInput";
+	    var submitId = "buySubmit";
+	  }
+	  else if(option === "Sell"){
+	    var inputId = "sellInput";
+	    var submitId = "sellSubmit";
+	  }
+	
+	  var form = document.createElement('form');
+	  form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
+	
+	  form.onsubmit = function(event){
+	    var value = document.getElementById(inputId).value;
+	    event.preventDefault();
+	    console.log("form submit", value);
+	
+	    if(option === "Buy"){
+	      user.buyShares(investment.share, parseInt(value), investment);
+	      loadInfo(investment, user);
+	    }
+	    else if(option ==="Sell"){
+	      user.sellShares(investment, parseInt(value)) 
+	      loadInfo(investment, user);
+	    }
+	  }  
+	  return form;
+	}
+	
+	var showInvestmentInfo = function(inputName, user){
+	  var investment = user.portfolio.find({shareName: inputName });
+	  var buysellView = document.getElementById('buysellView');
+	  buysellView.innerHTML = "";
+	
+	  loadInfo(investment, user);
+	
+	  var buyForm = new TradeForm("Buy", user, investment);
+	  var sellForm = new TradeForm("Sell", user, investment);
+	
+	  buysellView.appendChild(buyForm); 
+	  buysellView.appendChild(sellForm); 
+	}
+	
+	
+	module.exports = showInvestmentInfo;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Barry = __webpack_require__(1)
+	
+	
+	var SingleScatterChart = function(investment){
+	  var container = document.getElementById("singleScatterChart");
+	
+	  var lineColor = function(){
+	    if(investment.share.currentPrice > investment.share.pastCloseOfDayPrices[0]) {
+	      return  "rgb(110,216,84)"
+	      }
+	    else { 
+	      return'rgba(223, 83, 83, .9)'
+	    }
+	  }
+	
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'scatter',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "7 Day Performance - " + investment.shareName,
+	      style: {
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    xAxis: {
+	      title: {
+	        text: "Previous Week's Days"
+	      },
+	      tickAmount: 8,
+	      tickInterval: 1
+	    },
+	    yAxis: {
+	      title: {
+	        text: "Value of Share (GBX)"
+	      }
+	    },
+	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  lineColor(),
+	        dashStyle: 'ShortDash',
+	        name: "Line of Best Fit"
+	        },
+	        type: "line",
+	      name: "Value of Share",
+	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
+	    }],
+	
+	  });
+	}
+	
+	module.exports = SingleScatterChart;
+
 
 /***/ }
 /******/ ]);

@@ -12,6 +12,7 @@ describe('User', function(){
     testData = {
       "name": "Fusionex",
       "epic":"FXI",
+      "location": "USA",
       "price": 120.00,
       "quantity": 2000,
       "buyPrice": 80.00,
@@ -44,12 +45,12 @@ describe('User', function(){
 
   it('should be able to buy shares', function(){
     testUser.buyShares(testShare, 1, testData);
-    expect(testUser.portfolio.investments[1].share).to.equal(testShare)
+    expect(testUser.portfolio.investments[0].quantity).to.equal(2001)
   });
 
   it('should lose money appropriately on purchase', function(){
     testUser.buyShares(testShare, 1, testData);
-    expect(testUser.accountBalance).to.equal(testBalance - testSharePrice);
+    expect(testUser.accountBalance).to.equal(testBalance - testSharePrice / 100);
   });
 
   it('should be able to sell shares', function(){
@@ -59,7 +60,8 @@ describe('User', function(){
 
   it('should gain money appropriately on sale', function(){
     testUser.sellShares(testInvestment);
-    expect(testUser.accountBalance).to.equal(testBalance + (testSharePrice * testInvestment.quantity));
+    expect(testUser.accountBalance).to.equal(testBalance +
+     (testSharePrice * testInvestment.quantity) / 100 );
   });
 
   it('should be able to short sell shares', function(){
@@ -74,9 +76,14 @@ describe('User', function(){
   });
 
   it('should be unable to engage in insider trading without an opt-in', function(){
-    testUser.spreadRumours(testInvestment, 10);
-    expect(testShare.currentPrice).to.not.equal(testSharePrice * 0.9);
+    testUser.spreadRumours(testShare, 10);
+    expect(testShare.currentPrice).to.equal(testSharePrice);
   });
+
+  it('should be able to see the projected results of insider trading only if it lacks opt-in', function(){
+    testUser.spreadRumours(testShare, 10);
+    expect(testUser.spreadRumours(testShare, 10)).to.equal(108);
+  })
 
   it('should be able to engage in insider trading after opting in', function (){
     testUser.insideTrader = true;
@@ -88,6 +95,18 @@ describe('User', function(){
     testUser.insideTrader = true;
     testUser.pumpStock(testShare, 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
-  })
+  });
 
+  it('should be able to inflate stocks by region', function(){
+    testUser.insideTrader = true;
+    var usaTotal = portfolio.totalValueOfRegion('USA');
+    testUser.pumpRegion('USA', 10);
+    expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
+  });
+  it('should be able to deflate stocks by region', function(){
+    testUser.insideTrader = true;
+    var usaTotal = portfolio.totalValueOfRegion('USA');
+    testUser.crashRegion('USA', 10);
+    expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
+  })
 })
