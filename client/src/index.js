@@ -6,6 +6,7 @@ var singleScatterChart = require('./charts/singleScatterChart.js');
 var NotificationArea = require('./notification.js');
 var notificationArea;
 var Map = require('./map.js');
+var googleMap
 
 var displayLargestPercChange = function(){
   var moreInfo = document.getElementById('moreInfo');
@@ -37,6 +38,7 @@ var showInvestmentInfo = function(inputName){
 
   investmentView.appendChild(info); 
 
+  googleMap.changeLocation(investment.share.location);
 }
 
 var populateSelect = function(){
@@ -120,7 +122,8 @@ var init = function(){
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
-  var googleMap = new Map({location: 'Scotland'});
+  googleMap = new Map({location: 'China'});
+  googleMap.show();
 };
 
 window.onload = init;

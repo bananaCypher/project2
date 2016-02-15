@@ -19,6 +19,7 @@ Map.prototype = {
   setupMapElement: function(){
     var element = document.createElement('div');
     element.id = 'google-map';
+    element.style.display = 'none';
     element.classList.add('google-map-container'); 
     document.body.appendChild(element);
     return element;
@@ -32,8 +33,8 @@ Map.prototype = {
   setupMap: function(){
     var map = new google.maps.Map(this.element, {
       center: this.latlng,
-      zoom: 4,
-      mapTypeId: google.maps.MapTypeId.HYBRID
+      zoom: 4
+      //mapTypeId: google.maps.MapTypeId.HYBRID
     });
     return map;
   },
@@ -52,7 +53,7 @@ Map.prototype = {
   },
   addInfoWindow: function(){
     var infoWindow = new google.maps.InfoWindow({
-      content: '<p>stuff</p'
+      content: 'stuff'
     }); 
     return infoWindow;
   },
@@ -63,13 +64,14 @@ Map.prototype = {
     this.infoWindow.close(); 
   },
   show: function(){
-
+    this.element.style.display = 'block'; 
   },
   hide: function(){
-
+    this.element.style.display = 'none'; 
   },
-  changeLocation: function(){
-
+  changeLocation: function(loc){
+    this.location = loc;
+    this.latlng = this.getLatLng();
   }
 }
 

@@ -52,6 +52,7 @@
 	var NotificationArea = __webpack_require__(10);
 	var notificationArea;
 	var Map = __webpack_require__(11);
+	var googleMap
 	
 	var displayLargestPercChange = function(){
 	  var moreInfo = document.getElementById('moreInfo');
@@ -83,6 +84,7 @@
 	
 	  investmentView.appendChild(info); 
 	
+	  googleMap.changeLocation(investment.share.location);
 	}
 	
 	var populateSelect = function(){
@@ -166,7 +168,8 @@
 	  window.setInterval(function(){
 	    getLatestShareInfo();
 	  }, 10000);
-	  var googleMap = new Map({location: 'Scotland'});
+	  googleMap = new Map({location: 'China'});
+	  googleMap.show();
 	};
 	
 	window.onload = init;
@@ -1034,6 +1037,7 @@
 	  setupMapElement: function(){
 	    var element = document.createElement('div');
 	    element.id = 'google-map';
+	    element.style.display = 'none';
 	    element.classList.add('google-map-container'); 
 	    document.body.appendChild(element);
 	    return element;
@@ -1047,8 +1051,8 @@
 	  setupMap: function(){
 	    var map = new google.maps.Map(this.element, {
 	      center: this.latlng,
-	      zoom: 4,
-	      mapTypeId: google.maps.MapTypeId.HYBRID
+	      zoom: 4
+	      //mapTypeId: google.maps.MapTypeId.HYBRID
 	    });
 	    return map;
 	  },
@@ -1067,7 +1071,7 @@
 	  },
 	  addInfoWindow: function(){
 	    var infoWindow = new google.maps.InfoWindow({
-	      content: '<p>stuff</p'
+	      content: 'stuff'
 	    }); 
 	    return infoWindow;
 	  },
@@ -1078,13 +1082,14 @@
 	    this.infoWindow.close(); 
 	  },
 	  show: function(){
-	
+	    this.element.style.display = 'block'; 
 	  },
 	  hide: function(){
-	
+	    this.element.style.display = 'none'; 
 	  },
-	  changeLocation: function(){
-	
+	  changeLocation: function(loc){
+	    this.location = loc;
+	    this.latlng = this.getLatLng();
 	  }
 	}
 	
