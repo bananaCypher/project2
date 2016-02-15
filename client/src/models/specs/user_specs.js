@@ -107,5 +107,5 @@ describe('User', function(){
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
-  })
+  });
 })
