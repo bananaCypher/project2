@@ -31,11 +31,43 @@ Map.prototype = {
     }.bind(this));
   },
   setupMap: function(){
+    var customMapType = new google.maps.StyledMapType([
+        {
+          stylers: [
+          {hue: '#006c00'},
+          {gamma: 0.1},
+          {weight: 0.5}
+          ]
+        },
+        {
+          elementType: 'labels',
+          stylers: [
+            {color: '#FFFFFF'}
+          ]
+        },
+        {
+          featureType: 'water',
+          stylers: [{color: '#0F0F0F'}]
+        },
+        {
+          featureType: 'administrative.country',
+          stylers: [
+            {color: '#FFFFFF'}
+          ]
+        }
+    ], {
+      name: 'Custom Style'
+    });
+    var customMapTypeId = 'custom_style';
     var map = new google.maps.Map(this.element, {
       center: this.latlng,
-      zoom: 4
-      //mapTypeId: google.maps.MapTypeId.HYBRID
+      zoom: 4,
+      mapTypeControlOptions: {
+        mapTypeIds: [google.maps.MapTypeId.HYBRID, customMapTypeId]
+      }
     });
+    map.mapTypes.set(customMapTypeId, customMapType);
+    map.setMapTypeId(customMapTypeId);
     return map;
   },
   addMarker: function(){
