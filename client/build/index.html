@@ -8,27 +8,40 @@
   <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
   <script src="/bundle.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Unica+One">
 </head>
 <body>
   <header>
-    <h1>Portfolio Homepage</h1>
+    <h1 id="logo">Inside Trader</h1>
+    <div id="notifications">
+      <img src="https://cdn4.iconfinder.com/data/icons/web-icons-19/711/notification-icon-tm-512.png" alt="Notifications"/>
+      <span></span>
+    </div>
   </header>
 
   <div class="container">
     <div class="row">
 
-      <div id="basicInfo" class="grid grid-6"></div>
+      <div id="basicInfo" class="grid grid-4"></div>
+      <div id="moreInfo" class="grid grid-8"></div>
 
-      <div id="scatterChart" class="grid grid-6"></div> 
 
     </div> 
 
     <div class="row">
-      <select id="sharePerformanceSelect">
-        <option selected="selected">View 7 Day Performance by Share:</option>
-      </select><br>
-      <div id="singleScatterChart"></div> 
-      <div id="pieChart"></div> 
+      <select id="shareSelect">
+        <option selected="selected">View Investment Information:</option>
+      </select> <button id="portfolioView">View Portfolio Information</button><br>
+
+      <div id="investmentInfo">
+        <div id="singleScatterChart" class="chart grid-6"></div>
+        <div id="investmentView" class="grid grid-6"></div> 
+      </div>
+
+      <div id="portfolioInfo">
+        <div id="scatterChart" class="chart grid-6"></div>
+        <div id="pieChart" class="chart grid-6"></div> 
+      </div>
 
     </div>
   </div> 
