@@ -5,7 +5,7 @@ var SingleScatterChart = function(investment){
   var container = document.getElementById("singleScatterChart");
 
   var lineColor = function(){
-    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
+    if(investment.share.currentPrice > investment.share.pastCloseOfDayPrices[0]) {
       return  "rgb(110,216,84)"
       }
     else { 
