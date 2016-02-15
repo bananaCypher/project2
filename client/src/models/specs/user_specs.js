@@ -12,6 +12,7 @@ describe('User', function(){
     testData = {
       "name": "Fusionex",
       "epic":"FXI",
+      "location": "USA",
       "price": 120.00,
       "quantity": 2000,
       "buyPrice": 80.00,
@@ -87,6 +88,13 @@ describe('User', function(){
   it('should be able to inflate stocks', function(){
     testUser.insideTrader = true;
     testUser.pumpStock(testShare, 10);
+    expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
+  });
+
+  it('should be able to deflate stocks by region', function(){
+    testUser.insideTrader = true;
+    var usaTotal = portfolio.totalValueOfRegion('USA');
+    testUser.pumpRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   })
 

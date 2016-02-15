@@ -53,6 +53,14 @@ User.prototype = {
     else{
       share.inflateValue(percentage);
     }
+  },
+  pumpRegion: function(region, percentage){
+    for(investment of this.portfolio.investments){
+      var share = investment.share;
+      if(share.location === region){
+        this.pumpStock(share, percentage);
+      }
+    }
   }
 }
 
