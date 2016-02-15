@@ -25,14 +25,14 @@ User.prototype = {
   },
   sellShares: function(investment, quantity){
     var outlay = investment.share.currentPrice * quantity;
-    console.log(outlay);
     if(investment.quantity >= quantity){
       investment.quantity -= quantity;
+      this.accountBalance += outlay;
     }
     else {
       this.portfolio.removeInvestment(investment);
+      this.accountBalance = investment.share.currentPrice * investment.quantity;
     }
-    this.accountBalance += outlay;
   },
   sellShort: function(share, quantity, params){
     var outlay = share.currentPrice * quantity;

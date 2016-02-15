@@ -103,6 +103,7 @@ describe('User', function(){
     testUser.pumpRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   });
+  
   it('should be able to deflate stocks by region', function(){
     testUser.insideTrader = true;
     var usaTotal = portfolio.totalValueOfRegion('USA');

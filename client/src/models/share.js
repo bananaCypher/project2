@@ -21,6 +21,6 @@ Share.prototype = {
     var newPrice = this.currentPrice * ((100 + percentage) / 100);
     this.currentPrice = newPrice;
   }
-}
+};
 
 module.exports = Share;
