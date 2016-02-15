@@ -23,6 +23,13 @@ var displayCurrentPortfolioValue = function(){
   basicInfo.appendChild(p);
 }
 
+var displayAccountBalance = function(){
+  var balanceInfo = document.getElementById('balanceInfo');
+  var p = document.createElement('p');
+  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+  balanceInfo.appendChild(p);
+}
+
 var populateSelect = function(){
   var shareSelect = document.getElementById('shareSelect');
   for(investment of Barry.portfolio.investments){
@@ -87,6 +94,7 @@ var init = function(){
   populateSelect();
   displayCurrentPortfolioValue();
   displayLargestPercChange();
+  displayAccountBalance();
 
   shareSelect.onchange = function(){
     portfolioInfo.style.display = "none";

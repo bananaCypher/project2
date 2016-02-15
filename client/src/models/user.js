@@ -18,6 +18,7 @@ User.prototype = {
     else {
       var investment = new Investment(share, params);
       investment.quantity = quantity;
+      investment.buyPrice = share.currentPrice;
       this.portfolio.addInvestment(investment);
     }
     this.accountBalance -= (outlay / 100);

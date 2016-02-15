@@ -25,7 +25,7 @@ var investmentsSample = [
 },
 {
   "name": "Worldpay",
-  "epic":"WGP",
+  "epic":"WPG",
   "location": "China",
   "price": 301.00,
   "quantity": 1000,

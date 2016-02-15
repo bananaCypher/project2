@@ -69,6 +69,13 @@
 	  basicInfo.appendChild(p);
 	}
 	
+	var displayAccountBalance = function(){
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+	  balanceInfo.appendChild(p);
+	}
+	
 	var populateSelect = function(){
 	  var shareSelect = document.getElementById('shareSelect');
 	  for(investment of Barry.portfolio.investments){
@@ -133,6 +140,7 @@
 	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
+	  displayAccountBalance();
 	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
@@ -186,7 +194,7 @@
 	},
 	{
 	  "name": "Worldpay",
-	  "epic":"WGP",
+	  "epic":"WPG",
 	  "location": "China",
 	  "price": 301.00,
 	  "quantity": 1000,
@@ -315,6 +323,7 @@
 	    else {
 	      var investment = new Investment(share, params);
 	      investment.quantity = quantity;
+	      investment.buyPrice = share.currentPrice;
 	      this.portfolio.addInvestment(investment);
 	    }
 	    this.accountBalance -= (outlay / 100);
@@ -978,15 +987,34 @@
 
 	var singleScatterChart = __webpack_require__(11);
 	
-	var loadInfo = function(investment){
-	new singleScatterChart(investment);
-	var investmentView = document.getElementById('investmentView');
-	investmentView.innerHTML = "";
+	var loadInfo = function(investment, user){
+	  new singleScatterChart(investment);
+	  var investmentView = document.getElementById('investmentView');
+	  investmentView.innerHTML = "";
 	
-	var info = document.createElement('p');
-	info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	  if(investment.valueChange("percentage")){
+	    var value = "Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>";
+	  }
+	  else {
+	    var value = ""
+	  }
+	  var info = document.createElement('p');
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
 	
-	investmentView.appendChild(info); 
+	  investmentView.appendChild(info); 
+	
+	  var basicInfo = document.getElementById('basicInfo');
+	  basicInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
+	  basicInfo.appendChild(p);
+	
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  balanceInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+	  balanceInfo.appendChild(p);
+	
 	}
 	
 	var TradeForm = function(option, user, investment){
@@ -1009,24 +1037,23 @@
 	    console.log("form submit", value);
 	
 	    if(option === "Buy"){
-	    user.buyShares(investment.share, parseInt(value), investment);
-	    console.log(user);
-	    loadInfo(investment);
+	      user.buyShares(investment.share, parseInt(value), investment);
+	      loadInfo(investment, user);
 	    }
 	    else if(option ==="Sell"){
-	    user.sellShares(investment, parseInt(value)) 
-	    console.log(user);
-	    loadInfo(investment);
+	      user.sellShares(investment, parseInt(value)) 
+	      loadInfo(investment, user);
 	    }
 	  }  
-	return form;
+	  return form;
 	}
 	
 	var showInvestmentInfo = function(inputName, user){
 	  var investment = user.portfolio.find({shareName: inputName });
 	  var buysellView = document.getElementById('buysellView');
+	  buysellView.innerHTML = "";
 	
-	  loadInfo(investment);
+	  loadInfo(investment, user);
 	
 	  var buyForm = new TradeForm("Buy", user, investment);
 	  var sellForm = new TradeForm("Sell", user, investment);
@@ -1049,7 +1076,7 @@
 	  var container = document.getElementById("singleScatterChart");
 	
 	  var lineColor = function(){
-	    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
+	    if(investment.share.currentPrice > investment.share.pastCloseOfDayPrices[0]) {
 	      return  "rgb(110,216,84)"
 	      }
 	    else { 
