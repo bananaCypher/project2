@@ -44,7 +44,6 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//var Barry = require('./seedObjects.js');
 	var Barry;
 	__webpack_require__(1)(function(user) {
 	  Barry = user;
@@ -135,7 +134,7 @@
 	  while (!Barry) {
 	    // Wait for baza to load
 	  }
-	  Barry.name = 'Barbra';
+	  Barry.name = 'Barry Manilow';
 	  var shareSelect = document.getElementById('shareSelect');
 	  var portfolioButton = document.getElementById('portfolioView');
 	  var portfolioInfo = document.getElementById('portfolioInfo');
@@ -221,6 +220,14 @@
 	  this.accountBalance = 5000,
 	  this.insideTrader = false
 	  Object.observe(this, function(){
+	    for (var investment of this.portfolio.investments) {
+	      Object.observe(investment, function(){
+	        this.save();
+	      }.bind(this));  
+	      Object.observe(investment.share, function(){
+	        this.save();
+	      }.bind(this));  
+	    }
 	    this.save();
 	  }.bind(this));
 	};
@@ -305,7 +312,6 @@
 	    }
 	  },
 	  save: function(){
-	    console.log(this);
 	    var request = new XMLHttpRequest();
 	    request.open('POST', '/user/' + this.id);
 	    request.setRequestHeader('Content-Type', 'application/json');

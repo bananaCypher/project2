@@ -7,6 +7,14 @@ var User = function(name, id){
   this.accountBalance = 5000,
   this.insideTrader = false
   Object.observe(this, function(){
+    for (var investment of this.portfolio.investments) {
+      Object.observe(investment, function(){
+        this.save();
+      }.bind(this));  
+      Object.observe(investment.share, function(){
+        this.save();
+      }.bind(this));  
+    }
     this.save();
   }.bind(this));
 };
@@ -91,7 +99,6 @@ User.prototype = {
     }
   },
   save: function(){
-    console.log(this);
     var request = new XMLHttpRequest();
     request.open('POST', '/user/' + this.id);
     request.setRequestHeader('Content-Type', 'application/json');

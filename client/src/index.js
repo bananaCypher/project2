@@ -1,4 +1,3 @@
-//var Barry = require('./seedObjects.js');
 var Barry;
 require('./seedObjects.js')(function(user) {
   Barry = user;
@@ -89,7 +88,7 @@ var init = function(){
   while (!Barry) {
     // Wait for baza to load
   }
-  Barry.name = 'Barbra';
+  Barry.name = 'Barry Manilow';
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
   var portfolioInfo = document.getElementById('portfolioInfo');

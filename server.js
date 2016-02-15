@@ -39,6 +39,7 @@ app.get('/user/:id', function(req, res) {
 app.post('/user/:id', function(req, res) {
   UserModel.findByIdAndUpdate(req.params.id, req.body, function(err, user){
     if(err){ console.log(err) }
+    console.log(user.name, 'saved!');
     res.send('saved!');
   });
 });
