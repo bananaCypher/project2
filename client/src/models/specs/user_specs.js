@@ -75,9 +75,14 @@ describe('User', function(){
   });
 
   it('should be unable to engage in insider trading without an opt-in', function(){
-    testUser.spreadRumours(testInvestment, 10);
-    expect(testShare.currentPrice).to.not.equal(testSharePrice * 0.9);
+    testUser.spreadRumours(testShare, 10);
+    expect(testShare.currentPrice).to.equal(testSharePrice);
   });
+
+  it('should be able to see the projected results of insider trading only if it lacks opt-in', function(){
+    testUser.spreadRumours(testShare, 10);
+    expect(testUser.spreadRumours(testShare, 10)).to.equal(108);
+  })
 
   it('should be able to engage in insider trading after opting in', function (){
     testUser.insideTrader = true;

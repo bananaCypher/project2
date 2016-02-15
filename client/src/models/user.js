@@ -40,7 +40,8 @@ User.prototype = {
   },
   spreadRumours: function(share, percentage){
     if(!this.insideTrader){
-      console.log('this action is illegal!');
+      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
+      return hypotheticalPrice;
     }
     else{
       share.crashValue(percentage);
@@ -48,7 +49,8 @@ User.prototype = {
   },
   pumpStock: function(share, percentage){
     if(!this.insideTrader){
-      console.log('this action is illegal!');
+      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
+      return String(hypotheticalPrice);
     }
     else{
       share.inflateValue(percentage);
