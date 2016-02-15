@@ -1,4 +1,5 @@
 var singleScatterChart = require('./charts/singleScatterChart.js');
+var TargetChecker = require('./targets.js');
 
 var loadInfo = function(investment, user){
   new singleScatterChart(investment);
@@ -73,6 +74,8 @@ var showInvestmentInfo = function(inputName, user){
 
   buysellView.appendChild(buyForm); 
   buysellView.appendChild(sellForm); 
+
+  new TargetChecker(user, investment);
 }
 
 
