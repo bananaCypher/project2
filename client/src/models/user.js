@@ -61,6 +61,14 @@ User.prototype = {
         this.pumpStock(share, percentage);
       }
     }
+  },
+  crashRegion: function(region, percentage){
+    for(investment of this.portfolio.investments){
+      var share = investment.share;
+      if(share.location === region){
+        this.spreadRumours(share, percentage);
+      }
+    }
   }
 }
 

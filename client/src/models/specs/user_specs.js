@@ -91,11 +91,16 @@ describe('User', function(){
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   });
 
-  it('should be able to deflate stocks by region', function(){
+  it('should be able to inflate stocks by region', function(){
     testUser.insideTrader = true;
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.pumpRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
+  });
+  it('should be able to deflate stocks by region', function(){
+    testUser.insideTrader = true;
+    var usaTotal = portfolio.totalValueOfRegion('USA');
+    testUser.crashRegion('USA', 10);
+    expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
   })
-
 })
