@@ -5,6 +5,7 @@ var chartStyles = require('./charts/chartStyles.js');
 var singleScatterChart = require('./charts/singleScatterChart.js');
 var NotificationArea = require('./notification.js');
 var notificationArea;
+var Map = require('./map.js');
 
 var displayLargestPercChange = function(){
   var moreInfo = document.getElementById('moreInfo');
@@ -119,6 +120,7 @@ var init = function(){
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
+  var googleMap = new Map({location: 'Scotland'});
 };
 
 window.onload = init;

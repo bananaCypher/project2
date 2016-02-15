@@ -206,3 +206,9 @@ div.notification-success h2, div.notification-success span {
 .pulse {
   animation: pulse linear 1.5s infinite;
 }
+
+/* google maps */
+div.google-map-container {
+  height: 500px;
+  width: 500px;
+}
