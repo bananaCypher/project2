@@ -2,18 +2,16 @@ var User = require('./models/user.js');
 var Portfolio = require('./models/portfolio.js');
 var Investment = require('./models/investment.js');
 var Share = require('./models/share.js');
+var userID = '56c0f16a61c1654319c185ac';
 var Barry;
-
-var getBarry = function(){
-}
 
 module.exports = function (callback) {
   var request = new XMLHttpRequest();
-  request.open('GET', '/user/56c0f16a61c1654319c185ac');
+  request.open('GET', '/user/' + userID);
   request.onload = function(){
     if (request.status === 200) {
       data = JSON.parse(request.responseText);
-      Barry = new User(data.name);
+      Barry = new User(data.name, data._id);
 
       barryPortfolio = new Portfolio();
       for (var investment of data.portfolio.investments) {
@@ -24,7 +22,6 @@ module.exports = function (callback) {
           price: investment.share.currentPrice,
           pastCloseOfDayPrices: investment.share.pastCloseOfDayPrices
         }); 
-        console.log(newShare);
         var newInvestment = new Investment(newShare, investment);
         barryPortfolio.investments.push(newInvestment);
       }

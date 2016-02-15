@@ -86,8 +86,10 @@ var setUpPriceWatchers = function(){
 
 var init = function(){
   console.log('I have loaded');
-  console.log(Barry);
-
+  while (!Barry) {
+    // Wait for baza to load
+  }
+  Barry.name = 'Barbra';
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
   var portfolioInfo = document.getElementById('portfolioInfo');

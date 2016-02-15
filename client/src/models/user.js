@@ -1,10 +1,14 @@
 var Investment = require('./investment.js')
 
-var User = function(name){
+var User = function(name, id){
   this.name = name,
+  this.id = id,
   this.portfolio = undefined,
   this.accountBalance = 5000,
   this.insideTrader = false
+  Object.observe(this, function(){
+    this.save();
+  }.bind(this));
 };
 
 User.prototype = {
@@ -85,6 +89,13 @@ User.prototype = {
         this.spreadRumours(share, percentage);
       }
     }
+  },
+  save: function(){
+    console.log(this);
+    var request = new XMLHttpRequest();
+    request.open('POST', '/user/' + this.id);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify(this));
   }
 }
 

@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
 var path = require('path')
 var api = require('./api.js');
 
@@ -12,6 +13,12 @@ var mongoose = require('mongoose');
 var UserModel = require('./client/src/models/mongooseSchema');
 mongoose.connect('mongodb://localhost/project2');
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
@@ -22,11 +29,18 @@ app.get('/share/:symbol', function(req, res) {
   }); 
 });
 
+//persistence
 app.get('/user/:id', function(req, res) {
-  UserModel.findById(userID, function(err, user){
+  UserModel.findById(req.params.id, function(err, user){
     if(err){ console.log(err) }
     res.json(user);
   }); 
+});
+app.post('/user/:id', function(req, res) {
+  UserModel.findByIdAndUpdate(req.params.id, req.body, function(err, user){
+    if(err){ console.log(err) }
+    res.send('saved!');
+  });
 });
 
 app.use(express.static('client/build'));

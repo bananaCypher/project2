@@ -132,8 +132,10 @@
 	
 	var init = function(){
 	  console.log('I have loaded');
-	  console.log(Barry);
-	
+	  while (!Barry) {
+	    // Wait for baza to load
+	  }
+	  Barry.name = 'Barbra';
 	  var shareSelect = document.getElementById('shareSelect');
 	  var portfolioButton = document.getElementById('portfolioView');
 	  var portfolioInfo = document.getElementById('portfolioInfo');
@@ -175,18 +177,16 @@
 	var Portfolio = __webpack_require__(4);
 	var Investment = __webpack_require__(3);
 	var Share = __webpack_require__(5);
+	var userID = '56c0f16a61c1654319c185ac';
 	var Barry;
-	
-	var getBarry = function(){
-	}
 	
 	module.exports = function (callback) {
 	  var request = new XMLHttpRequest();
-	  request.open('GET', '/user/56c0f16a61c1654319c185ac');
+	  request.open('GET', '/user/' + userID);
 	  request.onload = function(){
 	    if (request.status === 200) {
 	      data = JSON.parse(request.responseText);
-	      Barry = new User(data.name);
+	      Barry = new User(data.name, data._id);
 	
 	      barryPortfolio = new Portfolio();
 	      for (var investment of data.portfolio.investments) {
@@ -197,7 +197,6 @@
 	          price: investment.share.currentPrice,
 	          pastCloseOfDayPrices: investment.share.pastCloseOfDayPrices
 	        }); 
-	        console.log(newShare);
 	        var newInvestment = new Investment(newShare, investment);
 	        barryPortfolio.investments.push(newInvestment);
 	      }
@@ -215,11 +214,15 @@
 
 	var Investment = __webpack_require__(3)
 	
-	var User = function(name){
+	var User = function(name, id){
 	  this.name = name,
+	  this.id = id,
 	  this.portfolio = undefined,
 	  this.accountBalance = 5000,
 	  this.insideTrader = false
+	  Object.observe(this, function(){
+	    this.save();
+	  }.bind(this));
 	};
 	
 	User.prototype = {
@@ -300,10 +303,18 @@
 	        this.spreadRumours(share, percentage);
 	      }
 	    }
+	  },
+	  save: function(){
+	    console.log(this);
+	    var request = new XMLHttpRequest();
+	    request.open('POST', '/user/' + this.id);
+	    request.setRequestHeader('Content-Type', 'application/json');
+	    request.send(JSON.stringify(this));
 	  }
 	}
 	
 	module.exports = User;
+
 
 /***/ },
 /* 3 */
