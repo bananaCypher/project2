@@ -48,8 +48,8 @@
 	var scatterChart = __webpack_require__(6);
 	var pieChart = __webpack_require__(7);
 	var chartStyles = __webpack_require__(8);
-	var singleScatterChart = __webpack_require__(9);
 	var NotificationArea = __webpack_require__(10);
+	var showInvestmentInfo = __webpack_require__(11);
 	var notificationArea;
 	
 	var displayLargestPercChange = function(){
@@ -67,21 +67,6 @@
 	  var p = document.createElement('p');
 	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
 	  basicInfo.appendChild(p);
-	}
-	
-	var showInvestmentInfo = function(inputName){
-	  var investment = Barry.portfolio.find({shareName: inputName });
-	  new singleScatterChart(investment);
-	
-	
-	  var investmentView = document.getElementById('investmentView');
-	  investmentView.innerHTML = "";
-	
-	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + (investment.currentValue() / 100) + "<br><br>Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX";
-	
-	  investmentView.appendChild(info); 
-	
 	}
 	
 	var populateSelect = function(){
@@ -146,7 +131,7 @@
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
 	    investmentInfo.style.display = "block";
-	    showInvestmentInfo(shareSelect.value);
+	    showInvestmentInfo(shareSelect.value, Barry);
 	  };
 	  portfolioButton.onclick = function(){
 	    investmentInfo.style.display = "none";
@@ -309,22 +294,35 @@
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500,
+	  this.accountBalance = 5000,
 	  this.insideTrader = false
 	};
 	
 	User.prototype = {
 	  buyShares: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
-	    var investment = new Investment(share, params);
-	    investment.quantity = quantity
-	    this.portfolio.addInvestment(investment);
-	    this.accountBalance -= outlay;
+	
+	    if(this.portfolio.find({shareName: share.shareName})){
+	      var investment = this.portfolio.find({shareName: share.shareName})
+	      investment.quantity += quantity;
+	    }
+	    else {
+	      var investment = new Investment(share, params);
+	      investment.quantity = quantity;
+	      this.portfolio.addInvestment(investment);
+	    }
+	    this.accountBalance -= (outlay / 100);
 	  },
-	  sellShares: function(investment){
-	    var outlay = investment.share.currentPrice * investment.quantity;
-	    this.portfolio.removeInvestment(investment);
-	    this.accountBalance += outlay;
+	  sellShares: function(investment, quantity){
+	    var outlay = investment.share.currentPrice * quantity;
+	
+	    if(investment.quantity >= quantity){
+	      investment.quantity -= quantity;
+	    }
+	    else {
+	      this.portfolio.removeInvestment(investment);
+	    }
+	    this.accountBalance += (outlay / 100);
 	  },
 	  sellShort: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
@@ -996,6 +994,72 @@
 	
 	module.exports = NotificationArea;
 
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var singleScatterChart = __webpack_require__(9);
+	
+	var loadInfo = function(investment){
+	new singleScatterChart(investment);
+	var investmentView = document.getElementById('investmentView');
+	investmentView.innerHTML = "";
+	
+	var info = document.createElement('p');
+	info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	
+	investmentView.appendChild(info); 
+	}
+	
+	var TradeForm = function(option, user, investment){
+	
+	  if(option === "Buy"){
+	    var inputId = "buyInput";
+	    var submitId = "buySubmit";
+	  }
+	  else if(option === "Sell"){
+	    var inputId = "sellInput";
+	    var submitId = "sellSubmit";
+	  }
+	
+	  var form = document.createElement('form');
+	  form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
+	
+	  form.onsubmit = function(event){
+	    var value = document.getElementById(inputId).value;
+	    event.preventDefault();
+	    console.log("form submit", value);
+	
+	    if(option === "Buy"){
+	    user.buyShares(investment.share, parseInt(value), investment);
+	    console.log(user);
+	    loadInfo(investment);
+	    }
+	    else if(option ==="Sell"){
+	    user.sellShares(investment, parseInt(value)) 
+	    console.log(user);
+	    loadInfo(investment);
+	    }
+	  }  
+	return form;
+	}
+	
+	var showInvestmentInfo = function(inputName, user){
+	  var investment = user.portfolio.find({shareName: inputName });
+	  var buysellView = document.getElementById('buysellView');
+	
+	  loadInfo(investment);
+	
+	  var buyForm = new TradeForm("Buy", user, investment);
+	  var sellForm = new TradeForm("Sell", user, investment);
+	
+	  buysellView.appendChild(buyForm); 
+	  buysellView.appendChild(sellForm); 
+	}
+	
+	
+	module.exports = showInvestmentInfo;
 
 /***/ }
 /******/ ]);
