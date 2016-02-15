@@ -4,6 +4,7 @@ var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
 var showInvestmentInfo = require('./buy_sell.js');
+var senseChecker = require('../src/models/senseChecker.js');
 var notificationArea;
 
 var displayLargestPercChange = function(){

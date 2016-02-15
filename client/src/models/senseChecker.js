@@ -1,4 +1,5 @@
 var senseChecker = {
+  errorList: [],
   validRegions: ['China', 'UK', 'USA'],
   validShares: ["Fusionex", "Empiric Student Prop", "Worldpay", "Pets At Home", "Cyprotex", "Robinson", "Softcat", "Royal Bank of Scotland Group", "NCC", "Stadium"],
   validInvestments: function(user){
@@ -6,11 +7,17 @@ var senseChecker = {
     return investments;
   },
 
+  errorMessage: function(error){
+    var error = 'Error: ' + error;
+    this.errorList.push(error);
+  },
+
   isShare: function(share){
     var filtered = this.validShares.filter(function(value){
       return value === share;
     });
     if(filtered.length == 0){
+      this.errorMessage('is not a share');
       return false;
     }
     else{

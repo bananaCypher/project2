@@ -44,7 +44,7 @@ describe('senseChecker', function(){
   it('should pass existing shares', function(){
     expect(senseChecker.isShare('Fusionex')).to.equal(true);
   });
-    it('should reject non-existing investments', function(){
+  it('should reject non-existing investments', function(){
     expect(senseChecker.isInvestment('a fake', testUser)).to.equal(false);
   });
   it('should pass existing investments', function(){
@@ -58,6 +58,10 @@ describe('senseChecker', function(){
   });
   it('should pass positive numbers lower than testInvestment.quantity', function(){
     expect(senseChecker.isBelowMax(1000, testInvestment)).to.equal(true);
+  });
+  it('should pass failures to an errorlist', function(){
+    senseChecker.isShare('ObviousFake');
+    expect(senseChecker.errorList[0]).to.equal('Error: is not a share');
   });
 
 })
