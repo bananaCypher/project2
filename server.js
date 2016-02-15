@@ -3,6 +3,10 @@ var app = express();
 var path = require('path')
 var api = require('./api.js');
 
+var mongoose = require('mongoose');
+var User = require('./client/src/mongooseSchema');
+mongoose.connect('mongodb://localhost/project2');
+
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });

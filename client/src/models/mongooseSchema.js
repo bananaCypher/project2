@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
   name:  String,
+  accountBalance: Number,
   portfolio: Object
 });
 
