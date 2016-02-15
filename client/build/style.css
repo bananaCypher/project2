@@ -104,23 +104,39 @@ h1 {
 }
  
 /* BUTTONS */
-button, select {
+button, select,  #buySubmit, #sellSubmit {
   font-size: 16px;
   font-family: "Unica One";
   text-transform: uppercase;
   font-weight: bold;
-  background-color: rgba(110,216,84, 0.5);
   border: 0;
   border-radius: 5px;
   display: inline-block;
-  margin: 10px 10px 20px 0;
+  margin: 5px 10px 20px 10px;
   padding: 2px 5px;
 }
 
-button:focus, select:focus {
-  outline: none;
-  background-color: rgba(110,216,84, 0.8);
+button, select, #buySubmit {
+  background-color: rgba(110,216,84, 0.7);
+}
 
+button:focus, select:focus, #buySubmit:focus {
+  outline: none;
+  background-color: rgba(110,216,84, 1);
+}
+
+#sellSubmit {
+  background-color: rgb(215,40,40);
+}
+
+#sellSubmit:focus {
+  outline: none;
+  background-color: rgb(223,82,82);
+}
+
+input[type=text] {
+  padding: 2px;
+  font-size: 1em;
 }
 
 /* Notification */

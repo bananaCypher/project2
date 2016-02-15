@@ -48,8 +48,8 @@
 	var scatterChart = __webpack_require__(6);
 	var pieChart = __webpack_require__(7);
 	var chartStyles = __webpack_require__(8);
-	var singleScatterChart = __webpack_require__(9);
-	var NotificationArea = __webpack_require__(10);
+	var NotificationArea = __webpack_require__(9);
+	var showInvestmentInfo = __webpack_require__(10);
 	var notificationArea;
 	
 	var displayLargestPercChange = function(){
@@ -69,19 +69,11 @@
 	  basicInfo.appendChild(p);
 	}
 	
-	var showInvestmentInfo = function(inputName){
-	  var investment = Barry.portfolio.find({shareName: inputName });
-	  new singleScatterChart(investment);
-	
-	
-	  var investmentView = document.getElementById('investmentView');
-	  investmentView.innerHTML = "";
-	
-	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + (investment.currentValue() / 100) + "<br><br>Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX";
-	
-	  investmentView.appendChild(info); 
-	
+	var displayAccountBalance = function(){
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+	  balanceInfo.appendChild(p);
 	}
 	
 	var populateSelect = function(){
@@ -148,11 +140,12 @@
 	  populateSelect();
 	  displayCurrentPortfolioValue();
 	  displayLargestPercChange();
+	  displayAccountBalance();
 	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
 	    investmentInfo.style.display = "block";
-	    showInvestmentInfo(shareSelect.value);
+	    showInvestmentInfo(shareSelect.value, Barry);
 	  };
 	  portfolioButton.onclick = function(){
 	    investmentInfo.style.display = "none";
@@ -201,7 +194,7 @@
 	},
 	{
 	  "name": "Worldpay",
-	  "epic":"WGP",
+	  "epic":"WPG",
 	  "location": "China",
 	  "price": 301.00,
 	  "quantity": 1000,
@@ -315,22 +308,36 @@
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500,
+	  this.accountBalance = 5000,
 	  this.insideTrader = false
 	};
 	
 	User.prototype = {
 	  buyShares: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
-	    var investment = new Investment(share, params);
-	    investment.quantity = quantity
-	    this.portfolio.addInvestment(investment);
-	    this.accountBalance -= outlay;
+	
+	    if(this.portfolio.find({shareName: share.shareName})){
+	      var investment = this.portfolio.find({shareName: share.shareName})
+	      investment.quantity += quantity;
+	    }
+	    else {
+	      var investment = new Investment(share, params);
+	      investment.quantity = quantity;
+	      investment.buyPrice = share.currentPrice;
+	      this.portfolio.addInvestment(investment);
+	    }
+	    this.accountBalance -= (outlay / 100);
 	  },
-	  sellShares: function(investment){
-	    var outlay = investment.share.currentPrice * investment.quantity;
-	    this.portfolio.removeInvestment(investment);
-	    this.accountBalance += outlay;
+	  sellShares: function(investment, quantity){
+	    var outlay = investment.share.currentPrice * quantity;
+	
+	    if(investment.quantity >= quantity){
+	      investment.quantity -= quantity;
+	    }
+	    else {
+	      this.portfolio.removeInvestment(investment);
+	    }
+	    this.accountBalance += (outlay / 100);
 	  },
 	  sellShort: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
@@ -352,7 +359,8 @@
 	  },
 	  spreadRumours: function(share, percentage){
 	    if(!this.insideTrader){
-	      console.log('this action is illegal!');
+	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
+	      return hypotheticalPrice;
 	    }
 	    else{
 	      share.crashValue(percentage);
@@ -360,10 +368,27 @@
 	  },
 	  pumpStock: function(share, percentage){
 	    if(!this.insideTrader){
-	      console.log('this action is illegal!');
+	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
+	      return hypotheticalPrice;
 	    }
 	    else{
 	      share.inflateValue(percentage);
+	    }
+	  },
+	  pumpRegion: function(region, percentage){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.pumpStock(share, percentage);
+	      }
+	    }
+	  },
+	  crashRegion: function(region, percentage){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.spreadRumours(share, percentage);
+	      }
 	    }
 	  }
 	}
@@ -430,35 +455,45 @@
 	    arrayLoop:
 	    for (var i = 0, len = this.investments.length; i < len; i++) {
 	     var investment = this.investments[i];
-	      for (var key in investmentToFind) {
-	        if (investmentToFind[key] != investment[key]) {
-	          continue arrayLoop;
-	        }
-	      } 
-	      for (var key in investment) {
-	        if (investmentToFind[key] != investment[key]) {
-	          continue arrayLoop;
-	        }
-	      } 
-	      return i;
+	     for (var key in investmentToFind) {
+	      if (investmentToFind[key] != investment[key]) {
+	        continue arrayLoop;
+	      }
+	    } 
+	    for (var key in investment) {
+	      if (investmentToFind[key] != investment[key]) {
+	        continue arrayLoop;
+	      }
+	    } 
+	    return i;
+	  }
+	},
+	totalValue: function(){
+	  var sum = 0;
+	  for (var investment of this.investments) {
+	    sum += investment.currentValue();
+	  }
+	  return sum;
+	},
+	pastTotalValue: function(day){
+	  var sum = 0;
+	  for(var investment of this.investments) {
+	    var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
+	    sum += dayTotal;
+	  }
+	  return sum;
+	},
+	totalValueOfRegion: function(region){
+	  var sum = 0;
+	  for(var investment of this.investments){
+	    if(investment.share.location === region){
+	      var total = investment.quantity * investment.share.currentPrice;
+	      sum += total;
 	    }
-	  },
-	  totalValue: function(){
-	    var sum = 0;
-	    for (var investment of this.investments) {
-	      sum += investment.currentValue();
-	    }
-	    return sum;
-	  },
-	  pastTotalValue: function(day){
-	    var sum = 0;
-	    for(var investment of this.investments) {
-	      var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
-	      sum += dayTotal;
-	    }
-	    return sum;
-	  },
-	  find: function(search){
+	  }
+	  return sum;
+	},
+	find: function(search){
 	    // accepts an object where the key is the search field and the value is the search term
 	    // e.g. find({name: 'My Investment'});
 	    arrayLoop:
@@ -513,6 +548,7 @@
 	var Share = function(params){
 	  this.shareName = params.name;
 	  this.epic = params.epic;
+	  this.location = params.location;
 	  this.currentPrice = params.price;
 	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
 	  this.location = params.location;
@@ -840,68 +876,6 @@
 
 /***/ },
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Barry = __webpack_require__(1)
-	
-	
-	var SingleScatterChart = function(investment){
-	  var container = document.getElementById("singleScatterChart");
-	
-	  var lineColor = function(){
-	    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
-	      return  "rgb(110,216,84)"
-	      }
-	    else { 
-	      return'rgba(223, 83, 83, .9)'
-	    }
-	  }
-	
-	  var chart = new Highcharts.Chart({
-	    chart: {
-	      type: 'scatter',
-	      renderTo: container
-	    },
-	    title: {
-	      text: "7 Day Performance - " + investment.shareName,
-	      style: {
-	        "text-decoration": "underline",
-	        "font-weight": "700"
-	      }
-	    },
-	    xAxis: {
-	      title: {
-	        text: "Previous Week's Days"
-	      },
-	      tickAmount: 8,
-	      tickInterval: 1
-	    },
-	    yAxis: {
-	      title: {
-	        text: "Value of Share (GBX)"
-	      }
-	    },
-	    series: [{
-	      regression: true ,
-	      regressionSettings: {
-	        type: 'linear',
-	        color:  lineColor(),
-	        dashStyle: 'ShortDash',
-	        name: "Line of Best Fit"
-	        },
-	        type: "line",
-	      name: "Value of Share",
-	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
-	    }],
-	
-	  });
-	}
-	
-	module.exports = SingleScatterChart;
-
-
-/***/ },
-/* 10 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -1005,6 +979,152 @@
 	}
 	
 	module.exports = NotificationArea;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var singleScatterChart = __webpack_require__(11);
+	
+	var loadInfo = function(investment, user){
+	  new singleScatterChart(investment);
+	  var investmentView = document.getElementById('investmentView');
+	  investmentView.innerHTML = "";
+	
+	  if(investment.valueChange("percentage")){
+	    var value = "Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>";
+	  }
+	  else {
+	    var value = ""
+	  }
+	  var info = document.createElement('p');
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	
+	  investmentView.appendChild(info); 
+	
+	  var basicInfo = document.getElementById('basicInfo');
+	  basicInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
+	  basicInfo.appendChild(p);
+	
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  balanceInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+	  balanceInfo.appendChild(p);
+	
+	}
+	
+	var TradeForm = function(option, user, investment){
+	
+	  if(option === "Buy"){
+	    var inputId = "buyInput";
+	    var submitId = "buySubmit";
+	  }
+	  else if(option === "Sell"){
+	    var inputId = "sellInput";
+	    var submitId = "sellSubmit";
+	  }
+	
+	  var form = document.createElement('form');
+	  form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
+	
+	  form.onsubmit = function(event){
+	    var value = document.getElementById(inputId).value;
+	    event.preventDefault();
+	    console.log("form submit", value);
+	
+	    if(option === "Buy"){
+	      user.buyShares(investment.share, parseInt(value), investment);
+	      loadInfo(investment, user);
+	    }
+	    else if(option ==="Sell"){
+	      user.sellShares(investment, parseInt(value)) 
+	      loadInfo(investment, user);
+	    }
+	  }  
+	  return form;
+	}
+	
+	var showInvestmentInfo = function(inputName, user){
+	  var investment = user.portfolio.find({shareName: inputName });
+	  var buysellView = document.getElementById('buysellView');
+	  buysellView.innerHTML = "";
+	
+	  loadInfo(investment, user);
+	
+	  var buyForm = new TradeForm("Buy", user, investment);
+	  var sellForm = new TradeForm("Sell", user, investment);
+	
+	  buysellView.appendChild(buyForm); 
+	  buysellView.appendChild(sellForm); 
+	}
+	
+	
+	module.exports = showInvestmentInfo;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Barry = __webpack_require__(1)
+	
+	
+	var SingleScatterChart = function(investment){
+	  var container = document.getElementById("singleScatterChart");
+	
+	  var lineColor = function(){
+	    if(investment.share.currentPrice > investment.share.pastCloseOfDayPrices[0]) {
+	      return  "rgb(110,216,84)"
+	      }
+	    else { 
+	      return'rgba(223, 83, 83, .9)'
+	    }
+	  }
+	
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'scatter',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "7 Day Performance - " + investment.shareName,
+	      style: {
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    xAxis: {
+	      title: {
+	        text: "Previous Week's Days"
+	      },
+	      tickAmount: 8,
+	      tickInterval: 1
+	    },
+	    yAxis: {
+	      title: {
+	        text: "Value of Share (GBX)"
+	      }
+	    },
+	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  lineColor(),
+	        dashStyle: 'ShortDash',
+	        name: "Line of Best Fit"
+	        },
+	        type: "line",
+	      name: "Value of Share",
+	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
+	    }],
+	
+	  });
+	}
+	
+	module.exports = SingleScatterChart;
 
 
 /***/ }
