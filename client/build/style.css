@@ -122,3 +122,89 @@ button:focus, select:focus {
   background-color: rgba(110,216,84, 0.8);
 
 }
+
+/* Notification */
+div#notifications {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  right: 8px;
+  top: 2px;
+  cursor: pointer;
+}
+div#notifications img {
+  height: 100%;
+  width: 100%;
+}
+div#notifications span {
+  position: relative;
+  top: -55px;
+  left: 28px;
+  color: white;
+  background-color: tomato;
+  border-radius: 5px;
+}
+
+div#notification-container {
+  width: 200px;
+  position: fixed;
+  right: -200px;
+  top: 53px;
+  height: calc(100vh - 53px);
+  overflow: scroll;
+  background-color: rgba(0,0,0,0.1);
+}
+div.hide-notification-container {
+  transition: right 1s;
+  right: -200px !important;
+}
+div.display-notification-container {
+  transition: right 1s;
+  right: 0px !important;
+}
+div#notification-container div {
+  box-shadow: 0px 5px 10px #b1b1b1;
+}
+div#notification-container h2, div#notification-container p {
+  margin: 0;
+  text-align: center;
+}
+div#notification-container div span {
+  position: absolute;
+  right: 7px;
+  top: 4px;
+  cursor: pointer;
+}
+
+div.notification-info {
+  position: relative;
+  border: 1px solid #005093;
+  background-color: #a5d6ff;
+}
+div.notification-info h2, div.notification-info span {
+  color: #005093;
+}
+div.notification-error {
+  position: relative;
+  border: 1px solid #e11212;
+  background-color: #ff7a7a;
+}
+div.notification-error h2, div.notification-error span {
+  color: #e11212;
+}
+div.notification-success {
+  position: relative;
+  border: 1px solid #286421;
+  background-color: #bde6b5;
+}
+div.notification-success h2, div.notification-success span {
+  color: #286421;
+}
+@keyframes pulse {
+  0% {font-size: 1em;}
+  50% {font-size: 1.3em;}
+  100% {font-size: 1em;}
+}
+.pulse {
+  animation: pulse linear 1.5s infinite;
+}

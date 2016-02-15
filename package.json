@@ -6,11 +6,12 @@
   "scripts": {
     "test": "mocha client/src/models/specs",
     "start": "node server.js",
-    "start-dev": "cd client && webpack -w >> /dev/null & mocha --watch client/src/models/specs & nodemon server.js"
+    "start-dev": "mocha --watch client/src/models/specs & nodemon server.js & cd client && webpack -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cheerio": "^0.20.0",
     "express": "^4.13.4"
   },
   "repository": {

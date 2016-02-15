@@ -1,9 +1,16 @@
 var express = require('express');
 var app = express();
 var path = require('path')
+var api = require('./api.js');
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/build/index.html'));
+});
+
+app.get('/share/:symbol', function(req, res) {
+  api.getLatestData(req.params.symbol, function(latestPrice){
+    res.send(latestPrice);
+  }); 
 });
 
 app.use(express.static('client/build'));

@@ -1,8 +1,10 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
-var singleScatterChart = require('./charts/singleScatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
+var singleScatterChart = require('./charts/singleScatterChart.js');
+var NotificationArea = require('./notification.js');
+var notificationArea;
 
 var displayLargestPercChange = function(){
   var moreInfo = document.getElementById('moreInfo');
@@ -44,6 +46,42 @@ var populateSelect = function(){
     shareSelect.appendChild(option);
   }
 }
+
+var updateShare = function(share){
+  var request = new XMLHttpRequest();
+  request.open('GET', '/share/' + share.epic);
+  request.onload = function(){
+    if (request.status === 200) {
+      var newPrice = Number(request.responseText);
+      if (newPrice != share.currentPrice) {
+        share.currentPrice = newPrice;
+      }
+    }
+  };
+  request.send(null);
+}
+
+var getLatestShareInfo = function(){
+  var investments = Barry.portfolio.investments;
+  for (var investment of investments) {
+    var share = investment.share;
+    updateShare(share);
+    Object.observe(share, function(changes){
+      for (var change of changes) {
+        if(change.name == 'currentPrice') {
+          var share = change.object;
+          if (change.oldValue > share.currentPrice) {var type = 'error'} else {var type = 'success'}
+          notificationArea.newNotification({
+            title: share.epic + ' price changed',
+            content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
+            type: type
+          });
+        }
+      }
+    })
+  }
+}
+
 var init = function(){
   console.log('I have loaded');
   console.log(Barry);
@@ -65,13 +103,16 @@ var init = function(){
     showInvestmentInfo(shareSelect.value);
   };
   portfolioButton.onclick = function(){
-  investmentInfo.style.display = "none";
-  portfolioInfo.style.display = "block"
-  new pieChart(Barry.portfolio);
-  new scatterChart();
-  ;
+    investmentInfo.style.display = "none";
+    portfolioInfo.style.display = "block"
+    new pieChart(Barry.portfolio);
+    new scatterChart();
   }
-  
+  notificationArea = new NotificationArea();  
+
+  window.setInterval(function(){
+    getLatestShareInfo();
+  }, 20000);
 };
 
 window.onload = init;
