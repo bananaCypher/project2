@@ -2,13 +2,13 @@ var User = require('../user.js');
 var Portfolio = require('../portfolio');
 var Investment = require('../investment.js');
 var Share = require('../share.js');
-var SenseChecker = require('../senseChecker.js');
+var senseChecker = require('../senseChecker.js');
 
 var chai = require('chai')
 var assert = chai.assert;
 var expect = chai.expect;
 
-describe('SenseChecker', function(){
+describe('senseChecker', function(){
   beforeEach(function(){
     testData = {
       "name": "Fusionex",
@@ -32,8 +32,29 @@ describe('SenseChecker', function(){
     testSharePrice = testShare.currentPrice;
   })
 
-  it('should catch non-existing regions', function(){
-    
+  it('should reject non-existing regions', function(){
+    expect(senseChecker.isRegion('France')).to.equal(false);
   });
+  it('should pass existing regions', function(){
+    expect(senseChecker.isRegion('USA')).to.equal(true);
+  });
+  it('should reject non-existing shares', function(){
+    expect(senseChecker.isShare('ObviousFake')).to.equal(false);
+  });
+  it('should pass existing shares', function(){
+    expect(senseChecker.isShare('Fusionex')).to.equal(true);
+  });
+    it('should reject non-existing investments', function(){
+    expect(senseChecker.isInvestment('a fake', testUser)).to.equal(false);
+  });
+  it('should pass existing investments', function(){
+    expect(senseChecker.isInvestment(testInvestment, testUser)).to.equal(true);
+  });
+  it('should reject negative numbers on quantity', function(){
+    expect(senseChecker.isNotNegative(-5)).to.equal(false);
+  });
+  it('should reject positive numbers higher than target quantity', function(){
+
+  })
 
 })

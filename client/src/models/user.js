@@ -1,4 +1,5 @@
 var Investment = require('./investment.js')
+var senseChecker = require('./senseChecker.js')
 
 var User = function(name){
   this.name = name,
@@ -71,7 +72,7 @@ User.prototype = {
     }
   },
   pumpRegion: function(region, percentage){
-    if(isRegion){
+    if(senseChecker.isRegion(region)){
       for(investment of this.portfolio.investments){
         var share = investment.share;
         if(share.location === region){
