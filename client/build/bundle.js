@@ -48,8 +48,8 @@
 	var scatterChart = __webpack_require__(6);
 	var pieChart = __webpack_require__(7);
 	var chartStyles = __webpack_require__(8);
-	var NotificationArea = __webpack_require__(10);
-	var showInvestmentInfo = __webpack_require__(11);
+	var NotificationArea = __webpack_require__(9);
+	var showInvestmentInfo = __webpack_require__(10);
 	var notificationArea;
 	
 	var displayLargestPercChange = function(){
@@ -97,6 +97,12 @@
 	  for (var investment of investments) {
 	    var share = investment.share;
 	    updateShare(share);
+	  }
+	}
+	
+	var setUpPriceWatchers = function(){
+	  for (var investment of Barry.portfolio.investments) {
+	    var share = investment.share
 	    Object.observe(share, function(changes){
 	      for (var change of changes) {
 	        if(change.name == 'currentPrice') {
@@ -109,7 +115,7 @@
 	          });
 	        }
 	      }
-	    })
+	    });
 	  }
 	}
 	
@@ -140,10 +146,10 @@
 	    new scatterChart();
 	  }
 	  notificationArea = new NotificationArea();  
-	
+	  setUpPriceWatchers();
 	  window.setInterval(function(){
 	    getLatestShareInfo();
-	  }, 20000);
+	  }, 10000);
 	};
 	
 	window.onload = init;
@@ -344,7 +350,8 @@
 	  },
 	  spreadRumours: function(share, percentage){
 	    if(!this.insideTrader){
-	      console.log('this action is illegal!');
+	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
+	      return hypotheticalPrice;
 	    }
 	    else{
 	      share.crashValue(percentage);
@@ -352,10 +359,27 @@
 	  },
 	  pumpStock: function(share, percentage){
 	    if(!this.insideTrader){
-	      console.log('this action is illegal!');
+	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
+	      return hypotheticalPrice;
 	    }
 	    else{
 	      share.inflateValue(percentage);
+	    }
+	  },
+	  pumpRegion: function(region, percentage){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.pumpStock(share, percentage);
+	      }
+	    }
+	  },
+	  crashRegion: function(region, percentage){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.spreadRumours(share, percentage);
+	      }
 	    }
 	  }
 	}
@@ -422,35 +446,45 @@
 	    arrayLoop:
 	    for (var i = 0, len = this.investments.length; i < len; i++) {
 	     var investment = this.investments[i];
-	      for (var key in investmentToFind) {
-	        if (investmentToFind[key] != investment[key]) {
-	          continue arrayLoop;
-	        }
-	      } 
-	      for (var key in investment) {
-	        if (investmentToFind[key] != investment[key]) {
-	          continue arrayLoop;
-	        }
-	      } 
-	      return i;
+	     for (var key in investmentToFind) {
+	      if (investmentToFind[key] != investment[key]) {
+	        continue arrayLoop;
+	      }
+	    } 
+	    for (var key in investment) {
+	      if (investmentToFind[key] != investment[key]) {
+	        continue arrayLoop;
+	      }
+	    } 
+	    return i;
+	  }
+	},
+	totalValue: function(){
+	  var sum = 0;
+	  for (var investment of this.investments) {
+	    sum += investment.currentValue();
+	  }
+	  return sum;
+	},
+	pastTotalValue: function(day){
+	  var sum = 0;
+	  for(var investment of this.investments) {
+	    var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
+	    sum += dayTotal;
+	  }
+	  return sum;
+	},
+	totalValueOfRegion: function(region){
+	  var sum = 0;
+	  for(var investment of this.investments){
+	    if(investment.share.location === region){
+	      var total = investment.quantity * investment.share.currentPrice;
+	      sum += total;
 	    }
-	  },
-	  totalValue: function(){
-	    var sum = 0;
-	    for (var investment of this.investments) {
-	      sum += investment.currentValue();
-	    }
-	    return sum;
-	  },
-	  pastTotalValue: function(day){
-	    var sum = 0;
-	    for(var investment of this.investments) {
-	      var dayTotal = investment.quantity * investment.share.pastCloseOfDayPrices[7 - day];
-	      sum += dayTotal;
-	    }
-	    return sum;
-	  },
-	  find: function(search){
+	  }
+	  return sum;
+	},
+	find: function(search){
 	    // accepts an object where the key is the search field and the value is the search term
 	    // e.g. find({name: 'My Investment'});
 	    arrayLoop:
@@ -505,6 +539,7 @@
 	var Share = function(params){
 	  this.shareName = params.name;
 	  this.epic = params.epic;
+	  this.location = params.location;
 	  this.currentPrice = params.price;
 	  this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
 	  this.location = params.location;
@@ -832,68 +867,6 @@
 
 /***/ },
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Barry = __webpack_require__(1)
-	
-	
-	var SingleScatterChart = function(investment){
-	  var container = document.getElementById("singleScatterChart");
-	
-	  var lineColor = function(){
-	    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
-	      return  "rgb(110,216,84)"
-	      }
-	    else { 
-	      return'rgba(223, 83, 83, .9)'
-	    }
-	  }
-	
-	  var chart = new Highcharts.Chart({
-	    chart: {
-	      type: 'scatter',
-	      renderTo: container
-	    },
-	    title: {
-	      text: "7 Day Performance - " + investment.shareName,
-	      style: {
-	        "text-decoration": "underline",
-	        "font-weight": "700"
-	      }
-	    },
-	    xAxis: {
-	      title: {
-	        text: "Previous Week's Days"
-	      },
-	      tickAmount: 8,
-	      tickInterval: 1
-	    },
-	    yAxis: {
-	      title: {
-	        text: "Value of Share (GBX)"
-	      }
-	    },
-	    series: [{
-	      regression: true ,
-	      regressionSettings: {
-	        type: 'linear',
-	        color:  lineColor(),
-	        dashStyle: 'ShortDash',
-	        name: "Line of Best Fit"
-	        },
-	        type: "line",
-	      name: "Value of Share",
-	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
-	    }],
-	
-	  });
-	}
-	
-	module.exports = SingleScatterChart;
-
-
-/***/ },
-/* 10 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -908,9 +881,13 @@
 	  setupElement: function(){
 	    var element = document.createElement('div');
 	    element.classList.add('notification-' + this.type);
-	    element.innerHTML += '<h2>' + this.title + '</h2>'
-	    element.innerHTML += '<p>' + this.content + '</p>' 
+	    var title = document.createElement('h2');
+	    title.innerText = this.title;
+	    var content = document.createElement('p');
+	    content.innerText = this.content; 
 	    element.appendChild(this.setupCloseButton());
+	    element.appendChild(title);
+	    element.appendChild(content);
 	    return element;
 	  },
 	  setupCloseButton: function(){
@@ -996,10 +973,10 @@
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(9);
+	var singleScatterChart = __webpack_require__(11);
 	
 	var loadInfo = function(investment){
 	new singleScatterChart(investment);
@@ -1060,6 +1037,68 @@
 	
 	
 	module.exports = showInvestmentInfo;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Barry = __webpack_require__(1)
+	
+	
+	var SingleScatterChart = function(investment){
+	  var container = document.getElementById("singleScatterChart");
+	
+	  var lineColor = function(){
+	    if(investment.share.pastCloseOfDayPrices[6] > investment.share.pastCloseOfDayPrices[0]) {
+	      return  "rgb(110,216,84)"
+	      }
+	    else { 
+	      return'rgba(223, 83, 83, .9)'
+	    }
+	  }
+	
+	  var chart = new Highcharts.Chart({
+	    chart: {
+	      type: 'scatter',
+	      renderTo: container
+	    },
+	    title: {
+	      text: "7 Day Performance - " + investment.shareName,
+	      style: {
+	        "text-decoration": "underline",
+	        "font-weight": "700"
+	      }
+	    },
+	    xAxis: {
+	      title: {
+	        text: "Previous Week's Days"
+	      },
+	      tickAmount: 8,
+	      tickInterval: 1
+	    },
+	    yAxis: {
+	      title: {
+	        text: "Value of Share (GBX)"
+	      }
+	    },
+	    series: [{
+	      regression: true ,
+	      regressionSettings: {
+	        type: 'linear',
+	        color:  lineColor(),
+	        dashStyle: 'ShortDash',
+	        name: "Line of Best Fit"
+	        },
+	        type: "line",
+	      name: "Value of Share",
+	      data: [ [1, investment.share.pastCloseOfDayPrices[0]], [2, investment.share.pastCloseOfDayPrices[1]], [3, investment.share.pastCloseOfDayPrices[2]], [4, investment.share.pastCloseOfDayPrices[3]], [5, investment.share.pastCloseOfDayPrices[4]], [6, investment.share.pastCloseOfDayPrices[5]], [7, investment.share.pastCloseOfDayPrices[6]], [8, investment.share.currentPrice] ],
+	    }],
+	
+	  });
+	}
+	
+	module.exports = SingleScatterChart;
+
 
 /***/ }
 /******/ ]);

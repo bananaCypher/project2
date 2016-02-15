@@ -1,6 +1,7 @@
 var Share = function(params){
   this.shareName = params.name;
   this.epic = params.epic;
+  this.location = params.location;
   this.currentPrice = params.price;
   this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
   this.location = params.location;

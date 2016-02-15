@@ -162,18 +162,16 @@ div.display-notification-container {
   transition: right 1s;
   right: 0px !important;
 }
-div#notification-container div {
-  box-shadow: 0px 5px 10px #b1b1b1;
-}
 div#notification-container h2, div#notification-container p {
   margin: 0;
-  text-align: center;
+  text-align: left;
+  padding-left: 5px;
 }
 div#notification-container div span {
-  position: absolute;
-  right: 7px;
-  top: 4px;
   cursor: pointer;
+  margin: 5px;
+  float: right;
+  z-index: 9001;
 }
 
 div.notification-info {

@@ -51,6 +51,12 @@ var getLatestShareInfo = function(){
   for (var investment of investments) {
     var share = investment.share;
     updateShare(share);
+  }
+}
+
+var setUpPriceWatchers = function(){
+  for (var investment of Barry.portfolio.investments) {
+    var share = investment.share
     Object.observe(share, function(changes){
       for (var change of changes) {
         if(change.name == 'currentPrice') {
@@ -63,7 +69,7 @@ var getLatestShareInfo = function(){
           });
         }
       }
-    })
+    });
   }
 }
 
@@ -94,10 +100,10 @@ var init = function(){
     new scatterChart();
   }
   notificationArea = new NotificationArea();  
-
+  setUpPriceWatchers();
   window.setInterval(function(){
     getLatestShareInfo();
-  }, 20000);
+  }, 10000);
 };
 
 window.onload = init;

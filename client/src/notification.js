@@ -10,9 +10,13 @@ Notification.prototype = {
   setupElement: function(){
     var element = document.createElement('div');
     element.classList.add('notification-' + this.type);
-    element.innerHTML += '<h2>' + this.title + '</h2>'
-    element.innerHTML += '<p>' + this.content + '</p>' 
+    var title = document.createElement('h2');
+    title.innerText = this.title;
+    var content = document.createElement('p');
+    content.innerText = this.content; 
     element.appendChild(this.setupCloseButton());
+    element.appendChild(title);
+    element.appendChild(content);
     return element;
   },
   setupCloseButton: function(){

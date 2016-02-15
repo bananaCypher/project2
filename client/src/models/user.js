@@ -53,7 +53,8 @@ User.prototype = {
   },
   spreadRumours: function(share, percentage){
     if(!this.insideTrader){
-      console.log('this action is illegal!');
+      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
+      return hypotheticalPrice;
     }
     else{
       share.crashValue(percentage);
@@ -61,10 +62,27 @@ User.prototype = {
   },
   pumpStock: function(share, percentage){
     if(!this.insideTrader){
-      console.log('this action is illegal!');
+      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
+      return hypotheticalPrice;
     }
     else{
       share.inflateValue(percentage);
+    }
+  },
+  pumpRegion: function(region, percentage){
+    for(investment of this.portfolio.investments){
+      var share = investment.share;
+      if(share.location === region){
+        this.pumpStock(share, percentage);
+      }
+    }
+  },
+  crashRegion: function(region, percentage){
+    for(investment of this.portfolio.investments){
+      var share = investment.share;
+      if(share.location === region){
+        this.spreadRumours(share, percentage);
+      }
     }
   }
 }
