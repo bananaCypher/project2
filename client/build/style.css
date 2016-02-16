@@ -104,7 +104,7 @@ h1 {
 }
  
 /* BUTTONS */
-button, select,  #buySubmit, #sellSubmit, #sellShortSubmit, #buyShortSubmit, #crashStockSubmit, #pumpStockSubmit {
+button, select,  #buySubmit, #sellSubmit, #sellShortSubmit, #buyShortSubmit, #crashStockSubmit, #pumpStockSubmit, #crashRegionSubmit, #pumpRegionSubmit {
   font-size: 16px;
   font-family: "Unica One";
   text-transform: uppercase;
@@ -133,6 +133,10 @@ button:focus, select:focus, #buySubmit:focus, #buyShortSubmit:focus {
   background-color: rgb(230,230,30);
 }
 
+#crashRegionSubmit, #pumpRegionSubmit {
+  background-color: rgb(255,69,0);
+}
+
 #sellSubmit:focus, #sellShortSubmit:focus {
   outline: none;
   background-color: rgb(223,82,82);
@@ -141,6 +145,11 @@ button:focus, select:focus, #buySubmit:focus, #buyShortSubmit:focus {
 #crashStockSubmit:focus, #pumpStockSubmit:focus {
   outline: none;
   background-color: rgb(255,255,70);
+}
+
+#crashRegionSubmit:focus, #pumpRegionSubmit:focus {
+  outline: none;
+  background-color: rgb(255, 85, 10);
 }
 
 input[type=text] {

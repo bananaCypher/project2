@@ -48,6 +48,14 @@ var TradeForm = function(option, user, investment){
     var inputId = "pumpStockInput";
     var submitId = "pumpStockSubmit";
   }
+  else if(option === "CrashRegion"){
+    var inputId = "crashRegionInput";
+    var submitId = "crashRegionSubmit";
+  } 
+  else if(option === 'PumpRegion'){
+    var inputId = "pumpRegionInput";
+    var submitId = "pumpRegionSubmit";
+  }
 
   var form = document.createElement('form');
   form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
@@ -89,16 +97,16 @@ var TradeForm = function(option, user, investment){
    }   
    else if(option === "CrashRegion"){
     user.crashRegion(investment.share.location, parseInt(value));
-     user.save();
-     loadInfo(investment, user);
-   }   
-   else if(option === "PumpRegion"){
+    user.save();
+    loadInfo(investment, user);
+  }   
+  else if(option === "PumpRegion"){
     user.pumpRegion(investment.share.location, parseInt(value));
-     user.save();
-     loadInfo(investment, user);
-   }
- }
- return form;
+    user.save();
+    loadInfo(investment, user);
+  }
+}
+return form;
 }
 
 var showPreview = function(investment, user){
