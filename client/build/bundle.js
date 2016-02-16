@@ -72,7 +72,7 @@
 	var displayAccountBalance = function(){
 	  var balanceInfo = document.getElementById('balanceInfo');
 	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
 	  balanceInfo.appendChild(p);
 	}
 	
@@ -310,7 +310,7 @@
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 5000,
+	  this.accountBalance = 500000,
 	  this.insideTrader = false
 	};
 	
@@ -1015,7 +1015,7 @@
 	  var balanceInfo = document.getElementById('balanceInfo');
 	  balanceInfo.innerHTML = "";
 	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
 	  balanceInfo.appendChild(p);
 	
 	}

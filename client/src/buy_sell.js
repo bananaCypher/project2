@@ -26,7 +26,7 @@ var loadInfo = function(investment, user){
   var balanceInfo = document.getElementById('balanceInfo');
   balanceInfo.innerHTML = "";
   var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
   balanceInfo.appendChild(p);
 
 }

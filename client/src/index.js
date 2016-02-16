@@ -26,7 +26,7 @@ var displayCurrentPortfolioValue = function(){
 var displayAccountBalance = function(){
   var balanceInfo = document.getElementById('balanceInfo');
   var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
   balanceInfo.appendChild(p);
 }
 

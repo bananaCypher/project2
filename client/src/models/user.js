@@ -3,7 +3,7 @@ var Investment = require('./investment.js')
 var User = function(name){
   this.name = name,
   this.portfolio = undefined,
-  this.accountBalance = 5000,
+  this.accountBalance = 500000,
   this.insideTrader = false
 };
 
