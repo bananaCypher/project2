@@ -89,6 +89,16 @@ var senseChecker = {
     else{
       return true;
     }
+  },
+
+  isQuantity: function(quantity){
+    if(typeof quantity != 'number'){
+      this.errorMessage('8: not a number');
+      return false;
+    }
+    else{
+      return true;
+    }
   }
 }
 

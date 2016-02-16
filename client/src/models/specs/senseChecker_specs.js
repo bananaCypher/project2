@@ -67,7 +67,16 @@ describe('senseChecker', function(){
   it('should when asked reject percentages of 100 or more', function(){
     senseChecker.isGoodPercentage(250);
     expect(senseChecker.errorList[0]).to.equal('Error #6: cannot reduce by 100% or above');
-  })
+  });
+  it('should reject quantity submissions that are not numbers', function(){
+    expect(senseChecker.isQuantity('a brick')).to.equal(false);
+  });
+  it('should pass quantity submissions that are numbers', function(){
+    expect(senseChecker.isQuantity(10)).to.equal(true);
+  });
+
+// ACTIONS
+
   it('should pass failures to an errorlist', function(){
     senseChecker.isShare('ObviousFake');
     expect(senseChecker.errorList[0]).to.equal('Error #1: is not a share');
