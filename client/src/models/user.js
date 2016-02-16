@@ -10,6 +10,7 @@ var User = function(name){
 
 User.prototype = {
   buyShares: function(share, quantity, params){
+if(senseChecker.isShare(share.shareName)){
     var outlay = share.currentPrice * quantity;
 
     if(this.portfolio.find({shareName: share.shareName})){
@@ -23,9 +24,11 @@ User.prototype = {
       this.portfolio.addInvestment(investment);
     }
     this.accountBalance -= outlay;
+  }
   },
   sellShares: function(investment, quantity){
-    var outlay = investment.share.currentPrice * quantity;
+if(senseChecker.isInvestment(investment, this)){    
+  var outlay = investment.share.currentPrice * quantity;
     if(investment.quantity >= quantity){
       investment.quantity -= quantity;
       this.accountBalance += outlay;
@@ -34,6 +37,7 @@ User.prototype = {
       this.portfolio.removeInvestment(investment);
       this.accountBalance = investment.share.currentPrice * investment.quantity;
     }
+  }
   },
   sellShort: function(share, quantity, params){
     var outlay = share.currentPrice * quantity;
