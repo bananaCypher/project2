@@ -2,6 +2,7 @@ var User = require('./models/user.js');
 var Portfolio = require('./models/portfolio.js');
 var Investment = require('./models/investment.js');
 var Share = require('./models/share.js');
+var Target = require('./models/target.js');
 var Barry;
 
 var getUser = function (userName, callback) {
@@ -11,7 +12,6 @@ var getUser = function (userName, callback) {
     if (request.status === 200) {
       data = JSON.parse(request.responseText);
       Barry = new User(data.name, data._id);
-      console.log(data);
       Barry.accountBalance = data.accountBalance;
       Barry.insideTrader = data.insideTrader;
 

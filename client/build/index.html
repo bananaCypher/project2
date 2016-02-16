@@ -13,6 +13,10 @@
 <body>
   <header>
     <h1 id="logo">Inside Trader</h1>
+    <ul id ="errorNotifications"></ul>
+    <div id="errorImage">
+    <img src="https://cdn2.iconfinder.com/data/icons/krispicons-modern-flat-icons-freebie/111/7.png">    
+    </div>
     <div id="notifications">
       <img src="https://cdn4.iconfinder.com/data/icons/web-icons-19/711/notification-icon-tm-512.png" alt="Notifications"/>
       <span></span>
@@ -31,7 +35,8 @@
     <div class="row">
       <select id="shareSelect">
         <option selected="selected">View Investment Information:</option>
-      </select> <button id="portfolioView">View Portfolio Information</button><br>
+      </select> <button id="portfolioView">View Portfolio Information</button>
+      <button id="targetsButton">View My Targets</button><br>
 
       <div id="investmentInfo">
         <div id="singleScatterChart" class="chart grid-6"></div>
@@ -50,12 +55,20 @@
         <div id="pieChart" class="chart grid-6"></div> 
       </div>
 
-    </div>
-
-    <div id="errorInfo">
-      <ul id="errorList">
-
-      </ul>
+      <div id="targetsInfo" style="display: none;">
+        <div class="grid-6">
+          <div id="targets">
+          </div>
+        </div>
+        <!--<div class="grid-6">
+          <select name="targetFormObject" id="targetFormObject">
+          </select> 
+          <select name="targetFormCheck" id="targetFormCheck">
+          </select>
+          <label for="targetFormValue">Target Value</label><input type="number" name="targetFormValue" value="" id="targetFormValue">
+          <button id="targetFormButton">Create Target</button>
+        </div>-->
+      </div>
     </div>
 
     <div class="row">

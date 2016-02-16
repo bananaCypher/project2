@@ -44,23 +44,33 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Target = __webpack_require__(1)
 	var Barry;
-	var getUser = __webpack_require__(1);
+	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user) {
 	  Barry = user;
 	  init();
 	});
 	
-	var index = __webpack_require__(7);
-	var scatterChart = __webpack_require__(8);
-	var pieChart = __webpack_require__(9);
-	var chartStyles = __webpack_require__(10);
-	var NotificationArea = __webpack_require__(11);
-	
-	var senseChecker = __webpack_require__(4);
-	var showInvestmentInfo = __webpack_require__(12);
+	var index = __webpack_require__(8);
+	var scatterChart = __webpack_require__(9);
+	var pieChart = __webpack_require__(10);
+	var chartStyles = __webpack_require__(11);
+	var NotificationArea = __webpack_require__(12);
+	var senseChecker = __webpack_require__(5);
+	var showInvestmentInfo = __webpack_require__(13);
 	var notificationArea;
 	
+	
+	var showTargets = function(){
+	  var targetsArea = document.getElementById('targets')
+	  targetsArea.innerHTML = '';
+	  for (var target of Barry.targets) {
+	    var p = document.createElement('p');
+	    p.innerText = target.description;
+	    targetsArea.appendChild(p); 
+	  }
+	}
 	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
@@ -108,30 +118,38 @@
 	  console.log('I have loaded');
 	  var shareSelect = document.getElementById('shareSelect');
 	  var portfolioButton = document.getElementById('portfolioView');
+	  var targetsButton = document.getElementById('targetsButton');
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
 	
-	  var errorList = document.getElementById('errorList');
+	  var errorList = document.getElementById('errorNotifications');
+	  var errorImage = document.getElementById('errorImage');
+	
+	  errorImage.onclick = function(){
+	    errorList.style.width = "295px";
+	    errorList.firstChild.style.display = "inline-block";
+	    errorImage.style.display = "none"
+	    setTimeout(function(){
+	     errorList.style.width = "0"; 
+	     errorList.firstChild.style.display = "none"; 
+	   }, 4000)
+	  }
 	
 	// ERRORLIST POPULATION
 	
-	  // Object.observe(senseChecker, function(changes){
-	  //   for(change of changes){
-	  //     if(change.name == 'errorList'){
-	  //       errorList.innerHTML = '';
-	  //       for(error of change.object.errorList){
-	  //         var li = document.createElement('li');
-	  //         li.innerText = error;
-	  //         errorList.appendChild(li);
-	  //       }
-	  //     }
-	  //   }
-	  // });
-	
-	  senseChecker.errorList.push('seriously, nothing works in Firefox');
+	  Object.observe(senseChecker.errorList, function(changes){
+	    
+	        errorList.innerHTML = '';
+	        errorImage.style.display = "inline-block";
+	        var li = document.createElement('li');
+	        li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+	        errorList.appendChild(li);
+	        }
+	    );
 	
 	  var targetsView = document.getElementById('targetsView');
-	
+	  var targetsInfo = document.getElementById('targetsInfo');
+	  var targetFormButton = document.getElementById('targetFormButton');
 	
 	  Highcharts.setOptions(chartStyles);
 	
@@ -142,23 +160,47 @@
 	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
+	    targetsInfo.style.display = "none";
 	    investmentInfo.style.display = "block";
 	    showInvestmentInfo(shareSelect.value, Barry);
 	  };
 	  
 	  portfolioButton.onclick = function(){
 	    investmentInfo.style.display = "none";
+	    targetsInfo.style.display = "none";
 	    portfolioInfo.style.display = "block";
 	    targetsView.innerHTML = "";
 	    new pieChart(Barry.portfolio);
 	    new scatterChart();
+	  }
+	  targetsButton.onclick = function(){
+	    portfolioInfo.style.display = "none";
+	    investmentInfo.style.display = "none";
+	    targetsInfo.style.display = "block";
+	    targetsView.innerHTML = "";
+	    showTargets();
 	  }
 	  notificationArea = new NotificationArea();  
 	  setUpPriceWatchers();
 	  window.setInterval(function(){
 	    getLatestShareInfo();
 	  }, 10000);
-	
+	  var portfolioTarget = new Target({
+	    description: 'Get portfolio value to above £65,000',
+	    object: Barry.portfolio,
+	    property: 'totalValue',
+	    check: 'gt',
+	    target: 6500000,
+	    checkTime: 10000
+	  }, function(){
+	    Barry.targets.splice(Barry.targets.indexOf(portfolioTarget), 1);
+	    notificationArea.newNotification({
+	      title: 'Target reached!',
+	      content: 'You have reached your target of getting your portfolio value to £65,000',
+	      type: 'success'
+	    });
+	  })
+	  Barry.targets.push(portfolioTarget);
 	};
 	
 	//window.onload = init;
@@ -166,12 +208,103 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	var Target = function(params, callback){
+	  this.object = params.object;
+	  this.property = params.property;
+	  this.check = params.check;
+	  this.target = params.target;
+	  this.checkTime = params.checkTime || 1000;
+	  this.description = params.description || this.property + ' ' + this.check + ' ' + this.target;
+	  this.callback = callback;
+	  this.observeFunction = function(){
+	    for (var key in this.object) {
+	      if(key == this.property || typeof(this.object[this.property]) == 'function'){
+	        var result = this.hasMetTarget();
+	        if(result == true){
+	          this.callback();
+	          return;
+	        } else {
+	          this.setupWatcher();
+	          return;
+	        }
+	      } 
+	    }
+	  }.bind(this);
+	  this.setupWatcher();
+	}
+	Target.prototype = {
+	  fullCheck: function(){
+	    switch(this.check) {
+	      case 'gt':
+	        return 'greater than';
+	        break;
+	      case 'gte':
+	        return 'greater than or equal to'
+	        break;
+	      case 'eq':
+	        return 'equal to'
+	        break;
+	      case 'lte':
+	        return 'less than or equal to'
+	        break;
+	      case 'lt':
+	        return 'less than'
+	        break;
+	    }
+	  },
+	  setupWatcher: function(){
+	    setTimeout(this.observeFunction, this.checkTime);
+	  },
+	  hasMetTarget: function(){
+	    if (typeof(this.object[this.property]) == 'function') {
+	      var property = this.object[this.property]();
+	    } else {
+	      var property = this.object[this.property];
+	    }
+	    switch(this.check) {
+	      case 'gt':
+	        if(property > this.target){
+	          return true;
+	        }
+	        break;
+	      case 'gte':
+	        if(property >= this.target){
+	          return true;
+	        }
+	        break;
+	      case 'eq':
+	        if(property == this.target){
+	          return true;
+	        }
+	        break;
+	      case 'lte':
+	        if(property <= this.target){
+	          return true;
+	        }
+	        break;
+	      case 'lt':
+	        if(property < this.target){
+	          return true;
+	        }
+	        break;
+	    }
+	  }
+	}
+	
+	module.exports = Target;
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var User = __webpack_require__(2);
-	var Portfolio = __webpack_require__(5);
-	var Investment = __webpack_require__(3);
-	var Share = __webpack_require__(6);
+	var User = __webpack_require__(3);
+	var Portfolio = __webpack_require__(6);
+	var Investment = __webpack_require__(4);
+	var Share = __webpack_require__(7);
+	var Target = __webpack_require__(1);
 	var Barry;
 	
 	var getUser = function (userName, callback) {
@@ -181,7 +314,6 @@
 	    if (request.status === 200) {
 	      data = JSON.parse(request.responseText);
 	      Barry = new User(data.name, data._id);
-	      console.log(data);
 	      Barry.accountBalance = data.accountBalance;
 	      Barry.insideTrader = data.insideTrader;
 	
@@ -208,18 +340,18 @@
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Investment = __webpack_require__(3);
-	var senseChecker = __webpack_require__(4);
+	var Investment = __webpack_require__(4);
+	var senseChecker = __webpack_require__(5);
 	
 	var User = function(name, id){
 	  this.name = name,
 	  this.id = id,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500000,
-	  this.hypothetical = false;
+	  this.accountBalance = 500000
+	  this.targets = [];
 	};
 	
 	User.prototype = {
@@ -246,11 +378,9 @@
 	        investment.quantity -= quantity;
 	        this.accountBalance += outlay;
 	      }
-	      else {
-	      // does not have enough shares to sell
-	
-	      this.portfolio.removeInvestment(investment, this);
-	      this.accountBalance = investment.share.currentPrice * investment.quantity;
+	      else if(investment.quantity <= quantity){
+	      var difference = quantity - investment.quantity
+	      senseChecker.errorMessage('10: you are ' + difference + ' shares short');
 	    }
 	  }
 	},
@@ -283,24 +413,12 @@
 	},
 	spreadRumours: function(share, percentage){
 	  if(senseChecker.isShare(share.shareName)){
-	    if(!this.hypothetical){
-	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
-	      return hypotheticalPrice;
-	    }
-	    else{
 	      share.crashValue(percentage);
-	    }
 	  }
 	},
 	pumpStock: function(share, percentage){
 	  if(senseChecker.isShare(share.shareName)){
-	    if(!this.hypothetical){
-	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
-	      return hypotheticalPrice;
-	    }
-	    else{
 	      share.inflateValue(percentage);
-	    }
 	  }
 	},
 	pumpRegion: function(region, percentage){
@@ -337,7 +455,7 @@
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	var Investment = function(share, params){
@@ -377,7 +495,7 @@
 	module.exports = Investment;
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	var senseChecker = {
@@ -391,7 +509,9 @@
 	
 	  errorMessage: function(error){
 	    var error = 'Error #' + error;
-	    this.errorList.push(error);
+	    var newErrorList = this.errorList;
+	    newErrorList.push(error);
+	    this.errorList = newErrorList;
 	  },
 	
 	  isShare: function(share){
@@ -487,10 +607,10 @@
 	module.exports = senseChecker;
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var senseChecker = __webpack_require__(4);
+	var senseChecker = __webpack_require__(5);
 	
 	var Portfolio = function(){
 	  this.investments = [];  
@@ -596,10 +716,10 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var senseChecker = __webpack_require__(4);
+	var senseChecker = __webpack_require__(5);
 	
 	
 	var Share = function(params){
@@ -627,7 +747,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	
@@ -675,11 +795,11 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
-	var getUser = __webpack_require__(1);
+	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user){
 	  Barry = user;
 	});
@@ -739,7 +859,7 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	
@@ -773,7 +893,7 @@
 	module.exports = PieChart;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	  var chartStyles = {
@@ -981,7 +1101,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -1088,17 +1208,21 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(13);
-	var TargetChecker = __webpack_require__(14);
-	var index = __webpack_require__(7);
+	var singleScatterChart = __webpack_require__(14);
+	var TargetChecker = __webpack_require__(15);
+	var index = __webpack_require__(8);
 	
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
 	  var investmentView = document.getElementById('investmentView');
+	  var buyPreview = document.getElementById('buyPreview');
+	  var sellPreview = document.getElementById('sellPreview');
 	  investmentView.innerHTML = "";
+	  buyPreview.innerHTML = "";
+	  sellPreview.innerHTML = "";
 	
 	  if(investment.valueChange("percentage")){
 	    var value = "Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>";
@@ -1156,7 +1280,6 @@
 	  form.onsubmit = function(event){
 	    var value = document.getElementById(inputId).value;
 	    event.preventDefault();
-	    console.log("form submit", value);
 	
 	    if(option === "Buy"){
 	      user.buyShares(investment.share, parseInt(value), investment);
@@ -1277,12 +1400,12 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//var Barry = require('../seedObjects.js')
 	var Barry;
-	var getUser = __webpack_require__(1);
+	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user){
 	  Barry = user;
 	});
@@ -1344,7 +1467,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	var TargetChecker = function(user, investment){

@@ -9,7 +9,9 @@ var senseChecker = {
 
   errorMessage: function(error){
     var error = 'Error #' + error;
-    this.errorList.push(error);
+    var newErrorList = this.errorList;
+    newErrorList.push(error);
+    this.errorList = newErrorList;
   },
 
   isShare: function(share){
