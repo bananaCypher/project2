@@ -11,8 +11,8 @@ var User = function(name, id){
 
 User.prototype = {
   buyShares: function(share, quantity, params){
+    var outlay = share.currentPrice * quantity;
     if(senseChecker.isShare(share.shareName) && senseChecker.isQuantity(quantity)){
-      var outlay = share.currentPrice * quantity;
       if(senseChecker.maxedAccount(this.accountBalance, outlay)){
         if(this.portfolio.find({shareName: share.shareName})){
           var investment = this.portfolio.find({shareName: share.shareName})
@@ -29,8 +29,8 @@ User.prototype = {
     }
   },
   sellShares: function(investment, quantity){
+    var outlay = investment.share.currentPrice * quantity;
     if(senseChecker.isInvestment(investment, this)){    
-      var outlay = investment.share.currentPrice * quantity;
       if(investment.quantity >= quantity){
         investment.quantity -= quantity;
         this.accountBalance += outlay;
@@ -55,15 +55,13 @@ sellShort: function(share, quantity, params){
 },
 buyShort: function(investment){
   var outlay = investment.share.currentPrice * investment.quantity;
-  if(senseChecker.maxedAccount(this.accountBalance, outlay)){
-    if(senseChecker.isInvestment(investment, this)){
-      if(!investment.short){
-        console.log('this action is illegal!');
-      }
-      else{
-        this.portfolio.removeInvestment(investment, this);
-        this.accountBalance -= outlay;
-      }
+  if(senseChecker.maxedAccount(this.accountBalance, outlay) && senseChecker.isInvestment(investment, this)){
+    if(!investment.short){
+      console.log('this action is illegal!');
+    }
+    else{
+      this.portfolio.removeInvestment(investment, this);
+      this.accountBalance -= outlay;
     }
   }
 },
