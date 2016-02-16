@@ -11,7 +11,7 @@ var User = function(name, id){
 
 User.prototype = {
   buyShares: function(share, quantity, params){
-    if(senseChecker.isShare(share.shareName)){
+    if(senseChecker.isShare(share.shareName) && senseChecker.isQuantity(quantity)){
       var outlay = share.currentPrice * quantity;
       if(senseChecker.maxedAccount(this.accountBalance, outlay)){
         if(this.portfolio.find({shareName: share.shareName})){
