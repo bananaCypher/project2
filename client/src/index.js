@@ -115,7 +115,8 @@ var init = function(){
   var showFormForPortfolio = function(){
     var label = document.getElementById('targetFormLabel'); 
     var select = document.getElementById('targetFormObject');
-    var propSelect = document.getElementById('targetFormProp')
+    var propSelect = document.getElementById('targetFormProp');
+    select.innerHTML = '';
     propSelect.innerHTML = '';
     label.innerText = 'Portfolio';
     var option = document.createElement('option');
@@ -129,7 +130,8 @@ var init = function(){
   var showFormForInvestment = function(){
     var label = document.getElementById('targetFormLabel'); 
     var select = document.getElementById('targetFormObject');
-    var propSelect = document.getElementById('targetFormProp')
+    var propSelect = document.getElementById('targetFormProp');
+    select.innerHTML = '';
     propSelect.innerHTML = '';
     label.innerText = 'Investment';
     for (var investment of Barry.portfolio.investments) {
@@ -150,7 +152,8 @@ var init = function(){
   var showFormForShare = function(){
     var label = document.getElementById('targetFormLabel'); 
     var select = document.getElementById('targetFormObject');
-    var propSelect = document.getElementById('targetFormProp')
+    var propSelect = document.getElementById('targetFormProp');
+    select.innerHTML = '';
     propSelect.innerHTML = '';
     label.innerText = 'Share';
     for (var investment of Barry.portfolio.investments) {
@@ -179,6 +182,78 @@ var init = function(){
       targetFormFields.style.display = 'none';
     }
   }
+
+  var submitTargetForm = function(){
+    var value = document.getElementById('targetFormValue').value;
+    var check = document.getElementById('targetFormCheck').value;
+    var description = document.getElementById('targetFormDescription').value;
+    var prop = document.getElementById('targetFormProp');
+    var target;
+    if (targetFormType.value == 'Portfolio'){
+      target = new Target({
+        description: description,
+        object: Barry.portfolio,
+        property: prop,
+        check: check,
+        target: value,
+        checkTime: 10000
+      }, function(){
+        showTargets();
+        notificationArea.newNotification({
+          title: 'Target reached!',
+          content: 'You have reached your target ' + description,
+          type: 'success'
+        });
+      })
+      Barry.targets.push(target);
+      showTargets();
+    } else if (targetFormType.value == 'Investment') {
+      var investmentName = document.getElementById('targetFormObject').value;
+      var investment = Barry.portfolio.findByName(investmentName);
+      target = new Target({
+        description: description,
+        object: investment,
+        property: prop,
+        check: check,
+        target: value,
+        checkTime: 10000
+      }, function(){
+        showTargets();
+        notificationArea.newNotification({
+          title: 'Target reached!',
+          content: 'You have reached your target ' + description,
+          type: 'success'
+        });
+      })
+      console.log(target);
+      Barry.targets.push(target);
+      showTargets();
+    } else if (targetFormType.value == 'Share'){
+      var shareName = document.getElementById('targetFormObject').value;
+      var share = Barry.portfolio.findByName(investmentName).share;
+      target = new Target({
+        description: description,
+        object: investment,
+        property: prop,
+        check: check,
+        target: value,
+        checkTime: 10000
+      }, function(){
+        showTargets();
+        notificationArea.newNotification({
+          title: 'Target reached!',
+          content: 'You have reached your target ' + description,
+          type: 'success'
+        });
+      })
+      Barry.targets.push(target);
+      showTargets();
+    }
+    targetFormFields.style.display = 'none';
+    targetFormFields.selectedIndex = 0;
+  }
+  
+  targetFormButton.onclick = submitTargetForm;
   // ==================
 
   Highcharts.setOptions(chartStyles);
