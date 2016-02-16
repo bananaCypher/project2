@@ -51,46 +51,15 @@
 	  init();
 	});
 	
-	var scatterChart = __webpack_require__(7);
-	var pieChart = __webpack_require__(8);
-	var chartStyles = __webpack_require__(9);
-	var NotificationArea = __webpack_require__(10);
-	var showInvestmentInfo = __webpack_require__(11);
+	var index = __webpack_require__(7);
+	var scatterChart = __webpack_require__(8);
+	var pieChart = __webpack_require__(9);
+	var chartStyles = __webpack_require__(10);
+	var NotificationArea = __webpack_require__(11);
+	
 	var senseChecker = __webpack_require__(4);
+	var showInvestmentInfo = __webpack_require__(12);
 	var notificationArea;
-	
-	var displayLargestPercChange = function(){
-	  var moreInfo = document.getElementById('moreInfo');
-	  var p = document.createElement('p');
-	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
-	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
-	  p.innerHTML = "<h2>Best performing stock</h2>"
-	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
-	  moreInfo.appendChild(p);
-	}
-	
-	var displayCurrentPortfolioValue = function(){
-	  var basicInfo = document.getElementById('basicInfo');
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
-	  basicInfo.appendChild(p);
-	}
-	
-	var displayAccountBalance = function(){
-	  var balanceInfo = document.getElementById('balanceInfo');
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
-	  balanceInfo.appendChild(p);
-	}
-	
-	var populateSelect = function(){
-	  var shareSelect = document.getElementById('shareSelect');
-	  for(investment of Barry.portfolio.investments){
-	    var option = document.createElement('option');
-	    option.innerText = investment.shareName;
-	    shareSelect.appendChild(option);
-	  }
-	}
 	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
@@ -165,10 +134,10 @@
 	
 	  Highcharts.setOptions(chartStyles);
 	
-	  populateSelect();
-	  displayCurrentPortfolioValue();
-	  displayLargestPercChange();
-	  displayAccountBalance();
+	  index.populateSelect(Barry);
+	  index.displayCurrentPortfolioValue(Barry);
+	  index.displayLargestPercChange(Barry);
+	  index.displayAccountBalance(Barry);
 	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
@@ -614,6 +583,54 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	
+	var displayLargestPercChange = function(user){
+	  var moreInfo = document.getElementById('moreInfo');
+	  var p = document.createElement('p');
+	  var largestPercChangeInvestment = user.portfolio.findLargestPercentageChange();
+	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
+	  p.innerHTML = "<h2>Best performing stock</h2>"
+	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
+	  moreInfo.appendChild(p);
+	}
+	
+	var displayCurrentPortfolioValue = function(user){
+	  var basicInfo = document.getElementById('basicInfo');
+	  basicInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
+	  basicInfo.appendChild(p);
+	}
+	
+	var displayAccountBalance = function(user){
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  balanceInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
+	  balanceInfo.appendChild(p);
+	}
+	
+	var populateSelect = function(user){
+	  var shareSelect = document.getElementById('shareSelect');
+	  for(investment of user.portfolio.investments){
+	    var option = document.createElement('option');
+	    option.innerText = investment.shareName;
+	    shareSelect.appendChild(option);
+	  }
+	}
+	
+	module.exports = {
+	  displayLargestPercChange: displayLargestPercChange,
+	  displayAccountBalance: displayAccountBalance,
+	  displayCurrentPortfolioValue: displayCurrentPortfolioValue,
+	  populateSelect: populateSelect
+	}
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
@@ -677,7 +694,7 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	
@@ -711,7 +728,7 @@
 	module.exports = PieChart;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	  var chartStyles = {
@@ -919,7 +936,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -1026,11 +1043,12 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(12);
-	var TargetChecker = __webpack_require__(13);
+	var singleScatterChart = __webpack_require__(13);
+	var TargetChecker = __webpack_require__(14);
+	var index = __webpack_require__(7);
 	
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
@@ -1047,17 +1065,9 @@
 	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
 	  investmentView.appendChild(info); 
 	
-	  var basicInfo = document.getElementById('basicInfo');
-	  basicInfo.innerHTML = "";
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
-	  basicInfo.appendChild(p);
+	  index.displayCurrentPortfolioValue(user);
+	  index.displayAccountBalance(user);
 	
-	  var balanceInfo = document.getElementById('balanceInfo');
-	  balanceInfo.innerHTML = "";
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
-	  balanceInfo.appendChild(p);
 	}
 	
 	var TradeForm = function(option, user, investment){
@@ -1114,7 +1124,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//var Barry = require('../seedObjects.js')
@@ -1181,7 +1191,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	var TargetChecker = function(user, investment){
