@@ -51,6 +51,21 @@ h1 {
   box-sizing: border-box;
 }
 
+.chart {
+  margin-top: 16px;
+}
+
+.col {
+  display: inline-block;
+  margin-right: -4px;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.col-padding-left {
+  padding-left: 20px;
+}
+
 .grid {
   padding: 0 10px;
 }
@@ -158,7 +173,8 @@ button:focus, select:focus, #buySubmit:focus, #buyShortSubmit:focus {
 
 input[type=text] {
   padding: 2px;
-  font-size: 1em;
+  font-size: 0.8em;
+  width: 120px;
 }
 
 #targetValuePrice, #targetValueDays {
