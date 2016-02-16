@@ -326,18 +326,18 @@
 	      investment.buyPrice = share.currentPrice;
 	      this.portfolio.addInvestment(investment);
 	    }
-	    this.accountBalance -= (outlay / 100);
+	    this.accountBalance -= outlay;
 	  },
 	  sellShares: function(investment, quantity){
 	    var outlay = investment.share.currentPrice * quantity;
-	
 	    if(investment.quantity >= quantity){
 	      investment.quantity -= quantity;
+	      this.accountBalance += outlay;
 	    }
 	    else {
 	      this.portfolio.removeInvestment(investment);
+	      this.accountBalance = investment.share.currentPrice * investment.quantity;
 	    }
-	    this.accountBalance += (outlay / 100);
 	  },
 	  sellShort: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
@@ -568,7 +568,7 @@
 	    var newPrice = this.currentPrice * ((100 + percentage) / 100);
 	    this.currentPrice = newPrice;
 	  }
-	}
+	};
 	
 	module.exports = Share;
 
