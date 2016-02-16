@@ -13,6 +13,7 @@ var NotificationArea = require('./notification.js');
 var showInvestmentInfo = require('./investmentInfo.js');
 var notificationArea;
 
+
 var updateShare = function(share){
   var request = new XMLHttpRequest();
   request.open('GET', '/share/' + share.epic);
@@ -88,6 +89,7 @@ var init = function(){
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
+
 };
 
 //window.onload = init;

@@ -59,6 +59,7 @@
 	var showInvestmentInfo = __webpack_require__(11);
 	var notificationArea;
 	
+	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
 	  request.open('GET', '/share/' + share.epic);
@@ -134,6 +135,7 @@
 	  window.setInterval(function(){
 	    getLatestShareInfo();
 	  }, 10000);
+	
 	};
 	
 	//window.onload = init;
@@ -986,6 +988,37 @@
 	  return form;
 	}
 	
+	var showPreview = function(investment, user){
+	  var preview = document.getElementById('preview');
+	  var buyPreview = document.getElementById('buyPreview');
+	  var sellPreview = document.getElementById('sellPreview');
+	  var buyValue = document.getElementById("buyInput").value;
+	  var sellValue = document.getElementById("sellInput").value;
+	  if(buyValue === ""){
+	  buyPreview.style.display = "none";
+	  }
+	  else {
+	    buyValue = parseInt(buyValue) * investment.share.currentPrice || "";
+	    buyPreview.style.display = "inline-block";
+	    buyPreview.innerHTML = "Buy Price: £" + Number(buyValue / 100).toLocaleString();
+	    if(buyValue > user.accountBalance){
+	      buyPreview.style.color = "red";
+	    }
+	    else {
+	      buyPreview.style.color = "green";
+	    }
+	  }
+	  if(sellValue === ""){
+	    sellPreview.style.display = "none";
+	  }
+	  else{
+	    sellValue = parseInt(sellValue) * investment.share.currentPrice || "";
+	    sellPreview.style.display = "inline-block";
+	    sellPreview.innerHTML = "<br>Sell Value: £" + Number(sellValue / 100).toLocaleString();
+	  }
+	
+	}
+	
 	var showInvestmentInfo = function(inputName, user){
 	  var investment = user.portfolio.find({shareName: inputName });
 	  var buysellView = document.getElementById('buysellView');
@@ -1000,6 +1033,10 @@
 	  buysellView.appendChild(sellForm); 
 	
 	  new TargetChecker(user, investment);
+	
+	  document.onkeyup = function(){
+	    showPreview(investment, user);
+	  }
 	}
 	
 	module.exports = showInvestmentInfo;
