@@ -31,7 +31,7 @@ describe('User', function(){
     testSharePrice = testShare.currentPrice;
   });
 
-  // BASIC INITIAL SETUP
+  // BASIC MODEL ATTRIBUTES
 
   it('should have a name', function(){
     expect(testUser.name).to.equal('Barry');
@@ -45,7 +45,7 @@ describe('User', function(){
     expect(testUser.portfolio).to.equal(testPortfolio);
   });
 
-  // FUNCTIONALITY
+  // MODEL FUNCTIONALITY
 
   it('should be able to buy shares', function(){
     testUser.buyShares(testShare, 1, testData);
@@ -115,7 +115,7 @@ describe('User', function(){
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
   });
 
-  // EDGE-CASES
+  // EDGE CASES
 
   it('should not be able to buy negative number of shares', function(){
     testUser.buyShares(testShare, -1, testData);
