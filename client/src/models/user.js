@@ -4,14 +4,16 @@ var User = function(name, id){
   this.name = name,
   this.id = id,
   this.portfolio = undefined,
-  this.accountBalance = 5000,
+  this.accountBalance = 500000,
   this.insideTrader = false
 };
 
 User.prototype = {
   buyShares: function(share, quantity, params){
     var outlay = share.currentPrice * quantity;
-
+    if(this.accountBalance < outlay){
+    return;
+    }
     if(this.portfolio.find({shareName: share.shareName})){
       var investment = this.portfolio.find({shareName: share.shareName})
       investment.quantity += quantity;
@@ -26,14 +28,14 @@ User.prototype = {
   },
   sellShares: function(investment, quantity){
     var outlay = investment.share.currentPrice * quantity;
-    console.log(outlay);
     if(investment.quantity >= quantity){
       investment.quantity -= quantity;
+      this.accountBalance += outlay;
     }
     else {
-      this.portfolio.removeInvestment(investment);
+      // this.portfolio.removeInvestment(investment);
+      // this.accountBalance = investment.share.currentPrice * investment.quantity;
     }
-    this.accountBalance += outlay;
   },
   sellShort: function(share, quantity, params){
     var outlay = share.currentPrice * quantity;

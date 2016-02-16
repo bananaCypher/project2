@@ -2,10 +2,9 @@ var User = require('./models/user.js');
 var Portfolio = require('./models/portfolio.js');
 var Investment = require('./models/investment.js');
 var Share = require('./models/share.js');
-var userName = 'Barry Manilow';
 var Barry;
 
-var getBarry = function (callback) {
+var getUser = function (userName, callback) {
   var request = new XMLHttpRequest();
   request.open('GET', '/user/' + userName);
   request.onload = function(){
@@ -35,4 +34,4 @@ var getBarry = function (callback) {
   request.send(null);
 };
 
-module.exports = getBarry;
+module.exports = getUser;

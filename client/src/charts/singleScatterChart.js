@@ -1,4 +1,9 @@
-var Barry = require('../seedObjects.js')
+//var Barry = require('../seedObjects.js')
+var Barry;
+var getUser = require('../getUser.js');
+getUser('Barry Manilow', function(user){
+  Barry = user;
+});
 
 
 var SingleScatterChart = function(investment){
