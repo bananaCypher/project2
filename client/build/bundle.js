@@ -51,45 +51,13 @@
 	  init();
 	});
 	
-	var scatterChart = __webpack_require__(6);
-	var pieChart = __webpack_require__(7);
-	var chartStyles = __webpack_require__(8);
-	var NotificationArea = __webpack_require__(9);
-	var showInvestmentInfo = __webpack_require__(10);
+	var index = __webpack_require__(6);
+	var scatterChart = __webpack_require__(7);
+	var pieChart = __webpack_require__(8);
+	var chartStyles = __webpack_require__(9);
+	var NotificationArea = __webpack_require__(10);
+	var showInvestmentInfo = __webpack_require__(11);
 	var notificationArea;
-	
-	var displayLargestPercChange = function(){
-	  var moreInfo = document.getElementById('moreInfo');
-	  var p = document.createElement('p');
-	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
-	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
-	  p.innerHTML = "<h2>Best performing stock</h2>"
-	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
-	  moreInfo.appendChild(p);
-	}
-	
-	var displayCurrentPortfolioValue = function(){
-	  var basicInfo = document.getElementById('basicInfo');
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
-	  basicInfo.appendChild(p);
-	}
-	
-	var displayAccountBalance = function(){
-	  var balanceInfo = document.getElementById('balanceInfo');
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
-	  balanceInfo.appendChild(p);
-	}
-	
-	var populateSelect = function(){
-	  var shareSelect = document.getElementById('shareSelect');
-	  for(investment of Barry.portfolio.investments){
-	    var option = document.createElement('option');
-	    option.innerText = investment.shareName;
-	    shareSelect.appendChild(option);
-	  }
-	}
 	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
@@ -143,16 +111,17 @@
 	
 	  Highcharts.setOptions(chartStyles);
 	
-	  populateSelect();
-	  displayCurrentPortfolioValue();
-	  displayLargestPercChange();
-	  displayAccountBalance();
+	  index.populateSelect(Barry);
+	  index.displayCurrentPortfolioValue(Barry);
+	  index.displayLargestPercChange(Barry);
+	  index.displayAccountBalance(Barry);
 	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
 	    investmentInfo.style.display = "block";
 	    showInvestmentInfo(shareSelect.value, Barry);
 	  };
+	  
 	  portfolioButton.onclick = function(){
 	    investmentInfo.style.display = "none";
 	    portfolioInfo.style.display = "block";
@@ -231,6 +200,7 @@
 	  buyShares: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
 	    if(this.accountBalance < outlay){
+	      //does not have enough money to buy those shares
 	    return;
 	    }
 	    if(this.portfolio.find({shareName: share.shareName})){
@@ -252,8 +222,7 @@
 	      this.accountBalance += outlay;
 	    }
 	    else {
-	      // this.portfolio.removeInvestment(investment);
-	      // this.accountBalance = investment.share.currentPrice * investment.quantity;
+	      // does not have enough shares to sell
 	    }
 	  },
 	  sellShort: function(share, quantity, params){
@@ -370,14 +339,13 @@
 	  addInvestment: function(investment){
 	    this.investments.push(investment);
 	  },
-	
 	  removeInvestment: function(investment){
 	    var index = this.findInvestmentIndex(investment);
 	    this.investments.splice(index, 1);
 	  },
 	  findInvestmentIndex: function(investmentToFind){
 	    arrayLoop:
-	    for (var i = 0, len = this.investments.length; i < len; i++) {
+	    for (var i = 0; i < this.investments.length; i++) {
 	     var investment = this.investments[i];
 	     for (var key in investmentToFind) {
 	      if (investmentToFind[key] != investment[key]) {
@@ -498,6 +466,54 @@
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	
+	var displayLargestPercChange = function(user){
+	  var moreInfo = document.getElementById('moreInfo');
+	  var p = document.createElement('p');
+	  var largestPercChangeInvestment = user.portfolio.findLargestPercentageChange();
+	  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
+	  p.innerHTML = "<h2>Best performing stock</h2>"
+	  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
+	  moreInfo.appendChild(p);
+	}
+	
+	var displayCurrentPortfolioValue = function(user){
+	  var basicInfo = document.getElementById('basicInfo');
+	  basicInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
+	  basicInfo.appendChild(p);
+	}
+	
+	var displayAccountBalance = function(user){
+	  var balanceInfo = document.getElementById('balanceInfo');
+	  balanceInfo.innerHTML = "";
+	  var p = document.createElement('p');
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
+	  balanceInfo.appendChild(p);
+	}
+	
+	var populateSelect = function(user){
+	  var shareSelect = document.getElementById('shareSelect');
+	  for(investment of user.portfolio.investments){
+	    var option = document.createElement('option');
+	    option.innerText = investment.shareName;
+	    shareSelect.appendChild(option);
+	  }
+	}
+	
+	module.exports = {
+	  displayLargestPercChange: displayLargestPercChange,
+	  displayAccountBalance: displayAccountBalance,
+	  displayCurrentPortfolioValue: displayCurrentPortfolioValue,
+	  populateSelect: populateSelect
+	}
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
@@ -561,7 +577,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	
@@ -595,7 +611,7 @@
 	module.exports = PieChart;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	  var chartStyles = {
@@ -803,7 +819,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -910,11 +926,12 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(11);
-	var TargetChecker = __webpack_require__(12);
+	var singleScatterChart = __webpack_require__(12);
+	var TargetChecker = __webpack_require__(13);
+	var index = __webpack_require__(6);
 	
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
@@ -929,20 +946,10 @@
 	  }
 	  var info = document.createElement('p');
 	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
-	
 	  investmentView.appendChild(info); 
 	
-	  var basicInfo = document.getElementById('basicInfo');
-	  basicInfo.innerHTML = "";
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
-	  basicInfo.appendChild(p);
-	
-	  var balanceInfo = document.getElementById('balanceInfo');
-	  balanceInfo.innerHTML = "";
-	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
-	  balanceInfo.appendChild(p);
+	  index.displayCurrentPortfolioValue(user);
+	  index.displayAccountBalance(user);
 	
 	}
 	
@@ -995,12 +1002,12 @@
 	  new TargetChecker(user, investment);
 	}
 	
-	
 	module.exports = showInvestmentInfo;
+	
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//var Barry = require('../seedObjects.js')
@@ -1067,7 +1074,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	var TargetChecker = function(user, investment){
@@ -1080,14 +1087,12 @@
 	  targetsView.appendChild(p);
 	
 	  var button = document.getElementById('targetValueButton');
-	
 	  button.onclick = function(){
 	    var input = document.getElementById('targetValue').value;
 	    if(input === ""){
 	      return;
 	    }
 	    input = parseInt(input) * 100;
-	    console.log(input);
 	
 	    var calcPrice = function(){
 	      var price = input / investment.quantity;

@@ -1,5 +1,6 @@
 var singleScatterChart = require('./charts/singleScatterChart.js');
 var TargetChecker = require('./targets.js');
+var index = require('./basicDisplay.js');
 
 var loadInfo = function(investment, user){
   new singleScatterChart(investment);
@@ -16,17 +17,9 @@ var loadInfo = function(investment, user){
   info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
   investmentView.appendChild(info); 
 
-  var basicInfo = document.getElementById('basicInfo');
-  basicInfo.innerHTML = "";
-  var p = document.createElement('p');
-  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(user.portfolio.totalValue() / 100).toLocaleString();
-  basicInfo.appendChild(p);
+  index.displayCurrentPortfolioValue(user);
+  index.displayAccountBalance(user);
 
-  var balanceInfo = document.getElementById('balanceInfo');
-  balanceInfo.innerHTML = "";
-  var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
-  balanceInfo.appendChild(p);
 }
 
 var TradeForm = function(option, user, investment){

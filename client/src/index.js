@@ -5,45 +5,13 @@ getUser('Barry Manilow', function(user) {
   init();
 });
 
+var index = require('./basicDisplay.js');
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
-var showInvestmentInfo = require('./buy_sell.js');
+var showInvestmentInfo = require('./investmentInfo.js');
 var notificationArea;
-
-var displayLargestPercChange = function(){
-  var moreInfo = document.getElementById('moreInfo');
-  var p = document.createElement('p');
-  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
-  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
-  p.innerHTML = "<h2>Best performing stock</h2>"
-  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
-  moreInfo.appendChild(p);
-}
-
-var displayCurrentPortfolioValue = function(){
-  var basicInfo = document.getElementById('basicInfo');
-  var p = document.createElement('p');
-  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
-  basicInfo.appendChild(p);
-}
-
-var displayAccountBalance = function(){
-  var balanceInfo = document.getElementById('balanceInfo');
-  var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
-  balanceInfo.appendChild(p);
-}
-
-var populateSelect = function(){
-  var shareSelect = document.getElementById('shareSelect');
-  for(investment of Barry.portfolio.investments){
-    var option = document.createElement('option');
-    option.innerText = investment.shareName;
-    shareSelect.appendChild(option);
-  }
-}
 
 var updateShare = function(share){
   var request = new XMLHttpRequest();
@@ -97,10 +65,10 @@ var init = function(){
 
   Highcharts.setOptions(chartStyles);
 
-  populateSelect();
-  displayCurrentPortfolioValue();
-  displayLargestPercChange();
-  displayAccountBalance();
+  index.populateSelect(Barry);
+  index.displayCurrentPortfolioValue(Barry);
+  index.displayLargestPercChange(Barry);
+  index.displayAccountBalance(Barry);
 
   shareSelect.onchange = function(){
     portfolioInfo.style.display = "none";
