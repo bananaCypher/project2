@@ -992,13 +992,13 @@
 	  var preview = document.getElementById('preview');
 	  var buyPreview = document.getElementById('buyPreview');
 	  var sellPreview = document.getElementById('sellPreview');
-	  var buyValue = document.getElementById("buyInput").value;
-	  var sellValue = document.getElementById("sellInput").value;
-	  if(buyValue === ""){
+	  var buyAmount = document.getElementById("buyInput").value;
+	  var sellAmount = document.getElementById("sellInput").value;
+	  if(buyAmount === ""){
 	  buyPreview.style.display = "none";
 	  }
 	  else {
-	    buyValue = parseInt(buyValue) * investment.share.currentPrice || "";
+	    var buyValue = parseInt(buyAmount) * investment.share.currentPrice || "";
 	    buyPreview.style.display = "inline-block";
 	    buyPreview.innerHTML = "Buy Price: £" + Number(buyValue / 100).toLocaleString();
 	    if(buyValue > user.accountBalance){
@@ -1008,13 +1008,23 @@
 	      buyPreview.style.color = "green";
 	    }
 	  }
-	  if(sellValue === ""){
+	  if(sellAmount === ""){
 	    sellPreview.style.display = "none";
 	  }
 	  else{
-	    sellValue = parseInt(sellValue) * investment.share.currentPrice || "";
+	    var sellValue = parseInt(sellAmount) * investment.share.currentPrice || "";
 	    sellPreview.style.display = "inline-block";
-	    sellPreview.innerHTML = "<br>Sell Value: £" + Number(sellValue / 100).toLocaleString();
+	    if (sellAmount < investment.quantity){
+	      sellPreview.style.color = "green";
+	      sellPreview.innerHTML = "<br>Sell Value: £" + Number(sellValue / 100).toLocaleString();
+	    }
+	    else{
+	      sellPreview.style.color = "red";
+	      sellPreview.innerHTML = "<br>Not enough shares held.";
+	    }
+	    
+	    
+	
 	  }
 	
 	}
@@ -1028,7 +1038,6 @@
 	
 	  var buyForm = new TradeForm("Buy", user, investment);
 	  var sellForm = new TradeForm("Sell", user, investment);
-	
 	  buysellView.appendChild(buyForm); 
 	  buysellView.appendChild(sellForm); 
 	
