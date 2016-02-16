@@ -40,6 +40,14 @@ var TradeForm = function(option, user, investment){
     var inputId = "sellShortInput";
     var submitId = "sellShortSubmit";
   }
+  else if(option === "CrashStock"){
+    var inputId = "crashStockInput";
+    var submitId = "crashStockSubmit";
+  }
+  else if(option === 'PumpStock'){
+    var inputId = "pumpStockInput";
+    var submitId = "pumpStockSubmit";
+  }
 
   var form = document.createElement('form');
   form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
@@ -69,18 +77,28 @@ var TradeForm = function(option, user, investment){
       user.save();
       loadInfo(investment, user);
     }
-  }  
-  return form;
+    else if(option === "CrashStock"){
+      user.spreadRumours(investment.share, parseInt(value));
+      user.save();
+      loadInfo(investment, user);
+    }
+    else if(option === "PumpStock"){
+     user.pumpStock(investment.share, parseInt(value));
+     user.save();
+     loadInfo(investment, user);
+   }  
 }
+   return form;
+ }
 
-var showPreview = function(investment, user){
+ var showPreview = function(investment, user){
   var preview = document.getElementById('preview');
   var buyPreview = document.getElementById('buyPreview');
   var sellPreview = document.getElementById('sellPreview');
   var buyAmount = document.getElementById("buyInput").value;
   var sellAmount = document.getElementById("sellInput").value;
   if(buyAmount === ""){
-  buyPreview.style.display = "none";
+    buyPreview.style.display = "none";
   }
   else {
     var buyValue = parseInt(buyAmount) * investment.share.currentPrice || "";
@@ -108,8 +126,6 @@ var showPreview = function(investment, user){
       sellPreview.innerHTML = "<br>Not enough shares held.";
     }
     
-    
-
   }
 
 }
@@ -125,10 +141,14 @@ var showInvestmentInfo = function(inputName, user){
   var sellForm = new TradeForm("Sell", user, investment);
   var sellShortForm = new TradeForm("SellShort", user, investment);
   var buyShortForm = new TradeForm("BuyShort", user, investment);
+  var crashStockForm = new TradeForm("CrashStock", user, investment);
+  var pumpStockForm = new TradeForm("PumpStock", user, investment);
   buysellView.appendChild(buyForm); 
   buysellView.appendChild(sellForm); 
   buysellView.appendChild(buyShortForm); 
   buysellView.appendChild(sellShortForm); 
+  buysellView.appendChild(crashStockForm); 
+  buysellView.appendChild(pumpStockForm); 
 
   new TargetChecker(user, investment);
 
