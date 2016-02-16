@@ -1101,7 +1101,11 @@
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
 	  var investmentView = document.getElementById('investmentView');
+	  var buyPreview = document.getElementById('buyPreview');
+	  var sellPreview = document.getElementById('sellPreview');
 	  investmentView.innerHTML = "";
+	  buyPreview.innerHTML = "";
+	  sellPreview.innerHTML = "";
 	
 	  if(investment.valueChange("percentage")){
 	    var value = "Change in Value Since Bought: " + investment.valueChange("percentage").toFixed(2) + "%<br>";
