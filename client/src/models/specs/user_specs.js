@@ -25,7 +25,6 @@ describe('User', function(){
     testInvestment = new Investment(testShare, testData);
     testPortfolio.investments = [testInvestment];
     testUser.portfolio = testPortfolio;
-    testUser.hypothetical = false;
     testBalance = testUser.accountBalance;
     testPortfolioBalance = testUser.portfolio.totalValue();
     testSharePrice = testShare.currentPrice;
@@ -79,16 +78,6 @@ describe('User', function(){
     expect(testUser.accountBalance).to.equal(testBalance);
   });
 
-  it('should be unable to engage in insider trading without an opt-in', function(){
-    testUser.spreadRumours(testShare, 10);
-    expect(testShare.currentPrice).to.equal(testSharePrice);
-  });
-
-  it('should be able to see the projected results of insider trading only if it lacks opt-in', function(){
-    testUser.spreadRumours(testShare, 10);
-    expect(testUser.spreadRumours(testShare, 10)).to.equal(108);
-  })
-
   it('should be able to inflate stocks', function(){
     testUser.pumpStock(testShare, 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
@@ -104,6 +93,11 @@ describe('User', function(){
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
+  });
+
+  it('should be unable to sell more shares than are in an investment', function(){
+    testUser.sellShares(testInvestment, 3000);
+    expect(testUser.portfolio.investments[0]).to.equal(testInvestment);
   });
 
   // EDGE CASES

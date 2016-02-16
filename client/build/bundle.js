@@ -219,7 +219,7 @@
 	  this.id = id,
 	  this.portfolio = undefined,
 	  this.accountBalance = 500000,
-	  this.insideTrader = false
+	  this.hypothetical = false;
 	};
 	
 	User.prototype = {
@@ -283,7 +283,7 @@
 	},
 	spreadRumours: function(share, percentage){
 	  if(senseChecker.isShare(share.shareName)){
-	    if(!this.insideTrader){
+	    if(!this.hypothetical){
 	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
 	      return hypotheticalPrice;
 	    }
@@ -294,7 +294,7 @@
 	},
 	pumpStock: function(share, percentage){
 	  if(senseChecker.isShare(share.shareName)){
-	    if(!this.insideTrader){
+	    if(!this.hypothetical){
 	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
 	      return hypotheticalPrice;
 	    }
