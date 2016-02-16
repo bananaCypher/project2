@@ -54,14 +54,16 @@ sellShort: function(share, quantity, params){
   }
 },
 buyShort: function(investment){
-  if(senseChecker.isInvestment(investment, this)){
-    if(!investment.short){
-      console.log('this action is illegal!');
-    }
-    else{
-      var outlay = investment.share.currentPrice * investment.quantity;
-      this.portfolio.removeInvestment(investment, this);
-      this.accountBalance -= outlay;
+  var outlay = investment.share.currentPrice * investment.quantity;
+  if(senseChecker.maxedAccount(this.accountBalance, outlay)){
+    if(senseChecker.isInvestment(investment, this)){
+      if(!investment.short){
+        console.log('this action is illegal!');
+      }
+      else{
+        this.portfolio.removeInvestment(investment, this);
+        this.accountBalance -= outlay;
+      }
     }
   }
 },
