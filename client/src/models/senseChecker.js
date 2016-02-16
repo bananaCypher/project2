@@ -8,7 +8,7 @@ var senseChecker = {
   },
 
   errorMessage: function(error){
-    var error = 'Error: ' + error;
+    var error = 'Error #' + error;
     this.errorList.push(error);
   },
 
@@ -17,7 +17,7 @@ var senseChecker = {
       return value === share;
     });
     if(filtered.length == 0){
-      this.errorMessage('is not a share');
+      this.errorMessage('1: is not a share');
       return false;
     }
     else{
@@ -27,6 +27,7 @@ var senseChecker = {
 
   isNotNegative: function(quantity){
     if(quantity <= 0){
+      this.errorMessage('2: cannot use negative number');
       return false;
     }
     else{
@@ -37,6 +38,7 @@ var senseChecker = {
   isBelowMax: function(quantity, investment){
     if(quantity > investment.quantity){
       return false;
+      this.errorMessage('3: more shares than available');
     }
     else{
       return true;
@@ -48,6 +50,7 @@ var senseChecker = {
       return value === investment;
     });
     if(filtered.length == 0){
+      this.errorMessage('4: not an investment');
       return false;
     }
     else{
@@ -60,6 +63,7 @@ var senseChecker = {
       return value === region;
     });
     if (filtered.length == 0){
+      this.errorMessage('5: not a region');
       return false;
     }
     else{
