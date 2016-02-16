@@ -61,6 +61,7 @@
 	var showInvestmentInfo = __webpack_require__(12);
 	var notificationArea;
 	
+	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
 	  request.open('GET', '/share/' + share.epic);
@@ -157,6 +158,7 @@
 	  window.setInterval(function(){
 	    getLatestShareInfo();
 	  }, 10000);
+	
 	};
 	
 	//window.onload = init;
@@ -209,8 +211,8 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Investment = __webpack_require__(3)
-	var senseChecker = __webpack_require__(4)
+	var Investment = __webpack_require__(3);
+	var senseChecker = __webpack_require__(4);
 	
 	var User = function(name, id){
 	  this.name = name,
@@ -222,28 +224,24 @@
 	
 	User.prototype = {
 	  buyShares: function(share, quantity, params){
-	    if(senseChecker.isShare(share.shareName)){
-	      var outlay = share.currentPrice * quantity;
-	      if(this.accountBalance < outlay){
-	        //does not have enough money to buy those shares
-	      return;
-	      }
-	      if(this.portfolio.find({shareName: share.shareName})){
-	        var investment = this.portfolio.find({shareName: share.shareName})
-	        investment.quantity += quantity;
-	      }
-	      else {
-	        var investment = new Investment(share, params);
-	        investment.quantity = quantity;
-	        investment.buyPrice = share.currentPrice;
-	        this.portfolio.addInvestment(investment);
-	      }
-	      this.accountBalance -= outlay;
+	    var outlay = share.currentPrice * quantity;
+	    if(senseChecker.isShare(share.shareName) && senseChecker.isQuantity(quantity) && senseChecker.maxedAccount(this.accountBalance, outlay)){
+	        if(this.portfolio.find({shareName: share.shareName})){
+	          var investment = this.portfolio.find({shareName: share.shareName})
+	          investment.quantity += quantity;
+	        }
+	        else {
+	          var investment = new Investment(share, params);
+	          investment.quantity = quantity;
+	          investment.buyPrice = share.currentPrice;
+	          this.portfolio.addInvestment(investment);
+	        }
+	        this.accountBalance -= outlay;
 	    }
 	  },
 	  sellShares: function(investment, quantity){
+	    var outlay = investment.share.currentPrice * quantity;
 	    if(senseChecker.isInvestment(investment, this)){    
-	      var outlay = investment.share.currentPrice * quantity;
 	      if(investment.quantity >= quantity){
 	        investment.quantity -= quantity;
 	        this.accountBalance += outlay;
@@ -251,34 +249,35 @@
 	      else {
 	      // does not have enough shares to sell
 	
-	        this.portfolio.removeInvestment(investment);
-	        this.accountBalance = investment.share.currentPrice * investment.quantity;
-	      }
+	      this.portfolio.removeInvestment(investment, this);
+	      this.accountBalance = investment.share.currentPrice * investment.quantity;
 	    }
-	  },
-	  sellShort: function(share, quantity, params){
-	    if(senseChecker.isShare(share.shareName)){
-	      var outlay = share.currentPrice * quantity;
-	      var investment = new Investment(share, params);
-	      investment.quantity = quantity;
-	      investment.short = true;
-	      this.portfolio.addInvestment(investment);
-	      this.accountBalance += outlay;
+	  }
+	},
+	sellShort: function(share, quantity, params){
+	  if(senseChecker.isShare(share.shareName)){
+	    var outlay = share.currentPrice * quantity;
+	    var investment = new Investment(share, params);
+	    investment.quantity = quantity;
+	    investment.short = true;
+	    this.portfolio.addInvestment(investment);
+	    this.accountBalance += outlay;
+	  }
+	},
+	buyShort: function(investment){
+	  var outlay = investment.share.currentPrice * investment.quantity;
+	  if(senseChecker.maxedAccount(this.accountBalance, outlay) && senseChecker.isInvestment(investment, this)){
+	    if(!investment.short){
+	      console.log('this action is illegal!');
 	    }
-	  },
-	  buyShort: function(investment){
-	    if(senseChecker.isInvestment(investment, this)){
-	      if(!investment.short){
-	        console.log('this action is illegal!');
-	      }
-	      else{
-	        var outlay = investment.share.currentPrice * investment.quantity;
-	        this.portfolio.removeInvestment(investment);
-	        this.accountBalance -= outlay;
-	      }
+	    else{
+	      this.portfolio.removeInvestment(investment, this);
+	      this.accountBalance -= outlay;
 	    }
-	  },
-	  spreadRumours: function(share, percentage){
+	  }
+	},
+	spreadRumours: function(share, percentage){
+	  if(senseChecker.isShare(share.shareName)){
 	    if(!this.insideTrader){
 	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
 	      return hypotheticalPrice;
@@ -286,8 +285,10 @@
 	    else{
 	      share.crashValue(percentage);
 	    }
-	  },
-	  pumpStock: function(share, percentage){
+	  }
+	},
+	pumpStock: function(share, percentage){
+	  if(senseChecker.isShare(share.shareName)){
 	    if(!this.insideTrader){
 	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
 	      return hypotheticalPrice;
@@ -295,34 +296,35 @@
 	    else{
 	      share.inflateValue(percentage);
 	    }
-	  },
-	  pumpRegion: function(region, percentage){
-	    if(senseChecker.isRegion(region)){
-	      for(investment of this.portfolio.investments){
-	        var share = investment.share;
-	        if(share.location === region){
-	          this.pumpStock(share, percentage);
-	        }
-	      }
-	    }
-	  },
-	  crashRegion: function(region, percentage){
-	    if(senseChecker.isRegion(region)){    
-	      for(investment of this.portfolio.investments){
-	        var share = investment.share;
-	        if(share.location === region){
-	          this.spreadRumours(share, percentage);
-	        }
-	      }
-	    }
-	  },
-	
-	  save: function(){
-	    var request = new XMLHttpRequest();
-	    request.open('POST', '/user/' + this.id);
-	    request.setRequestHeader('Content-Type', 'application/json');
-	    request.send(JSON.stringify(this));
 	  }
+	},
+	pumpRegion: function(region, percentage){
+	  if(senseChecker.isRegion(region)){
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.pumpStock(share, percentage);
+	      }
+	    }
+	  }
+	},
+	crashRegion: function(region, percentage){
+	  if(senseChecker.isRegion(region)){    
+	    for(investment of this.portfolio.investments){
+	      var share = investment.share;
+	      if(share.location === region){
+	        this.spreadRumours(share, percentage);
+	      }
+	    }
+	  }
+	},
+	
+	save: function(){
+	  var request = new XMLHttpRequest();
+	  request.open('POST', '/user/' + this.id);
+	  request.setRequestHeader('Content-Type', 'application/json');
+	  request.send(JSON.stringify(this));
+	}
 	
 	}
 	
@@ -383,7 +385,7 @@
 	  },
 	
 	  errorMessage: function(error){
-	    var error = 'Error: ' + error;
+	    var error = 'Error #' + error;
 	    this.errorList.push(error);
 	  },
 	
@@ -392,7 +394,7 @@
 	      return value === share;
 	    });
 	    if(filtered.length == 0){
-	      this.errorMessage('is not a share');
+	      this.errorMessage('1: is not a share');
 	      return false;
 	    }
 	    else{
@@ -402,6 +404,7 @@
 	
 	  isNotNegative: function(quantity){
 	    if(quantity <= 0){
+	      this.errorMessage('2: cannot use negative number');
 	      return false;
 	    }
 	    else{
@@ -412,6 +415,7 @@
 	  isBelowMax: function(quantity, investment){
 	    if(quantity > investment.quantity){
 	      return false;
+	      this.errorMessage('3: more shares than available');
 	    }
 	    else{
 	      return true;
@@ -423,6 +427,7 @@
 	      return value === investment;
 	    });
 	    if(filtered.length == 0){
+	      this.errorMessage('4: not an investment');
 	      return false;
 	    }
 	    else{
@@ -435,6 +440,37 @@
 	      return value === region;
 	    });
 	    if (filtered.length == 0){
+	      this.errorMessage('5: not a region');
+	      return false;
+	    }
+	    else{
+	      return true;
+	    }
+	  },
+	
+	  isGoodPercentage: function(percentage){
+	    if(percentage >= 100){
+	      this.errorMessage('6: cannot reduce by 100% or above');
+	      return false;
+	    }
+	    else{
+	      return true;
+	    }
+	  },
+	
+	  maxedAccount: function(userBalance, spend){
+	    if(userBalance < spend){
+	      this.errorMessage('7: not enough money');
+	      return false;
+	    }
+	    else{
+	      return true;
+	    }
+	  },
+	
+	  isQuantity: function(quantity){
+	    if(typeof quantity != 'number'){
+	      this.errorMessage('8: not a number');
 	      return false;
 	    }
 	    else{
@@ -447,8 +483,10 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var senseChecker = __webpack_require__(4);
+	
 	var Portfolio = function(){
 	  this.investments = [];  
 	}
@@ -456,9 +494,11 @@
 	  addInvestment: function(investment){
 	    this.investments.push(investment);
 	  },
-	  removeInvestment: function(investment){
-	    var index = this.findInvestmentIndex(investment);
-	    this.investments.splice(index, 1);
+	  removeInvestment: function(investment, user){
+	    if(senseChecker.isInvestment(investment, user)){
+	      var index = this.findInvestmentIndex(investment);
+	      this.investments.splice(index, 1);
+	    }
 	  },
 	  findInvestmentIndex: function(investmentToFind){
 	    arrayLoop:
@@ -552,8 +592,11 @@
 
 /***/ },
 /* 6 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var senseChecker = __webpack_require__(4);
+	
+	
 	var Share = function(params){
 	  this.shareName = params.name;
 	  this.epic = params.epic;
@@ -564,10 +607,7 @@
 	
 	Share.prototype = {
 	  crashValue: function(percentage){
-	    if(percentage >= 100){
-	      console.log('cannot reduce a shareprice below zero');
-	    }
-	    else{
+	    if(senseChecker.isGoodPercentage(percentage)){
 	      var newPrice = this.currentPrice * ((100 - percentage)/ 100);
 	      this.currentPrice = newPrice;
 	    }
@@ -1103,6 +1143,37 @@
 	  return form;
 	}
 	
+	var showPreview = function(investment, user){
+	  var preview = document.getElementById('preview');
+	  var buyPreview = document.getElementById('buyPreview');
+	  var sellPreview = document.getElementById('sellPreview');
+	  var buyValue = document.getElementById("buyInput").value;
+	  var sellValue = document.getElementById("sellInput").value;
+	  if(buyValue === ""){
+	  buyPreview.style.display = "none";
+	  }
+	  else {
+	    buyValue = parseInt(buyValue) * investment.share.currentPrice || "";
+	    buyPreview.style.display = "inline-block";
+	    buyPreview.innerHTML = "Buy Price: £" + Number(buyValue / 100).toLocaleString();
+	    if(buyValue > user.accountBalance){
+	      buyPreview.style.color = "red";
+	    }
+	    else {
+	      buyPreview.style.color = "green";
+	    }
+	  }
+	  if(sellValue === ""){
+	    sellPreview.style.display = "none";
+	  }
+	  else{
+	    sellValue = parseInt(sellValue) * investment.share.currentPrice || "";
+	    sellPreview.style.display = "inline-block";
+	    sellPreview.innerHTML = "<br>Sell Value: £" + Number(sellValue / 100).toLocaleString();
+	  }
+	
+	}
+	
 	var showInvestmentInfo = function(inputName, user){
 	  var investment = user.portfolio.find({shareName: inputName });
 	  var buysellView = document.getElementById('buysellView');
@@ -1117,6 +1188,10 @@
 	  buysellView.appendChild(sellForm); 
 	
 	  new TargetChecker(user, investment);
+	
+	  document.onkeyup = function(){
+	    showPreview(investment, user);
+	  }
 	}
 	
 	module.exports = showInvestmentInfo;
