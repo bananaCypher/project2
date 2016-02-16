@@ -36,7 +36,7 @@ describe('Share', function(){
     assert.equal("England", newShare.location)
   });
 
-  // FUNCTIONALITY
+  // MODEL FUNCTIONALITY
   
   it('should be able to crash in price', function(){
     var newSharePrice = newShare.currentPrice;

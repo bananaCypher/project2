@@ -116,12 +116,7 @@ describe('Portfolio', function(){
       portfolio.addInvestment(newInvestment); 
     }
     testUser.portfolio = portfolio;
-  });
-  it('should have an array of Investments', function(){
-    assert.notEqual(portfolio.investments[0].shareName, undefined);
-  }); 
-  it('should be able to add a new Investment', function(){
-    var newData = {
+    newData = {
       "name": "Softcat",
       "epic":"SCT",
       "price": 322.90,
@@ -130,6 +125,15 @@ describe('Portfolio', function(){
       "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
       "buyDate":"2015-02-18"
     }
+  });
+
+  // BASIC MODEL ATTRIBUTES
+  it('should have an array of Investments', function(){
+    assert.notEqual(portfolio.investments[0].shareName, undefined);
+  }); 
+
+  // MODEL FUNCTIONALITY
+  it('should be able to add a new Investment', function(){
     var share = new Share(newData);
     var investment = new Investment(share, newData);
     portfolio.addInvestment(investment);
@@ -142,15 +146,6 @@ describe('Portfolio', function(){
     assert.equal(portfolio.investments.length, previousLength - 1);
   });
   it('should be able to get the array index of a given investment', function(){
-    var newData = {
-      "name": "Softcat",
-      "epic":"SCT",
-      "price": 322.90,
-      "quantity": 2000,
-      "buyPrice": 420.00,
-      "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
-      "buyDate":"2015-02-18"
-    }
     var share = new Share(newData);
     var investment = new Investment(share, newData);
     portfolio.addInvestment(investment);
