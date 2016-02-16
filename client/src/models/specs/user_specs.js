@@ -25,7 +25,7 @@ describe('User', function(){
     testInvestment = new Investment(testShare, testData);
     testPortfolio.investments = [testInvestment];
     testUser.portfolio = testPortfolio;
-    testUser.insideTrader = false;
+    testUser.hypothetical = false;
     testBalance = testUser.accountBalance;
     testPortfolioBalance = testUser.portfolio.totalValue();
     testSharePrice = testShare.currentPrice;
@@ -89,27 +89,18 @@ describe('User', function(){
     expect(testUser.spreadRumours(testShare, 10)).to.equal(108);
   })
 
-  it('should be able to engage in insider trading after opting in', function (){
-    testUser.insideTrader = true;
-    testUser.spreadRumours(testShare, 10);
-    expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
-  });
-
   it('should be able to inflate stocks', function(){
-    testUser.insideTrader = true;
     testUser.pumpStock(testShare, 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   });
 
   it('should be able to inflate stocks by region', function(){
-    testUser.insideTrader = true;
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.pumpRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   });
   
   it('should be able to deflate stocks by region', function(){
-    testUser.insideTrader = true;
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);

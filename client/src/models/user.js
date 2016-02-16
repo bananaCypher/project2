@@ -6,7 +6,7 @@ var User = function(name, id){
   this.id = id,
   this.portfolio = undefined,
   this.accountBalance = 500000,
-  this.insideTrader = false
+  this.hypothetical = false;
 };
 
 User.prototype = {
@@ -70,7 +70,7 @@ buyShort: function(investment, quantity){
 },
 spreadRumours: function(share, percentage){
   if(senseChecker.isShare(share.shareName)){
-    if(!this.insideTrader){
+    if(!this.hypothetical){
       var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
       return hypotheticalPrice;
     }
@@ -81,7 +81,7 @@ spreadRumours: function(share, percentage){
 },
 pumpStock: function(share, percentage){
   if(senseChecker.isShare(share.shareName)){
-    if(!this.insideTrader){
+    if(!this.hypothetical){
       var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
       return hypotheticalPrice;
     }
