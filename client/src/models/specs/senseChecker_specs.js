@@ -71,6 +71,9 @@ describe('senseChecker', function(){
   it('should reject quantity submissions that are not numbers', function(){
     expect(senseChecker.isQuantity('a brick')).to.equal(false);
   });
+  it('should reject quantity submissions that are NaN', function(){
+    expect(senseChecker.isQuantity(NaN)).to.equal(false);
+  });
   it('should pass quantity submissions that are numbers', function(){
     expect(senseChecker.isQuantity(10)).to.equal(true);
   });
