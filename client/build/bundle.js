@@ -264,14 +264,19 @@
 	    this.accountBalance += outlay;
 	  }
 	},
-	buyShort: function(investment){
+	buyShort: function(investment, quantity){
 	  var outlay = investment.share.currentPrice * investment.quantity;
 	  if(senseChecker.maxedAccount(this.accountBalance, outlay) && senseChecker.isInvestment(investment, this)){
 	    if(!investment.short){
-	      console.log('this action is illegal!');
+	      senseChecker.errorMessage('9: this investment is not a short sale');
 	    }
 	    else{
+	      if(investment.quantity < quantity){
+	        investment.quantity -= quantity;
+	      }
+	      else{
 	      this.portfolio.removeInvestment(investment, this);
+	    }
 	      this.accountBalance -= outlay;
 	    }
 	  }
@@ -1102,7 +1107,7 @@
 	    var value = ""
 	  }
 	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity + "<br>Country: " + investment.share.location;
 	  investmentView.appendChild(info); 
 	
 	  index.displayCurrentPortfolioValue(user);
@@ -1120,6 +1125,22 @@
 	    var inputId = "sellInput";
 	    var submitId = "sellSubmit";
 	  }
+	  else if(option === "BuyShort"){
+	    var inputId = "buyShortInput";
+	    var submitId = "buyShortSubmit";
+	  }
+	  else if(option === "SellShort"){
+	    var inputId = "sellShortInput";
+	    var submitId = "sellShortSubmit";
+	  }
+	  else if(option === "CrashStock"){
+	    var inputId = "crashStockInput";
+	    var submitId = "crashStockSubmit";
+	  }
+	  else if(option === 'PumpStock'){
+	    var inputId = "pumpStockInput";
+	    var submitId = "pumpStockSubmit";
+	  }
 	
 	  var form = document.createElement('form');
 	  form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
@@ -1135,12 +1156,42 @@
 	      loadInfo(investment, user);
 	    }
 	    else if(option ==="Sell"){
-	      user.sellShares(investment, parseInt(value)) 
+	      user.sellShares(investment, parseInt(value));
 	      user.save();
 	      loadInfo(investment, user);
 	    }
-	  }  
-	  return form;
+	    else if(option === "BuyShort"){
+	      user.buyShort(investment, parseInt(value));
+	      user.save();
+	      loadInfo(investment, user);
+	    }
+	    else if(option == "SellShort"){
+	      user.sellShort(investment.share, parseInt(value), investment);
+	      user.save();
+	      loadInfo(investment, user);
+	    }
+	    else if(option === "CrashStock"){
+	      user.spreadRumours(investment.share, parseInt(value));
+	      user.save();
+	      loadInfo(investment, user);
+	    }
+	    else if(option === "PumpStock"){
+	     user.pumpStock(investment.share, parseInt(value));
+	     user.save();
+	     loadInfo(investment, user);
+	   }   
+	   else if(option === "CrashRegion"){
+	    user.crashRegion(investment.share.location, parseInt(value));
+	     user.save();
+	     loadInfo(investment, user);
+	   }   
+	   else if(option === "PumpRegion"){
+	    user.pumpRegion(investment.share.location, parseInt(value));
+	     user.save();
+	     loadInfo(investment, user);
+	   }
+	 }
+	 return form;
 	}
 	
 	var showPreview = function(investment, user){
@@ -1150,7 +1201,7 @@
 	  var buyAmount = document.getElementById("buyInput").value;
 	  var sellAmount = document.getElementById("sellInput").value;
 	  if(buyAmount === ""){
-	  buyPreview.style.display = "none";
+	    buyPreview.style.display = "none";
 	  }
 	  else {
 	    var buyValue = parseInt(buyAmount) * investment.share.currentPrice || "";
@@ -1178,8 +1229,6 @@
 	      sellPreview.innerHTML = "<br>Not enough shares held.";
 	    }
 	    
-	    
-	
 	  }
 	
 	}
@@ -1193,8 +1242,20 @@
 	
 	  var buyForm = new TradeForm("Buy", user, investment);
 	  var sellForm = new TradeForm("Sell", user, investment);
+	  var sellShortForm = new TradeForm("SellShort", user, investment);
+	  var buyShortForm = new TradeForm("BuyShort", user, investment);
+	  var crashStockForm = new TradeForm("CrashStock", user, investment);
+	  var pumpStockForm = new TradeForm("PumpStock", user, investment);
+	  var crashRegionForm = new TradeForm("CrashRegion", user, investment);
+	  var pumpRegionForm = new TradeForm("PumpRegion", user, investment);
 	  buysellView.appendChild(buyForm); 
 	  buysellView.appendChild(sellForm); 
+	  buysellView.appendChild(buyShortForm); 
+	  buysellView.appendChild(sellShortForm); 
+	  buysellView.appendChild(crashStockForm); 
+	  buysellView.appendChild(pumpStockForm); 
+	  buysellView.appendChild(crashRegionForm); 
+	  buysellView.appendChild(pumpRegionForm); 
 	
 	  new TargetChecker(user, investment);
 	

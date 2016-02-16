@@ -14,7 +14,7 @@ var loadInfo = function(investment, user){
     var value = ""
   }
   var info = document.createElement('p');
-  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity + "<br>Country: " + investment.share.location;
   investmentView.appendChild(info); 
 
   index.displayCurrentPortfolioValue(user);
@@ -86,12 +86,22 @@ var TradeForm = function(option, user, investment){
      user.pumpStock(investment.share, parseInt(value));
      user.save();
      loadInfo(investment, user);
-   }  
-}
-   return form;
+   }   
+   else if(option === "CrashRegion"){
+    user.crashRegion(investment.share.location, parseInt(value));
+     user.save();
+     loadInfo(investment, user);
+   }   
+   else if(option === "PumpRegion"){
+    user.pumpRegion(investment.share.location, parseInt(value));
+     user.save();
+     loadInfo(investment, user);
+   }
  }
+ return form;
+}
 
- var showPreview = function(investment, user){
+var showPreview = function(investment, user){
   var preview = document.getElementById('preview');
   var buyPreview = document.getElementById('buyPreview');
   var sellPreview = document.getElementById('sellPreview');
@@ -143,12 +153,16 @@ var showInvestmentInfo = function(inputName, user){
   var buyShortForm = new TradeForm("BuyShort", user, investment);
   var crashStockForm = new TradeForm("CrashStock", user, investment);
   var pumpStockForm = new TradeForm("PumpStock", user, investment);
+  var crashRegionForm = new TradeForm("CrashRegion", user, investment);
+  var pumpRegionForm = new TradeForm("PumpRegion", user, investment);
   buysellView.appendChild(buyForm); 
   buysellView.appendChild(sellForm); 
   buysellView.appendChild(buyShortForm); 
   buysellView.appendChild(sellShortForm); 
   buysellView.appendChild(crashStockForm); 
   buysellView.appendChild(pumpStockForm); 
+  buysellView.appendChild(crashRegionForm); 
+  buysellView.appendChild(pumpRegionForm); 
 
   new TargetChecker(user, investment);
 
