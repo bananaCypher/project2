@@ -108,7 +108,7 @@ describe('User', function(){
 
   it('should be unable to sell more shares than are in an investment', function(){
     testUser.sellShares(testInvestment, 3000);
-    expect(testUser.portfolio.investments[0]).to.equal(testInvestment);
+    expect(testUser.portfolio.investments[0].quantity).to.equal(testInvestment.quantity);
   });
 
   // EDGE CASES
