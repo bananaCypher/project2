@@ -10,51 +10,55 @@ var User = function(name){
 
 User.prototype = {
   buyShares: function(share, quantity, params){
-if(senseChecker.isShare(share.shareName)){
-    var outlay = share.currentPrice * quantity;
+    if(senseChecker.isShare(share.shareName)){
+      var outlay = share.currentPrice * quantity;
 
-    if(this.portfolio.find({shareName: share.shareName})){
-      var investment = this.portfolio.find({shareName: share.shareName})
-      investment.quantity += quantity;
+      if(this.portfolio.find({shareName: share.shareName})){
+        var investment = this.portfolio.find({shareName: share.shareName})
+        investment.quantity += quantity;
+      }
+      else {
+        var investment = new Investment(share, params);
+        investment.quantity = quantity;
+        investment.buyPrice = share.currentPrice;
+        this.portfolio.addInvestment(investment);
+      }
+      this.accountBalance -= outlay;
     }
-    else {
-      var investment = new Investment(share, params);
-      investment.quantity = quantity;
-      investment.buyPrice = share.currentPrice;
-      this.portfolio.addInvestment(investment);
-    }
-    this.accountBalance -= outlay;
-  }
   },
   sellShares: function(investment, quantity){
-if(senseChecker.isInvestment(investment, this)){    
-  var outlay = investment.share.currentPrice * quantity;
-    if(investment.quantity >= quantity){
-      investment.quantity -= quantity;
-      this.accountBalance += outlay;
+    if(senseChecker.isInvestment(investment, this)){    
+      var outlay = investment.share.currentPrice * quantity;
+      if(investment.quantity >= quantity){
+        investment.quantity -= quantity;
+        this.accountBalance += outlay;
+      }
+      else {
+        this.portfolio.removeInvestment(investment);
+        this.accountBalance = investment.share.currentPrice * investment.quantity;
+      }
     }
-    else {
-      this.portfolio.removeInvestment(investment);
-      this.accountBalance = investment.share.currentPrice * investment.quantity;
-    }
-  }
   },
   sellShort: function(share, quantity, params){
-    var outlay = share.currentPrice * quantity;
-    var investment = new Investment(share, params);
-    investment.quantity = quantity;
-    investment.short = true;
-    this.portfolio.addInvestment(investment);
-    this.accountBalance += outlay;
+    if(senseChecker.isShare(share.shareName)){
+      var outlay = share.currentPrice * quantity;
+      var investment = new Investment(share, params);
+      investment.quantity = quantity;
+      investment.short = true;
+      this.portfolio.addInvestment(investment);
+      this.accountBalance += outlay;
+    }
   },
   buyShort: function(investment){
-    if(!investment.short){
-      console.log('this action is illegal!');
-    }
-    else{
-      var outlay = investment.share.currentPrice * investment.quantity;
-      this.portfolio.removeInvestment(investment);
-      this.accountBalance -= outlay;
+    if(senseChecker.isInvestment(investment, this)){
+      if(!investment.short){
+        console.log('this action is illegal!');
+      }
+      else{
+        var outlay = investment.share.currentPrice * investment.quantity;
+        this.portfolio.removeInvestment(investment);
+        this.accountBalance -= outlay;
+      }
     }
   },
   spreadRumours: function(share, percentage){
@@ -86,10 +90,12 @@ if(senseChecker.isInvestment(investment, this)){
     }
   },
   crashRegion: function(region, percentage){
-    for(investment of this.portfolio.investments){
-      var share = investment.share;
-      if(share.location === region){
-        this.spreadRumours(share, percentage);
+    if(senseChecker.isRegion(region)){    
+      for(investment of this.portfolio.investments){
+        var share = investment.share;
+        if(share.location === region){
+          this.spreadRumours(share, percentage);
+        }
       }
     }
   },
