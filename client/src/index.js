@@ -26,7 +26,7 @@ var displayCurrentPortfolioValue = function(){
 var displayAccountBalance = function(){
   var balanceInfo = document.getElementById('balanceInfo');
   var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
   balanceInfo.appendChild(p);
 }
 
@@ -88,6 +88,7 @@ var init = function(){
   var portfolioButton = document.getElementById('portfolioView');
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
+  var targetsView = document.getElementById('targetsView');
 
   Highcharts.setOptions(chartStyles);
 
@@ -103,7 +104,8 @@ var init = function(){
   };
   portfolioButton.onclick = function(){
     investmentInfo.style.display = "none";
-    portfolioInfo.style.display = "block"
+    portfolioInfo.style.display = "block";
+    targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
     new scatterChart();
   }

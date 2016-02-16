@@ -72,7 +72,7 @@
 	var displayAccountBalance = function(){
 	  var balanceInfo = document.getElementById('balanceInfo');
 	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
 	  balanceInfo.appendChild(p);
 	}
 	
@@ -134,6 +134,7 @@
 	  var portfolioButton = document.getElementById('portfolioView');
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
+	  var targetsView = document.getElementById('targetsView');
 	
 	  Highcharts.setOptions(chartStyles);
 	
@@ -149,7 +150,8 @@
 	  };
 	  portfolioButton.onclick = function(){
 	    investmentInfo.style.display = "none";
-	    portfolioInfo.style.display = "block"
+	    portfolioInfo.style.display = "block";
+	    targetsView.innerHTML = "";
 	    new pieChart(Barry.portfolio);
 	    new scatterChart();
 	  }
@@ -308,7 +310,7 @@
 	var User = function(name){
 	  this.name = name,
 	  this.portfolio = undefined,
-	  this.accountBalance = 5000,
+	  this.accountBalance = 500000,
 	  this.insideTrader = false
 	};
 	
@@ -986,6 +988,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var singleScatterChart = __webpack_require__(11);
+	var TargetChecker = __webpack_require__(12);
 	
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
@@ -999,7 +1002,7 @@
 	    var value = ""
 	  }
 	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
 	
 	  investmentView.appendChild(info); 
 	
@@ -1012,7 +1015,7 @@
 	  var balanceInfo = document.getElementById('balanceInfo');
 	  balanceInfo.innerHTML = "";
 	  var p = document.createElement('p');
-	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+	  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
 	  balanceInfo.appendChild(p);
 	
 	}
@@ -1060,6 +1063,8 @@
 	
 	  buysellView.appendChild(buyForm); 
 	  buysellView.appendChild(sellForm); 
+	
+	  new TargetChecker(user, investment);
 	}
 	
 	
@@ -1126,6 +1131,58 @@
 	
 	module.exports = SingleScatterChart;
 
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	var TargetChecker = function(user, investment){
+	  var targetsView = document.getElementById('targetsView');
+	  targetsView.innerHTML = "";
+	
+	  var p = document.createElement('p');
+	  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue'><button id='targetValueButton'>Check</button><br>Price required to meet this target with current share quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current growth continues: <span id='targetValueDays'></span>";
+	
+	  targetsView.appendChild(p);
+	
+	  var button = document.getElementById('targetValueButton');
+	
+	  button.onclick = function(){
+	    var input = document.getElementById('targetValue').value;
+	    if(input === ""){
+	      return;
+	    }
+	    input = parseInt(input) * 100;
+	    console.log(input);
+	
+	    var calcPrice = function(){
+	      var price = input / investment.quantity;
+	      return price.toFixed(2);
+	    }
+	    var calcDays = function(){
+	      if(parseInt(input) <= investment.currentValue()){
+	        return "Investment already meets this value!"
+	      }
+	      else {
+	        var difference = parseInt(input) - investment.currentValue();
+	        var averageIncrease = (investment.currentValue() - (investment.share.pastCloseOfDayPrices[0] * investment.quantity)) / 8;
+	        console.log(investment.share.pastCloseOfDayPrices[0] * investment.quantity)
+	        var days = difference / averageIncrease;
+	        if(days < 0){
+	          return "Investment value is currently decreasing."
+	        }
+	        return Math.ceil(days);
+	      }
+	    }
+	
+	    var spanPrice = document.getElementById('targetValuePrice');
+	    spanPrice.innerText = calcPrice() + " GBX";
+	    var spanDays = document.getElementById('targetValueDays');
+	    spanDays.innerText = calcDays();
+	  }
+	}
+	
+	module.exports = TargetChecker;
 
 /***/ }
 /******/ ]);
