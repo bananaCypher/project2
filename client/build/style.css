@@ -139,6 +139,11 @@ input[type=text] {
   font-size: 1em;
 }
 
+#targetValuePrice, #targetValueDays {
+  color: rgba(110,216,84, 0.7);
+  font-weight: bold;
+}
+
 /* Notification */
 div#notifications {
   width: 50px;

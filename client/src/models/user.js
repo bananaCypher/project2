@@ -1,10 +1,11 @@
 var Investment = require('./investment.js')
 var senseChecker = require('./senseChecker.js')
 
-var User = function(name){
+var User = function(name, id){
   this.name = name,
+  this.id = id,
   this.portfolio = undefined,
-  this.accountBalance = 5000,
+  this.accountBalance = 500000,
   this.insideTrader = false
 };
 
@@ -12,7 +13,10 @@ User.prototype = {
   buyShares: function(share, quantity, params){
     if(senseChecker.isShare(share.shareName)){
       var outlay = share.currentPrice * quantity;
-
+      if(this.accountBalance < outlay){
+        //does not have enough money to buy those shares
+      return;
+      }
       if(this.portfolio.find({shareName: share.shareName})){
         var investment = this.portfolio.find({shareName: share.shareName})
         investment.quantity += quantity;
@@ -34,6 +38,8 @@ User.prototype = {
         this.accountBalance += outlay;
       }
       else {
+      // does not have enough shares to sell
+
         this.portfolio.removeInvestment(investment);
         this.accountBalance = investment.share.currentPrice * investment.quantity;
       }
@@ -99,6 +105,14 @@ User.prototype = {
       }
     }
   },
+
+  save: function(){
+    var request = new XMLHttpRequest();
+    request.open('POST', '/user/' + this.id);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(JSON.stringify(this));
+  }
+
 }
 
 module.exports = User;

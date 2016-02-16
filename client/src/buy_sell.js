@@ -1,4 +1,5 @@
 var singleScatterChart = require('./charts/singleScatterChart.js');
+var TargetChecker = require('./targets.js');
 
 var loadInfo = function(investment, user){
   new singleScatterChart(investment);
@@ -12,8 +13,7 @@ var loadInfo = function(investment, user){
     var value = ""
   }
   var info = document.createElement('p');
-  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "Average for Last 7 Days: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
-
+  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity;
   investmentView.appendChild(info); 
 
   var basicInfo = document.getElementById('basicInfo');
@@ -25,9 +25,8 @@ var loadInfo = function(investment, user){
   var balanceInfo = document.getElementById('balanceInfo');
   balanceInfo.innerHTML = "";
   var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance).toLocaleString();
+  p.innerHTML = "<h2>Account Credit</h2>£" + Number(user.accountBalance / 100).toLocaleString();
   balanceInfo.appendChild(p);
-
 }
 
 var TradeForm = function(option, user, investment){
@@ -51,10 +50,12 @@ var TradeForm = function(option, user, investment){
 
     if(option === "Buy"){
       user.buyShares(investment.share, parseInt(value), investment);
+      user.save();
       loadInfo(investment, user);
     }
     else if(option ==="Sell"){
       user.sellShares(investment, parseInt(value)) 
+      user.save();
       loadInfo(investment, user);
     }
   }  
@@ -73,7 +74,9 @@ var showInvestmentInfo = function(inputName, user){
 
   buysellView.appendChild(buyForm); 
   buysellView.appendChild(sellForm); 
+
+  new TargetChecker(user, investment);
 }
 
-
 module.exports = showInvestmentInfo;
+

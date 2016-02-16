@@ -1,4 +1,10 @@
-var Barry = require('./seedObjects.js');
+var Barry;
+var getUser = require('./getUser.js');
+getUser('Barry Manilow', function(user) {
+  Barry = user;
+  init();
+});
+
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
@@ -27,7 +33,7 @@ var displayCurrentPortfolioValue = function(){
 var displayAccountBalance = function(){
   var balanceInfo = document.getElementById('balanceInfo');
   var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
+  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance / 100).toLocaleString();
   balanceInfo.appendChild(p);
 }
 
@@ -77,19 +83,18 @@ var setUpPriceWatchers = function(){
             });
         }
       }
+      Barry.save();
     });
   }
 }
 
 var init = function(){
   console.log('I have loaded');
-  console.log(Barry);
-
-
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
+
   var errorList = document.getElementById('errorList');
 
 // ERRORLIST POPULATION
@@ -109,6 +114,9 @@ var init = function(){
 
   senseChecker.errorList.push('seriously, nothing works in Firefox');
 
+  var targetsView = document.getElementById('targetsView');
+
+
   Highcharts.setOptions(chartStyles);
 
   populateSelect();
@@ -121,9 +129,11 @@ var init = function(){
     investmentInfo.style.display = "block";
     showInvestmentInfo(shareSelect.value, Barry);
   };
+  
   portfolioButton.onclick = function(){
     investmentInfo.style.display = "none";
-    portfolioInfo.style.display = "block"
+    portfolioInfo.style.display = "block";
+    targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
     new scatterChart();
   }
@@ -134,4 +144,4 @@ var init = function(){
   }, 10000);
 };
 
-window.onload = init;
+//window.onload = init;

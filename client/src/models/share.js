@@ -4,7 +4,6 @@ var Share = function(params){
   this.location = params.location;
   this.currentPrice = params.price;
   this.pastCloseOfDayPrices = params.pastCloseOfDayPrices;
-  this.location = params.location;
 };
 
 Share.prototype = {
