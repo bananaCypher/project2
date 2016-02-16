@@ -93,7 +93,13 @@
 	}
 	
 	var showTargets = function(){
-	
+	  var targetsArea = document.getElementById('targets')
+	  targetsArea.innerHTML = '';
+	  for (var target of Barry.targets) {
+	    var p = document.createElement('p');
+	    p.innerText = target.description;
+	    targetsArea.appendChild(p); 
+	  }
 	}
 	
 	var updateShare = function(share){
@@ -146,6 +152,7 @@
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
 	  var targetsInfo = document.getElementById('targetsInfo');
+	  var targetFormButton = document.getElementById('targetFormButton');
 	
 	  Highcharts.setOptions(chartStyles);
 	
@@ -180,20 +187,22 @@
 	  window.setInterval(function(){
 	    getLatestShareInfo();
 	  }, 10000);
-	
 	  var portfolioTarget = new Target({
+	    description: 'Get portfolio value to above £65,000',
 	    object: Barry.portfolio,
 	    property: 'totalValue',
 	    check: 'gt',
 	    target: 6500000,
 	    checkTime: 10000
 	  }, function(){
+	    Barry.targets.splice(Barry.targets.indexOf(portfolioTarget), 1);
 	    notificationArea.newNotification({
 	      title: 'Target reached!',
 	      content: 'You have reached your target of getting your portfolio value to £65,000',
 	      type: 'success'
 	    });
 	  })
+	  Barry.targets.push(portfolioTarget);
 	};
 	
 	//window.onload = init;
@@ -209,6 +218,7 @@
 	  this.check = params.check;
 	  this.target = params.target;
 	  this.checkTime = params.checkTime || 1000;
+	  this.description = params.description || this.property + ' ' + this.check + ' ' + this.target;
 	  this.callback = callback;
 	  this.observeFunction = function(){
 	    for (var key in this.object) {
@@ -227,6 +237,25 @@
 	  this.setupWatcher();
 	}
 	Target.prototype = {
+	  fullCheck: function(){
+	    switch(this.check) {
+	      case 'gt':
+	        return 'greater than';
+	        break;
+	      case 'gte':
+	        return 'greater than or equal to'
+	        break;
+	      case 'eq':
+	        return 'equal to'
+	        break;
+	      case 'lte':
+	        return 'less than or equal to'
+	        break;
+	      case 'lt':
+	        return 'less than'
+	        break;
+	    }
+	  },
 	  setupWatcher: function(){
 	    setTimeout(this.observeFunction, this.checkTime);
 	  },
@@ -277,6 +306,7 @@
 	var Portfolio = __webpack_require__(5);
 	var Investment = __webpack_require__(4);
 	var Share = __webpack_require__(6);
+	var Target = __webpack_require__(1);
 	var Barry;
 	
 	var getUser = function (userName, callback) {
@@ -286,7 +316,6 @@
 	    if (request.status === 200) {
 	      data = JSON.parse(request.responseText);
 	      Barry = new User(data.name, data._id);
-	      console.log(data);
 	      Barry.accountBalance = data.accountBalance;
 	      Barry.insideTrader = data.insideTrader;
 	

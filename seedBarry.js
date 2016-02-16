@@ -134,9 +134,8 @@ Barry.portfolio = barryPortfolio;
 var update = Barry;
 
 var query = UserModel.where({name: 'Barry Manilow'});
-query.update(update, function(err, user){
+query.remove(function(err){
   if(err){ console.log(err) }
-  console.log(user);
 });
 UserModel.create(update, function(err, user){
   if(err){ console.log(err) }

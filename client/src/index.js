@@ -47,7 +47,13 @@ var populateSelect = function(){
 }
 
 var showTargets = function(){
-
+  var targetsArea = document.getElementById('targets')
+  targetsArea.innerHTML = '';
+  for (var target of Barry.targets) {
+    var p = document.createElement('p');
+    p.innerText = target.description;
+    targetsArea.appendChild(p); 
+  }
 }
 
 var updateShare = function(share){
@@ -100,6 +106,7 @@ var init = function(){
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
   var targetsInfo = document.getElementById('targetsInfo');
+  var targetFormButton = document.getElementById('targetFormButton');
 
   Highcharts.setOptions(chartStyles);
 
@@ -134,20 +141,22 @@ var init = function(){
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
-
   var portfolioTarget = new Target({
+    description: 'Get portfolio value to above £65,000',
     object: Barry.portfolio,
     property: 'totalValue',
     check: 'gt',
     target: 6500000,
     checkTime: 10000
   }, function(){
+    Barry.targets.splice(Barry.targets.indexOf(portfolioTarget), 1);
     notificationArea.newNotification({
       title: 'Target reached!',
       content: 'You have reached your target of getting your portfolio value to £65,000',
       type: 'success'
     });
   })
+  Barry.targets.push(portfolioTarget);
 };
 
 //window.onload = init;

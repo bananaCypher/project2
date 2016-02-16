@@ -4,6 +4,7 @@ var Target = function(params, callback){
   this.check = params.check;
   this.target = params.target;
   this.checkTime = params.checkTime || 1000;
+  this.description = params.description || this.property + ' ' + this.check + ' ' + this.target;
   this.callback = callback;
   this.observeFunction = function(){
     for (var key in this.object) {
@@ -22,6 +23,25 @@ var Target = function(params, callback){
   this.setupWatcher();
 }
 Target.prototype = {
+  fullCheck: function(){
+    switch(this.check) {
+      case 'gt':
+        return 'greater than';
+        break;
+      case 'gte':
+        return 'greater than or equal to'
+        break;
+      case 'eq':
+        return 'equal to'
+        break;
+      case 'lte':
+        return 'less than or equal to'
+        break;
+      case 'lt':
+        return 'less than'
+        break;
+    }
+  },
   setupWatcher: function(){
     setTimeout(this.observeFunction, this.checkTime);
   },
