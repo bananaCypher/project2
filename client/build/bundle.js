@@ -317,7 +317,9 @@
 	User.prototype = {
 	  buyShares: function(share, quantity, params){
 	    var outlay = share.currentPrice * quantity;
-	
+	    if(this.accountBalance < outlay){
+	    return;
+	    }
 	    if(this.portfolio.find({shareName: share.shareName})){
 	      var investment = this.portfolio.find({shareName: share.shareName})
 	      investment.quantity += quantity;
@@ -337,8 +339,8 @@
 	      this.accountBalance += outlay;
 	    }
 	    else {
-	      this.portfolio.removeInvestment(investment);
-	      this.accountBalance = investment.share.currentPrice * investment.quantity;
+	      // this.portfolio.removeInvestment(investment);
+	      // this.accountBalance = investment.share.currentPrice * investment.quantity;
 	    }
 	  },
 	  sellShort: function(share, quantity, params){
