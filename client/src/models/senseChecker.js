@@ -69,6 +69,16 @@ var senseChecker = {
     else{
       return true;
     }
+  },
+
+  maxedAccount: function(userBalance, spend){
+    if(userBalance < spend){
+      this.errorMessage('6: not enough money');
+      return false;
+    }
+    else{
+      return true;
+    }
   }
 }
 

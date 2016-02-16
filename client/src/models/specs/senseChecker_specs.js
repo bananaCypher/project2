@@ -59,9 +59,14 @@ describe('senseChecker', function(){
   it('should pass positive numbers lower than testInvestment.quantity', function(){
     expect(senseChecker.isBelowMax(1000, testInvestment)).to.equal(true);
   });
+  it('should reject buy attempts that exceed user balance', function(){
+    testUser.buyShares(testShare, 10000, testData);
+    expect(testUser.accountBalance).to.equal(testBalance);
+  });
   it('should pass failures to an errorlist', function(){
+    senseChecker.errorList = [];
     senseChecker.isShare('ObviousFake');
-    expect(senseChecker.errorList[0]).to.equal('Error: is not a share');
+    expect(senseChecker.errorList[0]).to.equal('Error #1: is not a share');
   });
 
 })
