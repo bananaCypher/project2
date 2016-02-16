@@ -34,10 +34,7 @@ User.prototype = {
         this.accountBalance += outlay;
       }
       else {
-      // does not have enough shares to sell
-
-      this.portfolio.removeInvestment(investment, this);
-      this.accountBalance = investment.share.currentPrice * investment.quantity;
+      // does not have enough shares to sell. user must input a lower number. 
     }
   }
 },

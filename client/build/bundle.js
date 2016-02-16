@@ -56,7 +56,6 @@
 	var pieChart = __webpack_require__(9);
 	var chartStyles = __webpack_require__(10);
 	var NotificationArea = __webpack_require__(11);
-	
 	var senseChecker = __webpack_require__(4);
 	var showInvestmentInfo = __webpack_require__(12);
 	var notificationArea;
@@ -111,27 +110,32 @@
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
 	
-	  var errorList = document.getElementById('errorList');
+	  var errorList = document.getElementById('errorNotifications');
+	  var errorImage = document.getElementById('errorImage');
+	
+	  errorImage.onclick = function(){
+	    errorList.style.width = "295px";
+	    errorList.firstChild.style.display = "inline-block";
+	    errorImage.style.display = "none"
+	    setTimeout(function(){
+	     errorList.style.width = "0"; 
+	     errorList.firstChild.style.display = "none"; 
+	   }, 4000)
+	  }
 	
 	// ERRORLIST POPULATION
 	
-	  // Object.observe(senseChecker, function(changes){
-	  //   for(change of changes){
-	  //     if(change.name == 'errorList'){
-	  //       errorList.innerHTML = '';
-	  //       for(error of change.object.errorList){
-	  //         var li = document.createElement('li');
-	  //         li.innerText = error;
-	  //         errorList.appendChild(li);
-	  //       }
-	  //     }
-	  //   }
-	  // });
-	
-	  senseChecker.errorList.push('seriously, nothing works in Firefox');
+	  Object.observe(senseChecker.errorList, function(changes){
+	    
+	        errorList.innerHTML = '';
+	        errorImage.style.display = "inline-block";
+	        var li = document.createElement('li');
+	        li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+	        errorList.appendChild(li);
+	        }
+	    );
 	
 	  var targetsView = document.getElementById('targetsView');
-	
 	
 	  Highcharts.setOptions(chartStyles);
 	
@@ -247,10 +251,7 @@
 	        this.accountBalance += outlay;
 	      }
 	      else {
-	      // does not have enough shares to sell
-	
-	      this.portfolio.removeInvestment(investment, this);
-	      this.accountBalance = investment.share.currentPrice * investment.quantity;
+	      // does not have enough shares to sell. user must input a lower number. 
 	    }
 	  }
 	},
@@ -391,7 +392,9 @@
 	
 	  errorMessage: function(error){
 	    var error = 'Error #' + error;
-	    this.errorList.push(error);
+	    var newErrorList = this.errorList;
+	    newErrorList.push(error);
+	    this.errorList = newErrorList;
 	  },
 	
 	  isShare: function(share){
@@ -1156,7 +1159,6 @@
 	  form.onsubmit = function(event){
 	    var value = document.getElementById(inputId).value;
 	    event.preventDefault();
-	    console.log("form submit", value);
 	
 	    if(option === "Buy"){
 	      user.buyShares(investment.share, parseInt(value), investment);

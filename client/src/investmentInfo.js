@@ -63,7 +63,6 @@ var TradeForm = function(option, user, investment){
   form.onsubmit = function(event){
     var value = document.getElementById(inputId).value;
     event.preventDefault();
-    console.log("form submit", value);
 
     if(option === "Buy"){
       user.buyShares(investment.share, parseInt(value), investment);
