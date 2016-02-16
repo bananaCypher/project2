@@ -2,6 +2,7 @@ var User = require('../user.js');
 var Portfolio = require('../portfolio');
 var Investment = require('../investment.js');
 var Share = require('../share.js');
+var Target = require('../target.js');
 
 var chai = require('chai')
 var assert = chai.assert;
@@ -109,5 +110,15 @@ describe('User', function(){
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
+  });
+  it('should be able to have targets', function(){
+    var target = new Target({
+      object: testInvestment,
+      property: 'currentValue',
+      check: 'gt',
+      target: 30100
+    }, function(){});
+    testUser.targets.push(target);
+    expect(testUser.targets.length).to.equal(1);
   });
 })

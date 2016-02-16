@@ -46,6 +46,10 @@ var populateSelect = function(){
   }
 }
 
+var showTargets = function(){
+
+}
+
 var updateShare = function(share){
   var request = new XMLHttpRequest();
   request.open('GET', '/share/' + share.epic);
@@ -92,9 +96,10 @@ var init = function(){
   console.log('I have loaded');
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
+  var targetsButton = document.getElementById('targetsButton');
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
-  var targetsView = document.getElementById('targetsView');
+  var targetsInfo = document.getElementById('targetsInfo');
 
   Highcharts.setOptions(chartStyles);
 
@@ -105,15 +110,24 @@ var init = function(){
 
   shareSelect.onchange = function(){
     portfolioInfo.style.display = "none";
+    targetsInfo.style.display = "none";
     investmentInfo.style.display = "block";
     showInvestmentInfo(shareSelect.value, Barry);
   };
   portfolioButton.onclick = function(){
     investmentInfo.style.display = "none";
+    targetsInfo.style.display = "none";
     portfolioInfo.style.display = "block";
     targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
     new scatterChart();
+  }
+  targetsButton.onclick = function(){
+    portfolioInfo.style.display = "none";
+    investmentInfo.style.display = "none";
+    targetsInfo.style.display = "block";
+    targetsView.innerHTML = "";
+    showTargets();
   }
   notificationArea = new NotificationArea();  
   setUpPriceWatchers();
