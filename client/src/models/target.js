@@ -6,11 +6,13 @@ var Target = function(params, callback){
   this.checkTime = params.checkTime || 1000;
   this.description = params.description || this.property + ' ' + this.check + ' ' + this.target;
   this.callback = callback;
+  this.complete = false;
   this.observeFunction = function(){
     for (var key in this.object) {
       if(key == this.property || typeof(this.object[this.property]) == 'function'){
         var result = this.hasMetTarget();
         if(result == true){
+          this.complete = true;
           this.callback();
           return;
         } else {

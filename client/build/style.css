@@ -282,3 +282,8 @@ div.notification-success h2, div.notification-success span {
 .pulse {
   animation: pulse linear 1.5s infinite;
 }
+ /* Targets */
+.completed-target {
+  text-decoration: line-through;  
+  color: #bde6b5;
+}

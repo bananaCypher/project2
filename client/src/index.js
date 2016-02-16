@@ -20,9 +20,14 @@ var showTargets = function(){
   var targetsArea = document.getElementById('targets')
   targetsArea.innerHTML = '';
   for (var target of Barry.targets) {
-    var p = document.createElement('p');
-    p.innerText = target.description;
-    targetsArea.appendChild(p); 
+    var li = document.createElement('li');
+    if(target.complete == true){
+      li.classList.add('completed-target')
+    } else {
+      li.classList.add('incomplete-target');
+    }
+    li.innerText = target.description;
+    targetsArea.appendChild(li); 
   }
 }
 
@@ -139,6 +144,7 @@ var init = function(){
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
+  //Create Targets
   var portfolioTarget = new Target({
     description: 'Get portfolio value to above £65,000',
     object: Barry.portfolio,
@@ -147,10 +153,26 @@ var init = function(){
     target: 6500000,
     checkTime: 10000
   }, function(){
-    Barry.targets.splice(Barry.targets.indexOf(portfolioTarget), 1);
+    showTargets();
     notificationArea.newNotification({
       title: 'Target reached!',
       content: 'You have reached your target of getting your portfolio value to £65,000',
+      type: 'success'
+    });
+  })
+  Barry.targets.push(portfolioTarget);
+  var portfolioTarget = new Target({
+    description: 'Get portfolio value to above £100,000',
+    object: Barry.portfolio,
+    property: 'totalValue',
+    check: 'gt',
+    target: 10000000,
+    checkTime: 10000
+  }, function(){
+    showTargets();
+    notificationArea.newNotification({
+      title: 'Target reached!',
+      content: 'You have reached your target of getting your portfolio value to £100,000',
       type: 'success'
     });
   })
