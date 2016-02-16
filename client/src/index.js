@@ -68,10 +68,12 @@ var init = function(){
   var errorImage = document.getElementById('errorImage');
 
   errorImage.onclick = function(){
-    errorList.style.display = "inline-block";
+    errorList.style.width = "295px";
+    errorList.firstChild.style.display = "inline-block";
     errorImage.style.display = "none"
     setTimeout(function(){
-     errorList.style.display = "none"; 
+     errorList.style.width = "0"; 
+     errorList.firstChild.style.display = "none"; 
    }, 4000)
   }
 

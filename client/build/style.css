@@ -168,23 +168,26 @@ div#errorImage {
   display: none;
 }
 
-div#errorNotifications {
+#errorNotifications {
   float: right;
-  margin-right: 105px;
-  display: none;
-}
-
-div#errorNotifications ul {
-  display: inline-block;
-  margin: 0;
+  margin: 0 105px 0 0;
   padding: 0;
-  width: 295px;
+  width: 0;
+  display: inline-block;
+  transition: width 2s;
 }
 
-div#errorNotifications li {
-  width: 295px;
+#errorNotifications li {
+  width: 285px;
+  display: none;
   list-style: none;
-  line-height: 44px;
+  line-height: 30px;
+  padding: 3px 20px;
+  font: bold 20px "Unica One";
+  text-transform: uppercase;
+  background-color: #323232;
+  border: 2px solid rgb(215,40,40);
+  border-radius: 25px;
 }
 
 div#notifications img, div#errorImage img {

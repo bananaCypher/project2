@@ -114,10 +114,12 @@
 	  var errorImage = document.getElementById('errorImage');
 	
 	  errorImage.onclick = function(){
-	    errorList.style.display = "inline-block";
+	    errorList.style.width = "295px";
+	    errorList.firstChild.style.display = "inline-block";
 	    errorImage.style.display = "none"
 	    setTimeout(function(){
-	     errorList.style.display = "none"; 
+	     errorList.style.width = "0"; 
+	     errorList.firstChild.style.display = "none"; 
 	   }, 4000)
 	  }
 	
@@ -249,10 +251,7 @@
 	        this.accountBalance += outlay;
 	      }
 	      else {
-	      // does not have enough shares to sell
-	
-	      this.portfolio.removeInvestment(investment, this);
-	      this.accountBalance = investment.share.currentPrice * investment.quantity;
+	      // does not have enough shares to sell. user must input a lower number. 
 	    }
 	  }
 	},
