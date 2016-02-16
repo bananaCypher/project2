@@ -30,6 +30,7 @@ describe('senseChecker', function(){
     testBalance = testUser.accountBalance;
     testPortfolioBalance = testUser.portfolio.totalValue();
     testSharePrice = testShare.currentPrice;
+    senseChecker.errorList = [];
   })
 
   it('should reject non-existing regions', function(){
@@ -59,9 +60,17 @@ describe('senseChecker', function(){
   it('should pass positive numbers lower than testInvestment.quantity', function(){
     expect(senseChecker.isBelowMax(1000, testInvestment)).to.equal(true);
   });
+  it('should reject buy attempts that exceed user balance', function(){
+    testUser.buyShares(testShare, 10000, testData);
+    expect(testUser.accountBalance).to.equal(testBalance);
+  });
+  it('should when asked reject percentages of 100 or more', function(){
+    senseChecker.isGoodPercentage(250);
+    expect(senseChecker.errorList[0]).to.equal('Error #6: cannot reduce by 100% or above');
+  })
   it('should pass failures to an errorlist', function(){
     senseChecker.isShare('ObviousFake');
-    expect(senseChecker.errorList[0]).to.equal('Error: is not a share');
+    expect(senseChecker.errorList[0]).to.equal('Error #1: is not a share');
   });
 
 })

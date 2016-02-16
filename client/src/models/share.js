@@ -1,3 +1,6 @@
+var senseChecker = require('./senseChecker.js');
+
+
 var Share = function(params){
   this.shareName = params.name;
   this.epic = params.epic;
@@ -8,10 +11,7 @@ var Share = function(params){
 
 Share.prototype = {
   crashValue: function(percentage){
-    if(percentage >= 100){
-      console.log('cannot reduce a shareprice below zero');
-    }
-    else{
+    if(senseChecker.isGoodPercentage(percentage)){
       var newPrice = this.currentPrice * ((100 - percentage)/ 100);
       this.currentPrice = newPrice;
     }
