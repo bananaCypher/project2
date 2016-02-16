@@ -1,3 +1,4 @@
+var Target = require('./models/target.js')
 var Barry;
 var getUser = require('./getUser.js');
 getUser('Barry Manilow', function(user) {
@@ -119,6 +120,20 @@ var init = function(){
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
+
+  var portfolioTarget = new Target({
+    object: Barry.portfolio,
+    property: 'totalValue',
+    check: 'gt',
+    target: 6500000,
+    checkTime: 10000
+  }, function(){
+    notificationArea.newNotification({
+      title: 'Target reached!',
+      content: 'You have reached your target of getting your portfolio value to £65,000',
+      type: 'success'
+    });
+  })
 };
 
 //window.onload = init;

@@ -1,8 +1,9 @@
 var Target = function(params, callback){
-  this.object = params.object,
-  this.property = params.property,
-  this.check = params.check,
-  this.target = params.target
+  this.object = params.object;
+  this.property = params.property;
+  this.check = params.check;
+  this.target = params.target;
+  this.checkTime = params.checkTime || 1000;
   this.callback = callback;
   this.observeFunction = function(){
     for (var key in this.object) {
@@ -13,6 +14,7 @@ var Target = function(params, callback){
           return;
         } else {
           this.setupWatcher();
+          return;
         }
       } 
     }
@@ -21,7 +23,7 @@ var Target = function(params, callback){
 }
 Target.prototype = {
   setupWatcher: function(){
-    setTimeout(this.observeFunction, 500);
+    setTimeout(this.observeFunction, this.checkTime);
   },
   hasMetTarget: function(){
     if (typeof(this.object[this.property]) == 'function') {

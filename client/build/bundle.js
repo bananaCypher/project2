@@ -44,18 +44,19 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Target = __webpack_require__(1)
 	var Barry;
-	var getUser = __webpack_require__(1);
+	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user) {
 	  Barry = user;
 	  init();
 	});
 	
-	var scatterChart = __webpack_require__(6);
-	var pieChart = __webpack_require__(7);
-	var chartStyles = __webpack_require__(8);
-	var NotificationArea = __webpack_require__(9);
-	var showInvestmentInfo = __webpack_require__(10);
+	var scatterChart = __webpack_require__(7);
+	var pieChart = __webpack_require__(8);
+	var chartStyles = __webpack_require__(9);
+	var NotificationArea = __webpack_require__(10);
+	var showInvestmentInfo = __webpack_require__(11);
 	var notificationArea;
 	
 	var displayLargestPercChange = function(){
@@ -165,6 +166,20 @@
 	  window.setInterval(function(){
 	    getLatestShareInfo();
 	  }, 10000);
+	
+	  var portfolioTarget = new Target({
+	    object: Barry.portfolio,
+	    property: 'totalValue',
+	    check: 'gt',
+	    target: 6500000,
+	    checkTime: 10000
+	  }, function(){
+	    notificationArea.newNotification({
+	      title: 'Target reached!',
+	      content: 'You have reached your target of getting your portfolio value to £65,000',
+	      type: 'success'
+	    });
+	  })
 	};
 	
 	//window.onload = init;
@@ -172,12 +187,82 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	var Target = function(params, callback){
+	  this.object = params.object;
+	  this.property = params.property;
+	  this.check = params.check;
+	  this.target = params.target;
+	  this.checkTime = params.checkTime || 1000;
+	  this.callback = callback;
+	  this.observeFunction = function(){
+	    for (var key in this.object) {
+	      if(key == this.property || typeof(this.object[this.property]) == 'function'){
+	        var result = this.hasMetTarget();
+	        if(result == true){
+	          this.callback();
+	          return;
+	        } else {
+	          this.setupWatcher();
+	          return;
+	        }
+	      } 
+	    }
+	  }.bind(this);
+	  this.setupWatcher();
+	}
+	Target.prototype = {
+	  setupWatcher: function(){
+	    setTimeout(this.observeFunction, this.checkTime);
+	  },
+	  hasMetTarget: function(){
+	    if (typeof(this.object[this.property]) == 'function') {
+	      var property = this.object[this.property]();
+	    } else {
+	      var property = this.object[this.property];
+	    }
+	    switch(this.check) {
+	      case 'gt':
+	        if(property > this.target){
+	          return true;
+	        }
+	        break;
+	      case 'gte':
+	        if(property >= this.target){
+	          return true;
+	        }
+	        break;
+	      case 'eq':
+	        if(property == this.target){
+	          return true;
+	        }
+	        break;
+	      case 'lte':
+	        if(property <= this.target){
+	          return true;
+	        }
+	        break;
+	      case 'lt':
+	        if(property < this.target){
+	          return true;
+	        }
+	        break;
+	    }
+	  }
+	}
+	
+	module.exports = Target;
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var User = __webpack_require__(2);
-	var Portfolio = __webpack_require__(4);
-	var Investment = __webpack_require__(3);
-	var Share = __webpack_require__(5);
+	var User = __webpack_require__(3);
+	var Portfolio = __webpack_require__(5);
+	var Investment = __webpack_require__(4);
+	var Share = __webpack_require__(6);
 	var Barry;
 	
 	var getUser = function (userName, callback) {
@@ -214,10 +299,10 @@
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Investment = __webpack_require__(3)
+	var Investment = __webpack_require__(4)
 	
 	var User = function(name, id){
 	  this.name = name,
@@ -320,7 +405,7 @@
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	var Investment = function(share, params){
@@ -360,7 +445,7 @@
 	module.exports = Investment;
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	var Portfolio = function(){
@@ -466,7 +551,7 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	var Share = function(params){
@@ -497,11 +582,11 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
-	var getUser = __webpack_require__(1);
+	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user){
 	  Barry = user;
 	});
@@ -561,7 +646,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	
@@ -595,7 +680,7 @@
 	module.exports = PieChart;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	  var chartStyles = {
@@ -803,7 +888,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -910,11 +995,11 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(11);
-	var TargetChecker = __webpack_require__(12);
+	var singleScatterChart = __webpack_require__(12);
+	var TargetChecker = __webpack_require__(13);
 	
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
@@ -1000,12 +1085,12 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//var Barry = require('../seedObjects.js')
 	var Barry;
-	var getUser = __webpack_require__(1);
+	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user){
 	  Barry = user;
 	});
@@ -1067,7 +1152,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	var TargetChecker = function(user, investment){
