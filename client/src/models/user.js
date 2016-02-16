@@ -6,17 +6,6 @@ var User = function(name, id){
   this.portfolio = undefined,
   this.accountBalance = 5000,
   this.insideTrader = false
-  Object.observe(this, function(){
-    for (var investment of this.portfolio.investments) {
-      Object.observe(investment, function(){
-        this.save();
-      }.bind(this));  
-      Object.observe(investment.share, function(){
-        this.save();
-      }.bind(this));  
-    }
-    this.save();
-  }.bind(this));
 };
 
 User.prototype = {

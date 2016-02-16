@@ -45,9 +45,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
-	__webpack_require__(1)(function(user) {
+	var getBarry = __webpack_require__(1);
+	getBarry(function(user) {
 	  Barry = user;
+	  init();
 	});
+	
 	var scatterChart = __webpack_require__(6);
 	var pieChart = __webpack_require__(7);
 	var chartStyles = __webpack_require__(8);
@@ -56,6 +59,7 @@
 	var notificationArea;
 	
 	var displayLargestPercChange = function(){
+	  console.log(Barry);
 	  var moreInfo = document.getElementById('moreInfo');
 	  var p = document.createElement('p');
 	  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
@@ -131,9 +135,6 @@
 	
 	var init = function(){
 	  console.log('I have loaded');
-	  while (!Barry) {
-	    // Wait for baza to load
-	  }
 	  Barry.name = 'Barry Manilow';
 	  var shareSelect = document.getElementById('shareSelect');
 	  var portfolioButton = document.getElementById('portfolioView');
@@ -165,7 +166,7 @@
 	  }, 10000);
 	};
 	
-	window.onload = init;
+	//window.onload = init;
 
 
 /***/ },
@@ -176,16 +177,19 @@
 	var Portfolio = __webpack_require__(4);
 	var Investment = __webpack_require__(3);
 	var Share = __webpack_require__(5);
-	var userID = '56c0f16a61c1654319c185ac';
+	var userName = 'Barry Manilow';
 	var Barry;
 	
-	module.exports = function (callback) {
+	var getBarry = function (callback) {
 	  var request = new XMLHttpRequest();
-	  request.open('GET', '/user/' + userID);
+	  request.open('GET', '/user/' + userName);
 	  request.onload = function(){
 	    if (request.status === 200) {
 	      data = JSON.parse(request.responseText);
 	      Barry = new User(data.name, data._id);
+	      console.log(data);
+	      Barry.accountBalance = data.accountBalance;
+	      Barry.insideTrader = data.insideTrader;
 	
 	      barryPortfolio = new Portfolio();
 	      for (var investment of data.portfolio.investments) {
@@ -205,6 +209,8 @@
 	  };
 	  request.send(null);
 	};
+	
+	module.exports = getBarry;
 
 
 /***/ },
@@ -219,17 +225,6 @@
 	  this.portfolio = undefined,
 	  this.accountBalance = 5000,
 	  this.insideTrader = false
-	  Object.observe(this, function(){
-	    for (var investment of this.portfolio.investments) {
-	      Object.observe(investment, function(){
-	        this.save();
-	      }.bind(this));  
-	      Object.observe(investment.share, function(){
-	        this.save();
-	      }.bind(this));  
-	    }
-	    this.save();
-	  }.bind(this));
 	};
 	
 	User.prototype = {
@@ -965,10 +960,12 @@
 	
 	    if(option === "Buy"){
 	      user.buyShares(investment.share, parseInt(value), investment);
+	      user.save();
 	      loadInfo(investment, user);
 	    }
 	    else if(option ==="Sell"){
 	      user.sellShares(investment, parseInt(value)) 
+	      user.save();
 	      loadInfo(investment, user);
 	    }
 	  }  
@@ -991,6 +988,7 @@
 	
 	
 	module.exports = showInvestmentInfo;
+
 
 /***/ },
 /* 11 */

@@ -2,7 +2,6 @@ var User = require('./client/src/models/user.js');
 var Portfolio = require('./client/src/models/portfolio.js');
 var Investment = require('./client/src/models/investment.js');
 var Share = require('./client/src/models/share.js');
-var userID = '56c0f16a61c1654319c185ac';
 var mongoose = require('mongoose');
 var UserModel = require('./client/src/models/mongooseSchema');
 mongoose.connect('mongodb://localhost/project2');
@@ -134,7 +133,12 @@ Barry.portfolio = barryPortfolio;
 
 var update = Barry;
 
-UserModel.findByIdAndUpdate(userID, update, function(err, user){
+var query = UserModel.where({name: 'Barry Manilow'});
+query.update(update, function(err, user){
+  if(err){ console.log(err) }
+  console.log(user);
+});
+UserModel.create(update, function(err, user){
   if(err){ console.log(err) }
   console.log(user);
 })

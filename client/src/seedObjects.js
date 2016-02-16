@@ -2,16 +2,19 @@ var User = require('./models/user.js');
 var Portfolio = require('./models/portfolio.js');
 var Investment = require('./models/investment.js');
 var Share = require('./models/share.js');
-var userID = '56c0f16a61c1654319c185ac';
+var userName = 'Barry Manilow';
 var Barry;
 
-module.exports = function (callback) {
+var getBarry = function (callback) {
   var request = new XMLHttpRequest();
-  request.open('GET', '/user/' + userID);
+  request.open('GET', '/user/' + userName);
   request.onload = function(){
     if (request.status === 200) {
       data = JSON.parse(request.responseText);
       Barry = new User(data.name, data._id);
+      console.log(data);
+      Barry.accountBalance = data.accountBalance;
+      Barry.insideTrader = data.insideTrader;
 
       barryPortfolio = new Portfolio();
       for (var investment of data.portfolio.investments) {
@@ -31,3 +34,5 @@ module.exports = function (callback) {
   };
   request.send(null);
 };
+
+module.exports = getBarry;

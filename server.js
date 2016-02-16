@@ -8,15 +8,11 @@ var User = require('./client/src/models/user.js');
 var Portfolio = require('./client/src/models/portfolio.js');
 var Investment = require('./client/src/models/investment.js');
 var Share = require('./client/src/models/share.js');
-var userID = '56c0f16a61c1654319c185ac';
 var mongoose = require('mongoose');
 var UserModel = require('./client/src/models/mongooseSchema');
 mongoose.connect('mongodb://localhost/project2');
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
 app.use(bodyParser.json())
 
 app.get('/', function (req, res) {
@@ -30,8 +26,9 @@ app.get('/share/:symbol', function(req, res) {
 });
 
 //persistence
-app.get('/user/:id', function(req, res) {
-  UserModel.findById(req.params.id, function(err, user){
+app.get('/user/:name', function(req, res) {
+  var query = UserModel.where({ name: req.params.name });
+  query.findOne(function(err, user){
     if(err){ console.log(err) }
     res.json(user);
   }); 

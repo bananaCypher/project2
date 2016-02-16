@@ -51,10 +51,12 @@ var TradeForm = function(option, user, investment){
 
     if(option === "Buy"){
       user.buyShares(investment.share, parseInt(value), investment);
+      user.save();
       loadInfo(investment, user);
     }
     else if(option ==="Sell"){
       user.sellShares(investment, parseInt(value)) 
+      user.save();
       loadInfo(investment, user);
     }
   }  

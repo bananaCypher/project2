@@ -1,7 +1,10 @@
 var Barry;
-require('./seedObjects.js')(function(user) {
+var getBarry = require('./seedObjects.js');
+getBarry(function(user) {
   Barry = user;
+  init();
 });
+
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
@@ -10,6 +13,7 @@ var showInvestmentInfo = require('./buy_sell.js');
 var notificationArea;
 
 var displayLargestPercChange = function(){
+  console.log(Barry);
   var moreInfo = document.getElementById('moreInfo');
   var p = document.createElement('p');
   var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
@@ -85,9 +89,6 @@ var setUpPriceWatchers = function(){
 
 var init = function(){
   console.log('I have loaded');
-  while (!Barry) {
-    // Wait for baza to load
-  }
   Barry.name = 'Barry Manilow';
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
@@ -119,4 +120,4 @@ var init = function(){
   }, 10000);
 };
 
-window.onload = init;
+//window.onload = init;
