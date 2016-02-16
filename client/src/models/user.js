@@ -7,6 +7,7 @@ var User = function(name, id){
   this.portfolio = undefined,
   this.accountBalance = 500000,
   this.insideTrader = false
+  this.targets = [];
 };
 
 User.prototype = {

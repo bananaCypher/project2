@@ -35,7 +35,8 @@
     <div class="row">
       <select id="shareSelect">
         <option selected="selected">View Investment Information:</option>
-      </select> <button id="portfolioView">View Portfolio Information</button><br>
+      </select> <button id="portfolioView">View Portfolio Information</button>
+      <button id="targetsButton">View My Targets</button><br>
 
       <div id="investmentInfo">
         <div id="singleScatterChart" class="chart grid-6"></div>
@@ -54,6 +55,20 @@
         <div id="pieChart" class="chart grid-6"></div> 
       </div>
 
+      <div id="targetsInfo" style="display: none;">
+        <div class="grid-6">
+          <div id="targets">
+          </div>
+        </div>
+        <!--<div class="grid-6">
+          <select name="targetFormObject" id="targetFormObject">
+          </select> 
+          <select name="targetFormCheck" id="targetFormCheck">
+          </select>
+          <label for="targetFormValue">Target Value</label><input type="number" name="targetFormValue" value="" id="targetFormValue">
+          <button id="targetFormButton">Create Target</button>
+        </div>-->
+      </div>
     </div>
 
     <div class="row">
