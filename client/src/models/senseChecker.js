@@ -92,7 +92,7 @@ var senseChecker = {
   },
 
   isQuantity: function(quantity){
-    if(typeof quantity != 'number'){
+    if((typeof(quantity) != 'number') || (isNaN(quantity))) {
       this.errorMessage('8: not a number');
       return false;
     }
