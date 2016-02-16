@@ -55,7 +55,7 @@ buyShort: function(investment){
   var outlay = investment.share.currentPrice * investment.quantity;
   if(senseChecker.maxedAccount(this.accountBalance, outlay) && senseChecker.isInvestment(investment, this)){
     if(!investment.short){
-      console.log('this action is illegal!');
+      senseChecker.errorMessage('9: this investment is not a short sale');
     }
     else{
       this.portfolio.removeInvestment(investment, this);
