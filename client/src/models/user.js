@@ -11,6 +11,7 @@ User.prototype = {
   buyShares: function(share, quantity, params){
     var outlay = share.currentPrice * quantity;
     if(this.accountBalance < outlay){
+      //does not have enough money to buy those shares
     return;
     }
     if(this.portfolio.find({shareName: share.shareName})){
@@ -32,8 +33,7 @@ User.prototype = {
       this.accountBalance += outlay;
     }
     else {
-      // this.portfolio.removeInvestment(investment);
-      // this.accountBalance = investment.share.currentPrice * investment.quantity;
+      // does not have enough shares to sell
     }
   },
   sellShort: function(share, quantity, params){

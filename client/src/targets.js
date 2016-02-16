@@ -8,14 +8,12 @@ var TargetChecker = function(user, investment){
   targetsView.appendChild(p);
 
   var button = document.getElementById('targetValueButton');
-
   button.onclick = function(){
     var input = document.getElementById('targetValue').value;
     if(input === ""){
       return;
     }
     input = parseInt(input) * 100;
-    console.log(input);
 
     var calcPrice = function(){
       var price = input / investment.quantity;

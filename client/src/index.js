@@ -102,6 +102,7 @@ var init = function(){
     investmentInfo.style.display = "block";
     showInvestmentInfo(shareSelect.value, Barry);
   };
+  
   portfolioButton.onclick = function(){
     investmentInfo.style.display = "none";
     portfolioInfo.style.display = "block";
