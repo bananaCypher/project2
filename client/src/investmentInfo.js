@@ -32,6 +32,14 @@ var TradeForm = function(option, user, investment){
     var inputId = "sellInput";
     var submitId = "sellSubmit";
   }
+  else if(option === "BuyShort"){
+    var inputId = "buyShortInput";
+    var submitId = "buyShortSubmit";
+  }
+  else if(option === "SellShort"){
+    var inputId = "sellShortInput";
+    var submitId = "sellShortSubmit";
+  }
 
   var form = document.createElement('form');
   form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
@@ -47,7 +55,17 @@ var TradeForm = function(option, user, investment){
       loadInfo(investment, user);
     }
     else if(option ==="Sell"){
-      user.sellShares(investment, parseInt(value)) 
+      user.sellShares(investment, parseInt(value));
+      user.save();
+      loadInfo(investment, user);
+    }
+    else if(option === "BuyShort"){
+      user.buyShort(investment, parseInt(value));
+      user.save();
+      loadInfo(investment, user);
+    }
+    else if(option == "SellShort"){
+      user.sellShort(investment.share, parseInt(value), investment);
       user.save();
       loadInfo(investment, user);
     }
@@ -105,8 +123,12 @@ var showInvestmentInfo = function(inputName, user){
 
   var buyForm = new TradeForm("Buy", user, investment);
   var sellForm = new TradeForm("Sell", user, investment);
+  var sellShortForm = new TradeForm("SellShort", user, investment);
+  var buyShortForm = new TradeForm("BuyShort", user, investment);
   buysellView.appendChild(buyForm); 
   buysellView.appendChild(sellForm); 
+  buysellView.appendChild(buyShortForm); 
+  buysellView.appendChild(sellShortForm); 
 
   new TargetChecker(user, investment);
 

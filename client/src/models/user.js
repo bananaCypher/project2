@@ -51,14 +51,19 @@ sellShort: function(share, quantity, params){
     this.accountBalance += outlay;
   }
 },
-buyShort: function(investment){
+buyShort: function(investment, quantity){
   var outlay = investment.share.currentPrice * investment.quantity;
   if(senseChecker.maxedAccount(this.accountBalance, outlay) && senseChecker.isInvestment(investment, this)){
     if(!investment.short){
       senseChecker.errorMessage('9: this investment is not a short sale');
     }
     else{
+      if(investment.quantity < quantity){
+        investment.quantity -= quantity;
+      }
+      else{
       this.portfolio.removeInvestment(investment, this);
+    }
       this.accountBalance -= outlay;
     }
   }
