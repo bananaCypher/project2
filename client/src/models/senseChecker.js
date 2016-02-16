@@ -71,9 +71,19 @@ var senseChecker = {
     }
   },
 
+  isGoodPercentage: function(percentage){
+    if(percentage >= 100){
+      this.errorMessage('6: cannot reduce by 100% or above');
+      return false;
+    }
+    else{
+      return true;
+    }
+  },
+
   maxedAccount: function(userBalance, spend){
     if(userBalance < spend){
-      this.errorMessage('6: not enough money');
+      this.errorMessage('7: not enough money');
       return false;
     }
     else{

@@ -1,5 +1,5 @@
-var Investment = require('./investment.js')
-var senseChecker = require('./senseChecker.js')
+var Investment = require('./investment.js');
+var senseChecker = require('./senseChecker.js');
 
 var User = function(name, id){
   this.name = name,
@@ -66,21 +66,25 @@ buyShort: function(investment){
   }
 },
 spreadRumours: function(share, percentage){
-  if(!this.insideTrader){
-    var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
-    return hypotheticalPrice;
-  }
-  else{
-    share.crashValue(percentage);
+  if(senseChecker.isShare(share.shareName)){
+    if(!this.insideTrader){
+      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
+      return hypotheticalPrice;
+    }
+    else{
+      share.crashValue(percentage);
+    }
   }
 },
 pumpStock: function(share, percentage){
-  if(!this.insideTrader){
-    var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
-    return hypotheticalPrice;
-  }
-  else{
-    share.inflateValue(percentage);
+  if(senseChecker.isShare(share.shareName)){
+    if(!this.insideTrader){
+      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
+      return hypotheticalPrice;
+    }
+    else{
+      share.inflateValue(percentage);
+    }
   }
 },
 pumpRegion: function(region, percentage){
