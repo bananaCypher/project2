@@ -218,8 +218,7 @@
 	  this.name = name,
 	  this.id = id,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500000,
-	  this.hypothetical = false;
+	  this.accountBalance = 500000
 	};
 	
 	User.prototype = {
@@ -246,11 +245,9 @@
 	        investment.quantity -= quantity;
 	        this.accountBalance += outlay;
 	      }
-	      else {
-	      // does not have enough shares to sell
-	
-	      this.portfolio.removeInvestment(investment, this);
-	      this.accountBalance = investment.share.currentPrice * investment.quantity;
+	      else if(investment.quantity <= quantity){
+	      var difference = quantity - investment.quantity
+	      senseChecker.errorMessage('10: you are ' + difference + ' shares short');
 	    }
 	  }
 	},
@@ -283,24 +280,12 @@
 	},
 	spreadRumours: function(share, percentage){
 	  if(senseChecker.isShare(share.shareName)){
-	    if(!this.hypothetical){
-	      var hypotheticalPrice = share.currentPrice * ((100 - percentage) / 100);
-	      return hypotheticalPrice;
-	    }
-	    else{
 	      share.crashValue(percentage);
-	    }
 	  }
 	},
 	pumpStock: function(share, percentage){
 	  if(senseChecker.isShare(share.shareName)){
-	    if(!this.hypothetical){
-	      var hypotheticalPrice = share.currentPrice * ((100 + percentage) / 100);
-	      return hypotheticalPrice;
-	    }
-	    else{
 	      share.inflateValue(percentage);
-	    }
 	  }
 	},
 	pumpRegion: function(region, percentage){
