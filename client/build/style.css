@@ -270,9 +270,11 @@ div.notification-success {
   position: relative;
   border: 1px solid #286421;
   background-color: #bde6b5;
+  text-shadow: 1px 1px 5px #000000;
 }
 div.notification-success h2, div.notification-success span {
   color: #286421;
+  text-shadow: 0px 0px 0px #000000;
 }
 @keyframes pulse {
   0% {font-size: 1em;}
