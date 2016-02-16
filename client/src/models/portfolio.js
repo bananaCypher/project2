@@ -1,3 +1,5 @@
+var senseChecker = require('./senseChecker.js');
+
 var Portfolio = function(){
   this.investments = [];  
 }
@@ -5,9 +7,11 @@ Portfolio.prototype = {
   addInvestment: function(investment){
     this.investments.push(investment);
   },
-  removeInvestment: function(investment){
-    var index = this.findInvestmentIndex(investment);
-    this.investments.splice(index, 1);
+  removeInvestment: function(investment, user){
+    if(senseChecker.isInvestment(investment, user)){
+      var index = this.findInvestmentIndex(investment);
+      this.investments.splice(index, 1);
+    }
   },
   findInvestmentIndex: function(investmentToFind){
     arrayLoop:

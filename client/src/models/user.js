@@ -38,7 +38,7 @@ User.prototype = {
       else {
       // does not have enough shares to sell
 
-      this.portfolio.removeInvestment(investment);
+      this.portfolio.removeInvestment(investment, this);
       this.accountBalance = investment.share.currentPrice * investment.quantity;
     }
   }
@@ -60,7 +60,7 @@ buyShort: function(investment){
     }
     else{
       var outlay = investment.share.currentPrice * investment.quantity;
-      this.portfolio.removeInvestment(investment);
+      this.portfolio.removeInvestment(investment, this);
       this.accountBalance -= outlay;
     }
   }
