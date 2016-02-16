@@ -10,7 +10,6 @@ var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
-
 var senseChecker = require('./models/senseChecker.js');
 var showInvestmentInfo = require('./investmentInfo.js');
 var notificationArea;
@@ -65,27 +64,30 @@ var init = function(){
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
 
-  var errorList = document.getElementById('errorList');
+  var errorList = document.getElementById('errorNotifications');
+  var errorImage = document.getElementById('errorImage');
+
+  errorImage.onclick = function(){
+    errorList.style.display = "inline-block";
+    errorImage.style.display = "none"
+    setTimeout(function(){
+     errorList.style.display = "none"; 
+   }, 4000)
+  }
 
 // ERRORLIST POPULATION
 
-  // Object.observe(senseChecker, function(changes){
-  //   for(change of changes){
-  //     if(change.name == 'errorList'){
-  //       errorList.innerHTML = '';
-  //       for(error of change.object.errorList){
-  //         var li = document.createElement('li');
-  //         li.innerText = error;
-  //         errorList.appendChild(li);
-  //       }
-  //     }
-  //   }
-  // });
-
-  senseChecker.errorList.push('seriously, nothing works in Firefox');
+  Object.observe(senseChecker.errorList, function(changes){
+    
+        errorList.innerHTML = '';
+        errorImage.style.display = "inline-block";
+        var li = document.createElement('li');
+        li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+        errorList.appendChild(li);
+        }
+    );
 
   var targetsView = document.getElementById('targetsView');
-
 
   Highcharts.setOptions(chartStyles);
 

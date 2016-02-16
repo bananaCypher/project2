@@ -22,6 +22,10 @@ h1, h2 {
   text-transform: uppercase;
 }
 
+h1#logo {
+  display: inline-block;
+}
+
 h1 {
   margin: 0;
   padding: 0;
@@ -153,10 +157,40 @@ div#notifications {
   top: 2px;
   cursor: pointer;
 }
-div#notifications img {
-  height: 100%;
-  width: 100%;
+
+div#errorImage {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  right: 65px;
+  top: 5px;
+  cursor: pointer;
+  display: none;
 }
+
+div#errorNotifications {
+  float: right;
+  margin-right: 105px;
+  display: none;
+}
+
+div#errorNotifications ul {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  width: 295px;
+}
+
+div#errorNotifications li {
+  width: 295px;
+  list-style: none;
+  line-height: 44px;
+}
+
+div#notifications img, div#errorImage img {
+  height: 100%;
+}
+
 div#notifications span {
   position: relative;
   top: -55px;
