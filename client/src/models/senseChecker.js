@@ -15,7 +15,6 @@ var senseChecker = {
         regionArray.push(entry.location);
       }
     }
-    console.log(regionArray);
     return regionArray;
   },
 
