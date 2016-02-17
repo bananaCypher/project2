@@ -102,8 +102,7 @@ User.prototype = {
     request.open('POST', '/user/' + this.id);
     request.setRequestHeader('Content-Type', 'application/json');
     request.send(JSON.stringify(this));
-  }
-
+  },
   findTargetsByShareName: function(shareName){
     var targets = [];
     for (var target of this.targets) {

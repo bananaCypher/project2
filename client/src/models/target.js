@@ -7,6 +7,7 @@ var Target = function(params, callback){
   this.description = params.description || this.property + ' ' + this.check + ' ' + this.target;
   this.callback = callback;
   this.complete = false;
+  this.startingValue;
   if (typeof(this.object[this.property]) == 'function') {
     this.startingValue = this.object[this.property]();
   } else {
