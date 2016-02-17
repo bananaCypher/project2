@@ -3,14 +3,14 @@ var TargetChecker = function(user, investment){
   targetsView.innerHTML = "";
 
   var p = document.createElement('p');
-  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue'><button id='targetValueButton'>Check</button><br>Price required to meet this target with current share quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current growth continues: <span id='targetValueDays'></span>";
+  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue'><button id='targetValueButton'>Check</button><br>Price required to meet this target with current share quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current trend continues: <span id='targetValueDays'></span>";
 
   targetsView.appendChild(p);
 
   var button = document.getElementById('targetValueButton');
   button.onclick = function(){
     var input = document.getElementById('targetValue').value;
-    if(input === ""){
+    if(input === "" || isNan(input)){
       return;
     }
     input = parseInt(input) * 100;

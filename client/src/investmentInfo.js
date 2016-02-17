@@ -17,8 +17,11 @@ var loadInfo = function(investment, user){
   else {
     var value = ""
   }
+
+  var currentShareValue = (investment.currentValue() / 100).toFixed(2);
+
   var info = document.createElement('p');
-  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity + "<br>Country: " + investment.share.location;
+  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice.toFixed(2) + " GBX <h3>Current Value</h3>£" + Number(currentShareValue).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity + "<br>Country: " + investment.share.location;
   investmentView.appendChild(info); 
 
   index.displayCurrentPortfolioValue(user);
@@ -30,39 +33,47 @@ var TradeForm = function(option, user, investment){
 
   if(option === "Buy"){
     var inputId = "buyInput";
-    var submitId = "buySubmit";
+    var submitId = "buySubmit"
+    var placeholder = '"Enter amount"';
   }
   else if(option === "Sell"){
     var inputId = "sellInput";
     var submitId = "sellSubmit";
+    var placeholder = '"Enter amount"';
   }
   else if(option === "BuyShort"){
     var inputId = "buyShortInput";
     var submitId = "buyShortSubmit";
+    var placeholder = '"Enter amount"';
   }
   else if(option === "SellShort"){
     var inputId = "sellShortInput";
     var submitId = "sellShortSubmit";
+    var placeholder = '"Enter amount"';
   }
   else if(option === "CrashStock"){
     var inputId = "crashStockInput";
     var submitId = "crashStockSubmit";
+    var placeholder = '"Enter percentage"';
   }
   else if(option === 'PumpStock'){
     var inputId = "pumpStockInput";
     var submitId = "pumpStockSubmit";
+    var placeholder = '"Enter percentage"';
   }
   else if(option === "CrashRegion"){
     var inputId = "crashRegionInput";
     var submitId = "crashRegionSubmit";
+    var placeholder = '"Enter percentage"';
   } 
   else if(option === 'PumpRegion'){
     var inputId = "pumpRegionInput";
     var submitId = "pumpRegionSubmit";
+    var placeholder = '"Enter percentage"';
   }
 
   var form = document.createElement('form');
-  form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
+  form.innerHTML = "<input type='text' id=" + inputId + " placeholder=" + placeholder + "><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
 
   form.onsubmit = function(event){
     var value = document.getElementById(inputId).value;
@@ -138,7 +149,7 @@ var showPreview = function(investment, user){
   else{
     var sellValue = parseInt(sellAmount) * investment.share.currentPrice || "";
     sellPreview.style.display = "inline-block";
-    if (sellAmount < investment.quantity){
+    if (sellAmount <= investment.quantity){
       sellPreview.style.color = "green";
       sellPreview.innerHTML = "<br>Sell Value: £" + Number(sellValue / 100).toLocaleString();
     }
