@@ -1946,9 +1946,17 @@
 	      return value;
 	    }
 	
+	    if(newTarget.check === "gt"){
 	    if(currentNewValue() >= newTarget.target){
 	      senseChecker.errorList.push("Error: Target already completed");
 	      return;
+	    }
+	    }
+	    else if(newTarget.check === "lt"){
+	      if(currentNewValue() <= newTarget.target){
+	        senseChecker.errorList.push("Error: Target already completed");
+	        return;
+	      }
 	    }
 	
 	    var target = new Target(newTarget, 
