@@ -139,21 +139,22 @@ module.exports = function(notificationArea, Barry){
       return;
     }
 
-    new Target (newTarget, 
+    var target = new Target(newTarget, 
       function(description){
         showTargets();
         notificationArea.newNotification({
           title: 'Target reached!',
           content: 'You have reached your target ' + description,
           type: 'success'
-        });
+        })
+      });
 
-        Barry.targets.push(newTarget);
+
+        Barry.targets.push(target);
         showTargets();
         targetFormFields.style.display = 'none';
         targetFormType.selectedIndex = 0;
-      })
-
+      
   }
 
   var showTargets = function(){
