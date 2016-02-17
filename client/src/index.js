@@ -1,6 +1,7 @@
 var Barry = require('./seedObjects.js');
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
+var gaugeChart = require('./charts/gaugeChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
 var showInvestmentInfo = require('./buy_sell.js');
@@ -106,6 +107,7 @@ var init = function(){
     portfolioInfo.style.display = "block"
     new pieChart(Barry.portfolio);
     new scatterChart();
+    new gaugeChart();
   }
   notificationArea = new NotificationArea();  
   setUpPriceWatchers();

@@ -47,9 +47,10 @@
 	var Barry = __webpack_require__(1);
 	var scatterChart = __webpack_require__(6);
 	var pieChart = __webpack_require__(7);
-	var chartStyles = __webpack_require__(8);
-	var NotificationArea = __webpack_require__(9);
-	var showInvestmentInfo = __webpack_require__(10);
+	var gaugeChart = __webpack_require__(8);
+	var chartStyles = __webpack_require__(9);
+	var NotificationArea = __webpack_require__(10);
+	var showInvestmentInfo = __webpack_require__(11);
 	var notificationArea;
 	
 	var displayLargestPercChange = function(){
@@ -152,6 +153,7 @@
 	    portfolioInfo.style.display = "block"
 	    new pieChart(Barry.portfolio);
 	    new scatterChart();
+	    new gaugeChart();
 	  }
 	  notificationArea = new NotificationArea();  
 	  setUpPriceWatchers();
@@ -670,6 +672,100 @@
 /* 8 */
 /***/ function(module, exports) {
 
+	var GaugeChart = function(){
+	  var container = document.getElementById("gaugeChart");
+	  var chart = new Highcharts.Chart( {
+	
+	    chart: {
+	      type: 'solidgauge'
+	    },
+	
+	    title: null,
+	
+	    pane: {
+	      center: ['50%', '85%'],
+	      size: '140%',
+	      startAngle: -90,
+	      endAngle: 90,
+	      background: {
+	        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+	        innerRadius: '60%',
+	        outerRadius: '100%',
+	        shape: 'arc'
+	      }
+	    },
+	
+	    tooltip: {
+	      enabled: false
+	    },
+	
+	        // the value axis
+	        yAxis: {
+	
+	          min: 0,
+	          max: 200,
+	          title: {
+	            text: 'Speed'
+	          },
+	
+	
+	          stops: [
+	                [0.1, '#55BF3B'], // green
+	                [0.5, '#DDDF0D'], // yellow
+	                [0.9, '#DF5353'] // red
+	                ],
+	                lineWidth: 0,
+	                minorTickInterval: null,
+	                tickPixelInterval: 400,
+	                tickWidth: 0,
+	                title: {
+	                  y: -70
+	                },
+	                labels: {
+	                  y: 16
+	                }
+	              },
+	
+	              plotOptions: {
+	                solidgauge: {
+	                  dataLabels: {
+	                    y: 5,
+	                    borderWidth: 0,
+	                    useHTML: true
+	                  }
+	                }
+	              },
+	            
+	
+	
+	
+	            credits: {
+	              enabled: false
+	            },
+	
+	            series: [{
+	              name: 'Speed',
+	              data: [80],
+	              dataLabels: {
+	                format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+	                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+	                '<span style="font-size:12px;color:silver">km/h</span></div>'
+	              },
+	              tooltip: {
+	                valueSuffix: ' km/h'
+	              }
+	            }],
+	
+	          })
+	}
+	
+	module.exports = GaugeChart;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
 	  var chartStyles = {
 	    colors: ["#2b908f", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
 	      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
@@ -875,7 +971,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -982,10 +1078,10 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(11);
+	var singleScatterChart = __webpack_require__(12);
 	
 	var loadInfo = function(investment, user){
 	  new singleScatterChart(investment);
@@ -1066,7 +1162,7 @@
 	module.exports = showInvestmentInfo;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry = __webpack_require__(1)
