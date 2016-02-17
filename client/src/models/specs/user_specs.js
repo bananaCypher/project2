@@ -37,6 +37,11 @@ describe('User', function(){
     expect(testUser.name).to.equal('Barry');
   });
 
+  it('should have a MongoDB ID on creation', function(){
+    // currently failing due to MongoDB init requirement
+    expect(testUser.id).to.not.equal(undefined);
+  })
+
   it('should have an account with money', function(){
     expect(testUser.accountBalance).to.equal(testBalance);
   });
@@ -44,6 +49,18 @@ describe('User', function(){
   it('should be able to have a portfolio', function(){
     expect(testUser.portfolio).to.equal(testPortfolio);
   });
+
+  it('should be able to have targets', function(){
+    var target = new Target({
+      object: testInvestment,
+      property: 'currentValue',
+      check: 'gt',
+      target: 30100
+    }, function(){});
+    testUser.targets.push(target);
+    expect(testUser.targets.length).to.equal(1);
+  });
+
 
   // MODEL FUNCTIONALITY
 
@@ -94,16 +111,6 @@ describe('User', function(){
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
-  });
-  it('should be able to have targets', function(){
-    var target = new Target({
-      object: testInvestment,
-      property: 'currentValue',
-      check: 'gt',
-      target: 30100
-    }, function(){});
-    testUser.targets.push(target);
-    expect(testUser.targets.length).to.equal(1);
   });
 
   it('should be unable to sell more shares than are in an investment', function(){

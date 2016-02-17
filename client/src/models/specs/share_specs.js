@@ -26,14 +26,14 @@ describe('Share', function(){
   it('should have an epic', function(){
     assert.equal('WGP', newShare.epic);
   });
+  it('should have a location', function(){
+    assert.equal("England", newShare.location)
+  });
   it('should have current price', function(){
     assert.equal(301.00, newShare.currentPrice);
   });
   it('should have an array of past close of day prices', function(){
     assert.equal(232.60, newShare.pastCloseOfDayPrices[0]);
-  });
-  it('should have a location', function(){
-    assert.equal("England", newShare.location)
   });
 
   // MODEL FUNCTIONALITY

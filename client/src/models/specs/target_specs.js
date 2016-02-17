@@ -50,6 +50,23 @@ describe('Target', function(){
     })
     share.currentPrice = 405;
   });
+  it("should run the callback if the price is greater than or equal to the given target", function(done){
+    var test = false;
+    var finishTest = function(){
+      done();
+    }
+    var target = new Target({
+      object: share,
+      property: 'currentPrice',
+      check: 'gte',
+      target: 400 
+    }, function(description){
+      test = true;
+      assert.equal(test, true);
+      finishTest()
+    })
+    share.currentPrice = 400;
+  });
   it('should run the callback when the price is less than the given target', function(done){
     var test = false;
     var target = new Target({
@@ -63,6 +80,20 @@ describe('Target', function(){
       done();
     })
     share.currentPrice = 150;
+  });
+  it('should run the callback when the price is less than or equal to the given target', function(done){
+    var test = false;
+    var target = new Target({
+      object: share,
+      property: 'currentPrice',
+      check: 'lte',
+      target: 200 
+    }, function(description){
+      test = true;
+      assert.equal(test, true);
+      done();
+    })
+    share.currentPrice = 200;
   });
   it('should run the callback when the price is equal to the given target', function(done){
       var test = false;
@@ -78,7 +109,7 @@ describe('Target', function(){
       })
       share.currentPrice = 100;
   });
-  it('should work on an invesetment as well', function(done){
+  it('should work on an investment as well', function(done){
       var test = false;
       var target = new Target({
         object: investment,

@@ -6,7 +6,7 @@ var User = function(name, id){
   this.id = id,
   this.portfolio = undefined,
   this.accountBalance = 500000
-    this.targets = [];
+  this.targets = [];
 };
 
 User.prototype = {
