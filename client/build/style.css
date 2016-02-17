@@ -305,3 +305,6 @@ div.notification-success h2, div.notification-success span {
   text-decoration: line-through;  
   color: #bde6b5;
 }
+div#targetFormFields {
+  display: none;
+}

@@ -13,7 +13,18 @@ var gaugeChart = require('./charts/gaugeChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
 var senseChecker = require('./models/senseChecker.js');
-var showInvestmentInfo = require('./investmentInfo.js');
+var timer = {
+  time: 10000,
+  timer: undefined,
+  startPriceUpdating: function(){
+    this.timer = setInterval(getLatestShareInfo, this.time);
+  },
+  stopPriceUpdating: function(){
+    console.log('stopping', this.timer);
+    clearInterval(this.timer);
+  }
+};
+var showInvestmentInfo = require('./investmentInfo.js')(timer);
 var notificationArea;
 
 
@@ -46,14 +57,6 @@ var updateShare = function(share){
   request.send(null);
 }
 
-var getLatestShareInfo = function(){
-  var investments = Barry.portfolio.investments;
-  for (var investment of investments) {
-    var share = investment.share;
-    updateShare(share);
-  }
-}
-
 var setUpPriceWatchers = function(){
   for (var investment of Barry.portfolio.investments) {
     var share = investment.share
@@ -73,6 +76,15 @@ var setUpPriceWatchers = function(){
     });
   }
 }
+
+var getLatestShareInfo = function(){
+  var investments = Barry.portfolio.investments;
+  for (var investment of investments) {
+    var share = investment.share;
+    updateShare(share);
+  }
+}
+
 
 var init = function(){
   console.log('I have loaded');
@@ -98,18 +110,13 @@ var init = function(){
 // ERRORLIST POPULATION
 
   Object.observe(senseChecker.errorList, function(changes){
-    
-        errorList.innerHTML = '';
-        errorImage.style.display = "inline-block";
-        var li = document.createElement('li');
-        li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
-        errorList.appendChild(li);
-        }
-    );
 
-  var targetsView = document.getElementById('targetsView');
-  var targetsInfo = document.getElementById('targetsInfo');
-  var targetFormButton = document.getElementById('targetFormButton');
+    errorList.innerHTML = '';
+    errorImage.style.display = "inline-block";
+    var li = document.createElement('li');
+    li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+    errorList.appendChild(li);
+  });
 
   Highcharts.setOptions(chartStyles);
 
@@ -133,53 +140,19 @@ var init = function(){
     new pieChart(Barry.portfolio);
     new scatterChart();
     var container = document.getElementById("gaugeChart");
-    new gaugeChart("Portfolio Value", 65000, 70000, 67500, "£GBP", container);
-  }
+    new gaugeChart("Portfolio Value", 65000, 70000, 67500, "£GBP", container)
+  };
+
   targetsButton.onclick = function(){
     portfolioInfo.style.display = "none";
     investmentInfo.style.display = "none";
     targetsInfo.style.display = "block";
     targetsView.innerHTML = "";
     showTargets();
-  }
-  notificationArea = new NotificationArea();  
-  setUpPriceWatchers();
-  window.setInterval(function(){
-    getLatestShareInfo();
-  }, 10000);
-  //Create Targets
-  var portfolioTarget = new Target({
-    description: 'Get portfolio value to above £65,000',
-    object: Barry.portfolio,
-    property: 'totalValue',
-    check: 'gt',
-    target: 6500000,
-    checkTime: 10000
-  }, function(){
-    showTargets();
-    notificationArea.newNotification({
-      title: 'Target reached!',
-      content: 'You have reached your target of getting your portfolio value to £65,000',
-      type: 'success'
-    });
-  })
-  Barry.targets.push(portfolioTarget);
-  var portfolioTarget = new Target({
-    description: 'Get portfolio value to above £100,000',
-    object: Barry.portfolio,
-    property: 'totalValue',
-    check: 'gt',
-    target: 10000000,
-    checkTime: 10000
-  }, function(){
-    showTargets();
-    notificationArea.newNotification({
-      title: 'Target reached!',
-      content: 'You have reached your target of getting your portfolio value to £100,000',
-      type: 'success'
-    });
-  })
-  Barry.targets.push(portfolioTarget);
-};
+  };
 
-//window.onload = init;
+  notificationArea = new NotificationArea();  
+  require('./targetForm.js')(notificationArea, Barry);
+  setUpPriceWatchers();
+  timer.startPriceUpdating();
+};

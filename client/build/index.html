@@ -66,14 +66,35 @@
           <ul id="targets">
           </ul>
         </div>
-        <!--<div class="grid-6">
-          <select name="targetFormObject" id="targetFormObject">
-          </select> 
-          <select name="targetFormCheck" id="targetFormCheck">
-          </select>
-          <label for="targetFormValue">Target Value</label><input type="number" name="targetFormValue" value="" id="targetFormValue">
-          <button id="targetFormButton">Create Target</button>
-        </div>-->
+        <div class="grid-12">
+          <fieldset>
+            <legend>New Target</legend>
+            <label for="targetFormType">Target Type</label>
+            <select name="targetFormType" id="targetFormType">
+              <option selected>Select a target type:</option>
+              <option value="Portfolio">Portfolio</option>
+              <option value="Investment">Investment</option>
+              <option value="Share">Share</option>
+            </select><br>
+            <div id="targetFormFields">
+              <label for="targetFormObject" id='targetFormLabel'>Investment</label>
+              <select name="targetFormObject" id="targetFormObject">
+              </select><br>
+              <select name="targetFormProp" id="targetFormProp">
+              </select>
+              <select name="targetFormCheck" id="targetFormCheck">
+                <option value="gt">greater than</option>
+                <option value="lt">less than</option>
+                <option value="eq">equal to</option>
+                <option value="gte">greater than or equal to</option>
+                <option value="lte">less than or equal to</option>
+              </select>
+              <label for="targetFormValue">Target </label><input type="number" name="targetFormValue" value="" id="targetFormValue"><br>
+              <label for="targetFormDescription">Description</label><input type="text" name="targetFormDescription" value="" id="targetFormDescription">
+              <button id="targetFormButton">Create Target</button>
+            </div>
+          </fieldset>
+        </div>
       </div>
     </div>
 
