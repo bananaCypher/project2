@@ -22,7 +22,7 @@ var Target = function(params, callback){
       } 
     }
   }.bind(this);
-  this.setupWatcher();
+  this.observeFunction();
 }
 Target.prototype = {
   fullCheck: function(){
