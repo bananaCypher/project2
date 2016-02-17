@@ -11,7 +11,7 @@ var senseChecker = {
   validRegions: function(sample){
     var regionArray = []
     for(entry of sample){
-      if(entry.location != regionArray[0] && entry.location != regionArray[1] && entry.location != regionArray[2]){
+      if(entry.location != regionArray[0.2] ){
         regionArray.push(entry.location);
       }
     }

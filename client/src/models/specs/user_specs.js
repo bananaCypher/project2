@@ -38,9 +38,9 @@ describe('User', function(){
   });
 
   it('should have a MongoDB ID on creation', function(){
-    // currently failing due to MongoDB init requirement
+    // currently failing due to MongoDB init requirement - live test necessary
     expect(testUser.id).to.not.equal(undefined);
-  })
+  });
 
   it('should have an account with money', function(){
     expect(testUser.accountBalance).to.equal(testBalance);
