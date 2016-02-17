@@ -30,39 +30,47 @@ var TradeForm = function(option, user, investment){
 
   if(option === "Buy"){
     var inputId = "buyInput";
-    var submitId = "buySubmit";
+    var submitId = "buySubmit"
+    var placeholder = '"Enter amount"';
   }
   else if(option === "Sell"){
     var inputId = "sellInput";
     var submitId = "sellSubmit";
+    var placeholder = '"Enter amount"';
   }
   else if(option === "BuyShort"){
     var inputId = "buyShortInput";
     var submitId = "buyShortSubmit";
+    var placeholder = '"Enter amount"';
   }
   else if(option === "SellShort"){
     var inputId = "sellShortInput";
     var submitId = "sellShortSubmit";
+    var placeholder = '"Enter amount"';
   }
   else if(option === "CrashStock"){
     var inputId = "crashStockInput";
     var submitId = "crashStockSubmit";
+    var placeholder = '"Enter percentage"';
   }
   else if(option === 'PumpStock'){
     var inputId = "pumpStockInput";
     var submitId = "pumpStockSubmit";
+    var placeholder = '"Enter percentage"';
   }
   else if(option === "CrashRegion"){
     var inputId = "crashRegionInput";
     var submitId = "crashRegionSubmit";
+    var placeholder = '"Enter percentage"';
   } 
   else if(option === 'PumpRegion'){
     var inputId = "pumpRegionInput";
     var submitId = "pumpRegionSubmit";
+    var placeholder = '"Enter percentage"';
   }
 
   var form = document.createElement('form');
-  form.innerHTML = "<input type='text' id=" + inputId + " placeholder='Enter Amount'><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
+  form.innerHTML = "<input type='text' id=" + inputId + " placeholder=" + placeholder + "><input type='submit' id=" + submitId + " value='" + option + " Shares'>";
 
   form.onsubmit = function(event){
     var value = document.getElementById(inputId).value;
