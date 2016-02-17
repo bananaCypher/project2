@@ -1254,8 +1254,11 @@
 	  else {
 	    var value = ""
 	  }
+	
+	  var currentShareValue = (investment.currentValue() / 100).toFixed(2);
+	
 	  var info = document.createElement('p');
-	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice + " GBX <h3>Current Value</h3>£" + Number(investment.currentValue() / 100).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity + "<br>Country: " + investment.share.location;
+	  info.innerHTML = "<h2>" + investment.shareName + " (" + investment.share.epic + ")</h2><h3>Current Price</h3>" + investment.share.currentPrice.toFixed(2) + " GBX <h3>Current Value</h3>£" + Number(currentShareValue).toLocaleString() + "<br><br>" + value + "7 Day Moving Average: " + investment.sevenDayAverage().toFixed(2) + " GBX<br>Quantity Held: " + investment.quantity + "<br>Country: " + investment.share.location;
 	  investmentView.appendChild(info); 
 	
 	  index.displayCurrentPortfolioValue(user);
