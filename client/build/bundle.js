@@ -1637,7 +1637,7 @@
 	      target = new Target({
 	        description: description,
 	        object: Barry.portfolio,
-	        property: prop,
+	        property: prop * 100,
 	        check: check,
 	        target: value,
 	        checkTime: 10000
@@ -1715,30 +1715,14 @@
 	
 	  //Create sample targets
 	  var portfolioTarget = new Target({
-	    description: 'Get portfolio value to above £65,000',
+	    description: 'Get portfolio value to above £70,000',
 	    object: Barry.portfolio,
 	    property: 'totalValue',
 	    check: 'gt',
-	    target: 6500000,
+	    target: 7000000,
 	    checkTime: 10000
 	  }, function(){
 	    showTargets();
-	  })
-	  Barry.targets.push(portfolioTarget);
-	  var portfolioTarget = new Target({
-	    description: 'Get portfolio value to above £100,000',
-	    object: Barry.portfolio,
-	    property: 'totalValue',
-	    check: 'gt',
-	    target: 10000000,
-	    checkTime: 10000
-	  }, function(){
-	    showTargets();
-	    notificationArea.newNotification({
-	      title: 'Target reached!',
-	      content: 'You have reached your target of getting your portfolio value to £100,000',
-	      type: 'success'
-	    });
 	  })
 	  Barry.targets.push(portfolioTarget);
 	};
