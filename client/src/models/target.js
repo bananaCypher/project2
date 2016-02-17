@@ -30,7 +30,7 @@ var Target = function(params, callback){
         var result = this.hasMetTarget();
         if(result == true){
           this.complete = true;
-          this.callback();
+          this.callback(this.description);
           return;
         } else {
           this.setupWatcher();
