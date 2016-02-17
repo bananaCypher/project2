@@ -132,7 +132,8 @@ var init = function(){
     targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
     new scatterChart();
-    new gaugeChart();
+    var container = document.getElementById("gaugeChart");
+    new gaugeChart("Portfolio Value", 65000, 70000, 67500, "£GBP", container);
   }
   targetsButton.onclick = function(){
     portfolioInfo.style.display = "none";

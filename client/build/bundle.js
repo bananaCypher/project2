@@ -178,7 +178,8 @@
 	    targetsView.innerHTML = "";
 	    new pieChart(Barry.portfolio);
 	    new scatterChart();
-	    new gaugeChart();
+	    var container = document.getElementById("gaugeChart");
+	    new gaugeChart("Portfolio Value", 65000, 70000, 67500, "£GBP", container);
 	  }
 	  targetsButton.onclick = function(){
 	    portfolioInfo.style.display = "none";
@@ -922,19 +923,19 @@
 /* 11 */
 /***/ function(module, exports) {
 
-	var GaugeChart = function(){
-	  var container = document.getElementById("gaugeChart");
+	var GaugeChart = function(title, min, max, current, unit, container){
 	  var chart = new Highcharts.Chart( {
 	
 	    chart: {
-	      type: 'solidgauge'
+	      type: 'solidgauge',
+	      renderTo: container,
 	    },
 	
 	    title: null,
 	
 	    pane: {
 	      center: ['50%', '85%'],
-	      size: '140%',
+	      size: '120%',
 	      startAngle: -90,
 	      endAngle: 90,
 	      background: {
@@ -952,25 +953,29 @@
 	        // the value axis
 	        yAxis: {
 	
-	          min: 0,
-	          max: 200,
+	          min: min,
+	          max: max,
 	          title: {
-	            text: 'Speed'
+	            text: title,
+	            style: {
+	              "fontSize": "18px"
+	            },
+	            y: -70
 	          },
 	
 	
+	
+	
 	          stops: [
-	                [0.1, '#55BF3B'], // green
+	                [0.1, '#DF5353'], // red
 	                [0.5, '#DDDF0D'], // yellow
-	                [0.9, '#DF5353'] // red
+	                [0.9, '#55BF3B'] // green
 	                ],
 	                lineWidth: 0,
 	                minorTickInterval: null,
 	                tickPixelInterval: 400,
 	                tickWidth: 0,
-	                title: {
-	                  y: -70
-	                },
+	               
 	                labels: {
 	                  y: 16
 	                }
@@ -995,14 +1000,14 @@
 	
 	            series: [{
 	              name: 'Speed',
-	              data: [80],
+	              data: [current],
 	              dataLabels: {
-	                format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+	                format: '<div style="text-align:center"><span style="font-size:25px;color: white' +
 	                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-	                '<span style="font-size:12px;color:silver">km/h</span></div>'
+	                '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
 	              },
 	              tooltip: {
-	                valueSuffix: ' km/h'
+	                valueSuffix: unit
 	              }
 	            }],
 	
