@@ -22,4 +22,4 @@ Inside Trader is a Javascript app designed for the less scrupulous investor.  Us
 6. You can also start in dev mode using `npm run start-dev` which will watch for changes to the code and rerun webpack, the mocha tests and the server
 
 ### Known issues
-- Currently certain functions are depreciated in Firefox/Safari/etc. and as such the developers recommend vewiing in Chrome.
+- Currently certain functions are depreciated in Firefox/Safari/etc. and as such the developers recommend viewing in Chrome.
