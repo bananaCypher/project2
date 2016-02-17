@@ -74,21 +74,6 @@
 	var notificationArea;
 	
 	
-	var showTargets = function(){
-	  var targetsArea = document.getElementById('targets')
-	  targetsArea.innerHTML = '';
-	  for (var target of Barry.targets) {
-	    var li = document.createElement('li');
-	    if(target.complete == true){
-	      li.classList.add('completed-target')
-	    } else {
-	      li.classList.add('incomplete-target');
-	    }
-	    li.innerText = target.description;
-	    targetsArea.appendChild(li); 
-	  }
-	}
-	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
 	  request.open('GET', '/share/' + share.epic);
@@ -155,52 +140,50 @@
 	
 	// ERRORLIST POPULATION
 	
-	  Object.observe(senseChecker.errorList, function(changes){
+	Object.observe(senseChecker.errorList, function(changes){
 	
-	    errorList.innerHTML = '';
-	    errorImage.style.display = "inline-block";
-	    var li = document.createElement('li');
-	    li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
-	    errorList.appendChild(li);
-	  });
+	  errorList.innerHTML = '';
+	  errorImage.style.display = "inline-block";
+	  var li = document.createElement('li');
+	  li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+	  errorList.appendChild(li);
+	});
 	
-	  Highcharts.setOptions(chartStyles);
+	Highcharts.setOptions(chartStyles);
 	
-	  index.populateSelect(Barry);
-	  index.displayCurrentPortfolioValue(Barry);
-	  index.displayLargestPercChange(Barry);
-	  index.displayAccountBalance(Barry);
+	index.populateSelect(Barry);
+	index.displayCurrentPortfolioValue(Barry);
+	index.displayLargestPercChange(Barry);
+	index.displayAccountBalance(Barry);
 	
-	  shareSelect.onchange = function(){
-	    portfolioInfo.style.display = "none";
-	    targetsInfo.style.display = "none";
-	    investmentInfo.style.display = "block";
-	    showInvestmentInfo(shareSelect.value, Barry);
-	  };
-	  
-	  portfolioButton.onclick = function(){
-	    investmentInfo.style.display = "none";
-	    targetsInfo.style.display = "none";
-	    portfolioInfo.style.display = "block";
-	    targetsView.innerHTML = "";
-	    new pieChart(Barry.portfolio);
-	    new scatterChart();
-	    var container = document.getElementById("gaugeChart");
-	    new gaugeChart("Portfolio Value", 65000, 70000, 67500, "£GBP", container)
-	  };
+	shareSelect.onchange = function(){
+	  portfolioInfo.style.display = "none";
+	  targetsInfo.style.display = "none";
+	  investmentInfo.style.display = "block";
+	  showInvestmentInfo(shareSelect.value, Barry);
+	};
 	
-	  targetsButton.onclick = function(){
-	    portfolioInfo.style.display = "none";
-	    investmentInfo.style.display = "none";
-	    targetsInfo.style.display = "block";
-	    targetsView.innerHTML = "";
-	    showTargets();
-	  };
+	portfolioButton.onclick = function(){
+	  investmentInfo.style.display = "none";
+	  targetsInfo.style.display = "none";
+	  portfolioInfo.style.display = "block";
+	  targetsView.innerHTML = "";
+	  new pieChart(Barry.portfolio);
+	  new scatterChart();
+	};
 	
-	  notificationArea = new NotificationArea();  
-	  __webpack_require__(17)(notificationArea, Barry);
-	  setUpPriceWatchers();
-	  timer.startPriceUpdating();
+	targetsButton.onclick = function(){
+	  portfolioInfo.style.display = "none";
+	  investmentInfo.style.display = "none";
+	  targetsInfo.style.display = "block";
+	  targetsView.innerHTML = "";
+	  showTargets();
+	};
+	
+	notificationArea = new NotificationArea();  
+	var showTargets = __webpack_require__(17)(notificationArea, Barry);
+	setUpPriceWatchers();
+	timer.startPriceUpdating();
 	};
 
 
@@ -940,6 +923,10 @@
 	        // the value axis
 	        yAxis: {
 	
+	          labels: {
+	            enabled: true
+	          },
+	          tickPositions: [min,max],
 	          min: min,
 	          max: max,
 	          title: {
@@ -1649,6 +1636,8 @@
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var gaugeChart = __webpack_require__(11);
+	
 	module.exports = function(notificationArea, Barry){
 	  var Target = __webpack_require__(1)
 	  var targetsView = document.getElementById('targetsView');
@@ -1733,14 +1722,14 @@
 	    var check = document.getElementById('targetFormCheck').value;
 	    var description = document.getElementById('targetFormDescription').value;
 	    var prop = document.getElementById('targetFormProp').value;
-	    var target;
+	    var newTarget;
 	    if (targetFormType.value == 'Portfolio'){
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
 	        object: Barry.portfolio,
-	        property: prop * 100,
+	        property: prop,
 	        check: check,
-	        target: value,
+	        target: value * 100,
 	        checkTime: 10000
 	      }, function(){
 	        showTargets();
@@ -1750,12 +1739,12 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
+	      Barry.targets.push(newTarget);
 	      showTargets();
 	    } else if (targetFormType.value == 'Investment') {
 	      var investmentName = document.getElementById('targetFormObject').value;
 	      var investment = Barry.portfolio.findByName(investmentName);
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
 	        object: investment,
 	        property: prop,
@@ -1770,12 +1759,12 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
+	      Barry.targets.push(newTarget);
 	      showTargets();
 	    } else if (targetFormType.value == 'Share'){
 	      var shareName = document.getElementById('targetFormObject').value;
 	      var share = Barry.portfolio.findByName(shareName).share;
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
 	        object: investment,
 	        property: prop,
@@ -1790,7 +1779,7 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
+	      Barry.targets.push(newTarget);
 	      showTargets();
 	    }
 	    targetFormFields.style.display = 'none';
@@ -1800,16 +1789,40 @@
 	  var showTargets = function(){
 	    var targetsArea = document.getElementById('targets')
 	      targetsArea.innerHTML = '';
-	    for (var target of Barry.targets) {
+	      for (target of Barry.targets) {
 	      var li = document.createElement('li');
 	      if(target.complete == true){
 	        li.classList.add('completed-target')
 	      } else {
 	        li.classList.add('incomplete-target');
 	      }
-	      li.innerText = target.description;
+	      li.innerHTML = target.description;
+	      var button = document.createElement('button');
+	      button.innerText = "Show Details";
+	      li.appendChild(button);
+	
+	      var addClickEvent = function(target){
+	        button.addEventListener("click", function(event){
+	        showTargetDetails(target);
+	      })
+	      }
+	      addClickEvent(target);
+	
 	      targetsArea.appendChild(li); 
 	    }
+	    var div = document.createElement('div');
+	    div.id = "gaugeChart";
+	    div.style.height = "200px";
+	    div.style.display = "none";
+	    targetsArea.appendChild(div);
+	  }
+	
+	  var showTargetDetails = function(target){
+	    console.log(target);
+	    var div = document.getElementById('gaugeChart')
+	    div.className = "chart grid-6";
+	    div.style.display = "block";
+	    new gaugeChart(target.description, target.startingValue, target.target, 6800000, "£GBP", div);
 	  }
 	
 	  targetFormButton.onclick = submitTargetForm;
@@ -1826,7 +1839,10 @@
 	    showTargets();
 	  })
 	  Barry.targets.push(portfolioTarget);
+	
+	  return showTargets;
 	};
+	
 
 
 /***/ }

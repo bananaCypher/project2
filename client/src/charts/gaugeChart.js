@@ -28,6 +28,10 @@ var GaugeChart = function(title, min, max, current, unit, container){
         // the value axis
         yAxis: {
 
+          labels: {
+            enabled: true
+          },
+          tickPositions: [min,max],
           min: min,
           max: max,
           title: {
