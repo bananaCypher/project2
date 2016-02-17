@@ -21,15 +21,27 @@ describe('Investment', function(){
   });
 
   // BASIC MODEL ATTRIBUTES
+  it('should have a Share object', function(){
+    assert.equal(newInvestment.share, newShare);
+  });
+  it('should contain the share name separately', function(){
+    assert.equal(newInvestment.shareName, newShare.shareName);
+  });
   it('should have a quantity', function(){
     assert.equal(1000, newInvestment.quantity);
-
   });
   it('should have a buy price', function(){
     assert.equal(209.40, newInvestment.buyPrice);
   });
   it('should have a buy date', function(){
     assert.equal("2015-12-22", newInvestment.buyDate);
+  });
+  it('should not be a short unless set so', function(){
+    assert.equal(newInvestment.short, false);
+  });
+  it('should be a short if set so', function(){
+    newInvestment.short = true;
+    assert.equal(newInvestment.short, true);
   });
 
   // MODEL FUNCTIONALITY

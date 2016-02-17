@@ -40,7 +40,7 @@ describe('senseChecker', function(){
     expect(senseChecker.isRegion('USA')).to.equal(true);
   });
   it('should reject non-existing shares', function(){
-    expect(senseChecker.isShare('ObviousFake')).to.equal(false);
+    expect(senseChecker.isShare({shareName: 'ObviousFake'})).to.equal(false);
   });
   it('should pass existing shares', function(){
     expect(senseChecker.isShare('Fusionex')).to.equal(true);
@@ -66,7 +66,7 @@ describe('senseChecker', function(){
   });
   it('should when asked reject percentages of 100 or more', function(){
     senseChecker.isGoodPercentage(250);
-    expect(senseChecker.errorList[0]).to.equal('Error #6: cannot reduce by 100% or above');
+    expect(senseChecker.errorList[0]).to.equal('Error #6: cannot reduce by 100% or more');
   });
   it('should reject quantity submissions that are not numbers', function(){
     expect(senseChecker.isQuantity('a brick')).to.equal(false);
@@ -81,7 +81,7 @@ describe('senseChecker', function(){
 // ACTIONS
 
 it('should pass failures to an errorlist', function(){
-  senseChecker.isShare('ObviousFake');
+  senseChecker.isShare({shareName: 'ObviousFake'});
   expect(senseChecker.errorList[0]).to.equal('Error #1: is not a share');
 });
 

@@ -9,6 +9,7 @@ getUser('Barry Manilow', function(user) {
 var index = require('./basicDisplay.js');
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
+var gaugeChart = require('./charts/gaugeChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
 var senseChecker = require('./models/senseChecker.js');
@@ -26,21 +27,6 @@ var timer = {
 var showInvestmentInfo = require('./investmentInfo.js')(timer);
 var notificationArea;
 
-
-var showTargets = function(){
-  var targetsArea = document.getElementById('targets')
-  targetsArea.innerHTML = '';
-  for (var target of Barry.targets) {
-    var li = document.createElement('li');
-    if(target.complete == true){
-      li.classList.add('completed-target')
-    } else {
-      li.classList.add('incomplete-target');
-    }
-    li.innerText = target.description;
-    targetsArea.appendChild(li); 
-  }
-}
 
 var updateShare = function(share){
   var request = new XMLHttpRequest();
@@ -118,12 +104,12 @@ var init = function(){
     errorList.appendChild(li);
   });
 
-  Highcharts.setOptions(chartStyles);
+Highcharts.setOptions(chartStyles);
 
-  index.populateSelect(Barry);
-  index.displayCurrentPortfolioValue(Barry);
-  index.displayLargestPercChange(Barry);
-  index.displayAccountBalance(Barry);
+index.populateSelect(Barry);
+index.displayCurrentPortfolioValue(Barry);
+index.displayLargestPercChange(Barry);
+index.displayAccountBalance(Barry);
 
   shareSelect.onchange = function(){
     portfolioInfo.style.display = "none";
@@ -160,7 +146,7 @@ var init = function(){
   }
 
   notificationArea = new NotificationArea();  
-  require('./targetForm.js')(notificationArea, Barry);
+  var showTargets = require('./targetForm.js')(notificationArea, Barry);
   setUpPriceWatchers();
   timer.startPriceUpdating();
 };

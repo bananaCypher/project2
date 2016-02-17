@@ -52,11 +52,12 @@
 	  init();
 	});
 	
-	var index = __webpack_require__(8);
-	var scatterChart = __webpack_require__(9);
-	var pieChart = __webpack_require__(10);
-	var chartStyles = __webpack_require__(11);
-	var NotificationArea = __webpack_require__(12);
+	var index = __webpack_require__(9);
+	var scatterChart = __webpack_require__(10);
+	var pieChart = __webpack_require__(11);
+	var gaugeChart = __webpack_require__(12);
+	var chartStyles = __webpack_require__(13);
+	var NotificationArea = __webpack_require__(14);
 	var senseChecker = __webpack_require__(5);
 	var timer = {
 	  time: 10000,
@@ -69,24 +70,9 @@
 	    clearInterval(this.timer);
 	  }
 	};
-	var showInvestmentInfo = __webpack_require__(13)(timer);
+	var showInvestmentInfo = __webpack_require__(15)(timer);
 	var notificationArea;
 	
-	
-	var showTargets = function(){
-	  var targetsArea = document.getElementById('targets')
-	  targetsArea.innerHTML = '';
-	  for (var target of Barry.targets) {
-	    var li = document.createElement('li');
-	    if(target.complete == true){
-	      li.classList.add('completed-target')
-	    } else {
-	      li.classList.add('incomplete-target');
-	    }
-	    li.innerText = target.description;
-	    targetsArea.appendChild(li); 
-	  }
-	}
 	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
@@ -164,12 +150,12 @@
 	    errorList.appendChild(li);
 	  });
 	
-	  Highcharts.setOptions(chartStyles);
+	Highcharts.setOptions(chartStyles);
 	
-	  index.populateSelect(Barry);
-	  index.displayCurrentPortfolioValue(Barry);
-	  index.displayLargestPercChange(Barry);
-	  index.displayAccountBalance(Barry);
+	index.populateSelect(Barry);
+	index.displayCurrentPortfolioValue(Barry);
+	index.displayLargestPercChange(Barry);
+	index.displayAccountBalance(Barry);
 	
 	  shareSelect.onchange = function(){
 	    portfolioInfo.style.display = "none";
@@ -206,7 +192,7 @@
 	  }
 	
 	  notificationArea = new NotificationArea();  
-	  __webpack_require__(16)(notificationArea, Barry);
+	  var showTargets = __webpack_require__(18)(notificationArea, Barry);
 	  setUpPriceWatchers();
 	  timer.startPriceUpdating();
 	};
@@ -282,12 +268,16 @@
 	  setupWatcher: function(){
 	    setTimeout(this.observeFunction, this.checkTime);
 	  },
-	  hasMetTarget: function(){
+	  currentValue: function(){
 	    if (typeof(this.object[this.property]) == 'function') {
-	      var property = this.object[this.property]();
+	      var value = this.object[this.property]();
 	    } else {
-	      var property = this.object[this.property];
+	      var value = this.object[this.property];
 	    }
+	    return value;
+	  },
+	  hasMetTarget: function(){
+	    var property = this.currentValue();
 	    switch(this.check) {
 	      case 'gt':
 	        if(property > this.target){
@@ -326,9 +316,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var User = __webpack_require__(3);
-	var Portfolio = __webpack_require__(6);
+	var Portfolio = __webpack_require__(7);
 	var Investment = __webpack_require__(4);
-	var Share = __webpack_require__(7);
+	var Share = __webpack_require__(8);
 	var Target = __webpack_require__(1);
 	var Barry;
 	
@@ -376,7 +366,7 @@
 	  this.id = id,
 	  this.portfolio = undefined,
 	  this.accountBalance = 500000
-	    this.targets = [];
+	  this.targets = [];
 	};
 	
 	User.prototype = {
@@ -529,15 +519,34 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var shareSample = __webpack_require__(6);
+	
 	var senseChecker = {
 	  errorList: [],
-	  validRegions: ['China', 'UK', 'USA'],
-	  validShares: ["Fusionex", "Empiric Student Prop", "Worldpay", "Pets At Home", "Cyprotex", "Robinson", "Softcat", "Royal Bank of Scotland Group", "NCC", "Stadium"],
+	
 	  validInvestments: function(user){
 	    var investments = user.portfolio.investments;
 	    return investments;
+	  },
+	
+	  validRegions: function(sample){
+	    var regionArray = []
+	    for(entry of sample){
+	      if(entry.location != regionArray[0] && entry.location != regionArray[1] && entry.location != regionArray[2]){
+	        regionArray.push(entry.location);
+	      }
+	    }
+	    return regionArray;
+	  },
+	
+	  validShares: function(sample){
+	    var shareArray = [];
+	    for(entry of sample){
+	      shareArray.push(entry);
+	    }
+	    return shareArray;
 	  },
 	
 	  errorMessage: function(error){
@@ -545,19 +554,6 @@
 	    var newErrorList = this.errorList;
 	    newErrorList.push(error);
 	    this.errorList = newErrorList;
-	  },
-	
-	  isShare: function(share){
-	    var filtered = this.validShares.filter(function(value){
-	      return value === share;
-	    });
-	    if(filtered.length == 0){
-	      this.errorMessage('1: is not a share');
-	      return false;
-	    }
-	    else{
-	      return true;
-	    }
 	  },
 	
 	  isNotNegative: function(quantity){
@@ -593,10 +589,29 @@
 	    }
 	  },
 	
+	  isShare: function(shareName){
+	    var filtered = [];
+	    for(entry of this.validShares(shareSample)){
+	      if(entry.name === shareName){
+	        filtered.push(entry)
+	      }
+	    }
+	    if(filtered.length == 0){
+	      this.errorMessage('1: is not a share');
+	      return false;
+	    }
+	    else{
+	      return true;
+	    }
+	  },
+	
 	  isRegion:  function(region){
-	    var filtered = this.validRegions.filter(function(value){
-	      return value === region;
-	    });
+	    var filtered = [];
+	    for(entry of this.validRegions(shareSample)){
+	      if(entry === region){
+	        filtered.push(entry);
+	      }
+	    }
 	    if (filtered.length == 0){
 	      this.errorMessage('5: not a region');
 	      return false;
@@ -608,7 +623,7 @@
 	
 	  isGoodPercentage: function(percentage){
 	    if(percentage >= 100){
-	      this.errorMessage('6: cannot reduce by 100% or above');
+	      this.errorMessage('6: cannot reduce by 100% or more');
 	      return false;
 	    }
 	    else{
@@ -641,6 +656,113 @@
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	module.exports = [
+	    {
+	      "name": "Fusionex",
+	      "epic":"FXI",
+	      "location": "USA",
+	      "price": 120.00,
+	      "quantity": 2000,
+	      "buyPrice": 80.00,
+	      "pastCloseOfDayPrices": [92.00, 89.00, 103.00, 125.00, 108.00, 98.00, 110.00],
+	      "buyDate":"2014-11-15"
+	    },
+	    {
+	      "name": "Empiric Student Prop",
+	      "epic":"ESP",
+	      "location": "UK",
+	      "price": 112.00,
+	      "quantity": 3500,
+	      "buyPrice": 100.00,
+	      "pastCloseOfDayPrices": [90.00, 78.50, 82.50, 110.00, 109.00, 109.00, 110.50],
+	      "buyDate":"2013-10-23"
+	    },
+	    {
+	      "name": "Worldpay",
+	      "epic":"WPG",
+	      "location": "China",
+	      "price": 301.00,
+	      "quantity": 1000,
+	      "buyPrice": 209.40,
+	      "pastCloseOfDayPrices": [232.60, 220.00, 222.00, 221.60, 240.00, 238.00, 235.40],
+	      "buyDate":"2015-12-22"
+	    },
+	    {
+	      "name": "Pets At Home",
+	      "epic":"PETS",
+	      "location": "USA",
+	      "price": 247.40,
+	      "quantity": 2500,
+	      "buyPrice": 250.50,
+	      "pastCloseOfDayPrices": [230.00, 232.30, 235.90, 236.60, 237.00, 240.00, 242.70],
+	      "buyDate":"2014-08-23"
+	    },
+	    {
+	      "name": "Cyprotex",
+	      "epic":"CRX",
+	      "location": "UK",
+	      "price": 87.00,
+	      "quantity": 5000,
+	      "buyPrice": 90.00,
+	      "pastCloseOfDayPrices": [92.00, 91.00, 91.50, 92.10, 92.70, 91.00, 88.70],
+	      "buyDate":"2015-01-11"
+	    },
+	    {
+	      "name": "Robinson",
+	      "epic":"RBN",
+	      "location": "China",
+	      "price": 202.00,
+	      "quantity": 5000,
+	      "buyPrice": 80.50,
+	      "pastCloseOfDayPrices": [201.00, 200.50, 200.00, 202.30, 202.40, 202.10, 203.00],
+	      "buyDate":"2014-04-10"
+	    },
+	    {
+	      "name": "Softcat",
+	      "epic":"SCT",
+	      "location": "USA",
+	      "price": 322.90,
+	      "quantity": 2000,
+	      "buyPrice": 420.00,
+	      "pastCloseOfDayPrices": [324.40, 325.10, 323.90, 323.40, 323.10, 323.00, 322.20],
+	      "buyDate":"2015-02-18"
+	    },
+	    {
+	      "name": "Royal Bank of Scotland Group",
+	      "epic":"RBS",
+	      "location": "UK",
+	      "price": 233.00,
+	      "quantity": 8000,
+	      "buyPrice": 790.00,
+	      "pastCloseOfDayPrices": [228.00, 229.10, 228.10, 229.70, 230.90, 231.10, 231.40],
+	      "buyDate":"2016-01-15"
+	    },
+	    {
+	      "name": "NCC",
+	      "epic":"NCC",
+	      "location": "USA",
+	      "price": 279.00,
+	      "quantity": 2000,
+	      "buyPrice": 500.00,
+	      "pastCloseOfDayPrices": [279.10, 285.00, 285.20, 286.00, 286.00, 285.20, 280.00],
+	      "buyDate":"2014-11-15"
+	    },
+	    {
+	      "name": "Stadium",
+	      "epic":"SDM",
+	      "location": "China",
+	      "price": 116.90,
+	      "quantity": 5000,
+	      "buyPrice": 9.00,
+	      "pastCloseOfDayPrices": [115.00, 115.00, 115.50, 115.90, 116.30, 116.40, 116.80],
+	      "buyDate":"2014-04-04"
+	    }
+	]
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var senseChecker = __webpack_require__(5);
@@ -749,7 +871,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var senseChecker = __webpack_require__(5);
@@ -780,7 +902,7 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	
@@ -828,7 +950,7 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
@@ -892,7 +1014,7 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	var PieChart = function(portfolio){
@@ -926,7 +1048,126 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Share = __webpack_require__(8);
+	
+	var GaugeChart = function(target, container){
+	  var title = target.description;
+	
+	  if(target.object instanceof Share || target.property === "sevenDayAverage"){
+	    var min = target.startingValue;
+	    var max = target.target;
+	    var current = parseFloat(target.currentValue().toFixed(2));
+	    var unit = "GMX";
+	  }
+	  else {
+	    var min = target.startingValue / 100;
+	    var max = target.target / 100;
+	    var current = target.currentValue() / 100;
+	    var unit = "£GBP";
+	  }
+	
+	  var chart = new Highcharts.Chart( {
+	
+	    chart: {
+	      type: 'solidgauge',
+	      renderTo: container,
+	    },
+	
+	    title: null,
+	
+	    pane: {
+	      center: ['50%', '85%'],
+	      size: '120%',
+	      startAngle: -90,
+	      endAngle: 90,
+	      background: {
+	        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+	        innerRadius: '60%',
+	        outerRadius: '100%',
+	        shape: 'arc'
+	      }
+	    },
+	
+	    tooltip: {
+	      enabled: false
+	    },
+	
+	        // the value axis
+	        yAxis: {
+	
+	          labels: {
+	            enabled: true
+	          },
+	          tickPositions: [min,max],
+	          min: min.toFixed(2),
+	          max: max,
+	          title: {
+	            text: title,
+	            style: {
+	              "fontSize": "18px"
+	            },
+	            y: -70
+	          },
+	
+	
+	
+	
+	          stops: [
+	                [0.1, '#DF5353'], // red
+	                [0.5, '#DDDF0D'], // yellow
+	                [0.9, '#55BF3B'] // green
+	                ],
+	                lineWidth: 0,
+	                minorTickInterval: null,
+	                tickPixelInterval: 400,
+	                tickWidth: 0,
+	               
+	                labels: {
+	                  y: 16
+	                }
+	              },
+	
+	              plotOptions: {
+	                solidgauge: {
+	                  dataLabels: {
+	                    y: 5,
+	                    borderWidth: 0,
+	                    useHTML: true
+	                  }
+	                }
+	              },
+	            
+	
+	
+	
+	            credits: {
+	              enabled: false
+	            },
+	
+	            series: [{
+	              name: 'Speed',
+	              data: [current],
+	              dataLabels: {
+	                format: '<div style="text-align:center"><span style="font-size:25px;color: white' +
+	                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+	                '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
+	              },
+	              tooltip: {
+	                valueSuffix: unit
+	              }
+	            }],
+	
+	          })
+	}
+	
+	module.exports = GaugeChart;
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports) {
 
 	  var chartStyles = {
@@ -1134,7 +1375,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -1241,12 +1482,12 @@
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(14);
-	var TargetChecker = __webpack_require__(15);
-	var index = __webpack_require__(8);
+	var singleScatterChart = __webpack_require__(16);
+	var TargetChecker = __webpack_require__(17);
+	var index = __webpack_require__(9);
 	
 	module.exports = function(timer){
 	  var loadInfo = function(investment, user){
@@ -1450,7 +1691,7 @@
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Barry;
@@ -1516,7 +1757,7 @@
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports) {
 
 	var TargetChecker = function(user, investment){
@@ -1531,7 +1772,7 @@
 	  var button = document.getElementById('targetValueButton');
 	  button.onclick = function(){
 	    var input = document.getElementById('targetValue').value;
-	    if(input === "" || isNan(input)){
+	    if(input === "" || isNaN(input)){
 	      return;
 	    }
 	    input = parseInt(input) * 100;
@@ -1566,9 +1807,12 @@
 	module.exports = TargetChecker;
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var gaugeChart = __webpack_require__(12);
+	var senseChecker = __webpack_require__(5);
+	
 	module.exports = function(notificationArea, Barry){
 	  var Target = __webpack_require__(1)
 	  var targetsView = document.getElementById('targetsView');
@@ -1653,14 +1897,14 @@
 	    var check = document.getElementById('targetFormCheck').value;
 	    var description = document.getElementById('targetFormDescription').value;
 	    var prop = document.getElementById('targetFormProp').value;
-	    var target;
+	    var newTarget;
 	    if (targetFormType.value == 'Portfolio'){
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
 	        object: Barry.portfolio,
-	        property: prop * 100,
+	        property: prop,
 	        check: check,
-	        target: value,
+	        target: value * 100,
 	        checkTime: 10000
 	      }, function(){
 	        showTargets();
@@ -1670,12 +1914,13 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
-	      showTargets();
 	    } else if (targetFormType.value == 'Investment') {
 	      var investmentName = document.getElementById('targetFormObject').value;
 	      var investment = Barry.portfolio.findByName(investmentName);
-	      target = new Target({
+	      if(prop === "currentValue"){
+	        value = value * 100;
+	      }
+	      newTarget = new Target({
 	        description: description,
 	        object: investment,
 	        property: prop,
@@ -1690,14 +1935,12 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
-	      showTargets();
 	    } else if (targetFormType.value == 'Share'){
 	      var shareName = document.getElementById('targetFormObject').value;
 	      var share = Barry.portfolio.findByName(shareName).share;
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
-	        object: investment,
+	        object: share,
 	        property: prop,
 	        check: check,
 	        target: value,
@@ -1710,9 +1953,13 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
-	      showTargets();
 	    }
+	    if(newTarget.complete){
+	      senseChecker.errorList.push("Error: Target already completed");
+	      return;
+	    }
+	    Barry.targets.push(newTarget);
+	    showTargets();
 	    targetFormFields.style.display = 'none';
 	    targetFormType.selectedIndex = 0;
 	  }
@@ -1720,16 +1967,40 @@
 	  var showTargets = function(){
 	    var targetsArea = document.getElementById('targets')
 	      targetsArea.innerHTML = '';
-	    for (var target of Barry.targets) {
+	      for (target of Barry.targets) {
 	      var li = document.createElement('li');
 	      if(target.complete == true){
 	        li.classList.add('completed-target')
 	      } else {
 	        li.classList.add('incomplete-target');
 	      }
-	      li.innerText = target.description;
+	      li.innerHTML = target.description;
+	      var button = document.createElement('button');
+	      button.innerText = "Show Details";
+	      li.appendChild(button);
+	
+	      var addClickEvent = function(target){
+	        button.addEventListener("click", function(event){
+	        showTargetDetails(target);
+	      })
+	      }
+	      addClickEvent(target);
+	
 	      targetsArea.appendChild(li); 
 	    }
+	    var div = document.createElement('div');
+	    div.id = "gaugeChart";
+	    div.style.height = "200px";
+	    div.style.display = "none";
+	    targetsArea.appendChild(div);
+	  }
+	
+	  var showTargetDetails = function(target){
+	    console.log(target);
+	    var div = document.getElementById('gaugeChart')
+	    div.className = "chart grid-6";
+	    div.style.display = "block";
+	    new gaugeChart(target, div);
 	  }
 	
 	  targetFormButton.onclick = submitTargetForm;
@@ -1746,7 +2017,10 @@
 	    showTargets();
 	  })
 	  Barry.targets.push(portfolioTarget);
+	
+	  return showTargets;
 	};
+	
 
 
 /***/ }
