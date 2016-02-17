@@ -11,7 +11,7 @@ var TargetChecker = function(user, investment){
   }
 
   var p = document.createElement('p');
-  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue' value='" + targetValue + "''><button id='targetValueButton'>Check</button><br>Price required to meet this target with current share quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current trend continues: <span id='targetValueDays'></span>";
+  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue' value='" + targetValue + "''><button id='targetValueButton'>Check</button><br>Price required to meet this target with current quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current trend continues: <span id='targetValueDays'></span>";
 
   targetsView.appendChild(p);
 
