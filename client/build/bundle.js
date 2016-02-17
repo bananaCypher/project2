@@ -1506,7 +1506,7 @@
 	  var button = document.getElementById('targetValueButton');
 	  button.onclick = function(){
 	    var input = document.getElementById('targetValue').value;
-	    if(input === ""){
+	    if(input === "" || isNan(input)){
 	      return;
 	    }
 	    input = parseInt(input) * 100;
