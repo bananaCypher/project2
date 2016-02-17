@@ -5,7 +5,6 @@ var userSchema = new Schema({
   name:  String,
   accountBalance: Number,
   portfolio: Object,
-  insideTrader: Boolean
 });
 
 var User = mongoose.model('User', userSchema);

@@ -1,10 +1,29 @@
+var shareSample = require('./specs/shareSample.js');
+
 var senseChecker = {
   errorList: [],
-  validRegions: ['China', 'UK', 'USA'],
-  validShares: ["Fusionex", "Empiric Student Prop", "Worldpay", "Pets At Home", "Cyprotex", "Robinson", "Softcat", "Royal Bank of Scotland Group", "NCC", "Stadium"],
+
   validInvestments: function(user){
     var investments = user.portfolio.investments;
     return investments;
+  },
+
+  validRegions: function(sample){
+    var regionArray = []
+    for(entry of sample){
+      if(entry.location != regionArray[0] && entry.location != regionArray[1] && entry.location != regionArray[2]){
+        regionArray.push(entry.location);
+      }
+    }
+    return regionArray;
+  },
+
+  validShares: function(sample){
+    var shareArray = [];
+    for(entry of sample){
+      shareArray.push(entry);
+    }
+    return shareArray;
   },
 
   errorMessage: function(error){
@@ -12,19 +31,6 @@ var senseChecker = {
     var newErrorList = this.errorList;
     newErrorList.push(error);
     this.errorList = newErrorList;
-  },
-
-  isShare: function(share){
-    var filtered = this.validShares.filter(function(value){
-      return value === share;
-    });
-    if(filtered.length == 0){
-      this.errorMessage('1: is not a share');
-      return false;
-    }
-    else{
-      return true;
-    }
   },
 
   isNotNegative: function(quantity){
@@ -60,10 +66,29 @@ var senseChecker = {
     }
   },
 
+  isShare: function(shareName){
+    var filtered = [];
+    for(entry of this.validShares(shareSample)){
+      if(entry.name === shareName){
+        filtered.push(entry)
+      }
+    }
+    if(filtered.length == 0){
+      this.errorMessage('1: is not a share');
+      return false;
+    }
+    else{
+      return true;
+    }
+  },
+
   isRegion:  function(region){
-    var filtered = this.validRegions.filter(function(value){
-      return value === region;
-    });
+    var filtered = [];
+    for(entry of this.validRegions(shareSample)){
+      if(entry === region){
+        filtered.push(entry);
+      }
+    }
     if (filtered.length == 0){
       this.errorMessage('5: not a region');
       return false;
@@ -75,7 +100,7 @@ var senseChecker = {
 
   isGoodPercentage: function(percentage){
     if(percentage >= 100){
-      this.errorMessage('6: cannot reduce by 100% or above');
+      this.errorMessage('6: cannot reduce by 100% or more');
       return false;
     }
     else{

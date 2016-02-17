@@ -1,4 +1,3 @@
-//var Barry = require('../seedObjects.js')
 var Barry;
 var getUser = require('../getUser.js');
 getUser('Barry Manilow', function(user){

@@ -1,4 +1,3 @@
-
 var PieChart = function(portfolio){
   var container = document.getElementById("pieChart");
   var investmentData = []

@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <title>index</title>
   <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="http://code.highcharts.com/modules/exporting.js"></script> 
-  <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
+  <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+  <script src="regressionLine.js"> </script>
   <script src="/bundle.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Unica+One">
@@ -36,7 +38,20 @@
       <select id="shareSelect">
         <option selected="selected">View Investment Information:</option>
       </select> <button id="portfolioView">View Portfolio Information</button>
-      <button id="targetsButton">View My Targets</button><br>
+      <button id="targetsButton">View My Targets</button>
+      <button id="twitterButton">Show @stocktweets Twitter</button>
+      <br>
+
+      <div id="twitterInfo" style="display: none;">
+        <div class="grid-12">
+          <a  class="twitter-timeline" 
+              data-dnt="true" 
+              href="https://twitter.com/StockTwits" 
+              data-widget-id="699948581264953344">
+            Tweets by @StockTwits
+          </a>
+        </div>
+      </div>
 
       <div id="investmentInfo">
       <div class='col grid-6'>
@@ -60,23 +75,45 @@
       </div>
 
       <div id="targetsInfo" style="display: none;">
-        <div class="grid-6">
+        <div class="grid-12">
           <ul id="targets">
           </ul>
         </div>
-        <!--<div class="grid-6">
-          <select name="targetFormObject" id="targetFormObject">
-          </select> 
-          <select name="targetFormCheck" id="targetFormCheck">
-          </select>
-          <label for="targetFormValue">Target Value</label><input type="number" name="targetFormValue" value="" id="targetFormValue">
-          <button id="targetFormButton">Create Target</button>
-        </div>-->
+        <div class="grid-12">
+          <fieldset>
+            <legend>New Target</legend>
+            <label for="targetFormType">Target Type</label>
+            <select name="targetFormType" id="targetFormType">
+              <option selected>Select a target type:</option>
+              <option value="Portfolio">Portfolio</option>
+              <option value="Investment">Investment</option>
+              <option value="Share">Share</option>
+            </select><br>
+            <div id="targetFormFields">
+              <label for="targetFormObject" id='targetFormLabel'>Investment</label>
+              <select name="targetFormObject" id="targetFormObject">
+              </select><br>
+              <select name="targetFormProp" id="targetFormProp">
+              </select>
+              <select name="targetFormCheck" id="targetFormCheck">
+                <option value="gt">greater than</option>
+                <option value="lt">less than</option>
+                <option value="eq">equal to</option>
+                <option value="gte">greater than or equal to</option>
+                <option value="lte">less than or equal to</option>
+              </select>
+              <label for="targetFormValue">Target </label><input type="number" name="targetFormValue" value="" id="targetFormValue"><br>
+              <label for="targetFormDescription">Description</label><input type="text" name="targetFormDescription" value="" id="targetFormDescription">
+              <button id="targetFormButton">Create Target</button>
+            </div>
+          </fieldset>
+        </div>
       </div>
     </div>
-
-    
   </div>
 </div> 
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
 </body>
 </html>
