@@ -124,4 +124,8 @@ describe('User', function(){
     testUser.buyShares(testShare, -1, testData);
     expect(testUser.portfolio.investments[1]).to.equal(undefined);
   });
+  it('should be unable to buy non-existent shares', function(){
+    testUser.buyShares('Barry', 10, testData);
+    expect(testUser.portfolio.investments[1]).to.equal(undefined);
+  });
 })
