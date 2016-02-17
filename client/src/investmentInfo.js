@@ -138,7 +138,7 @@ var showPreview = function(investment, user){
   else{
     var sellValue = parseInt(sellAmount) * investment.share.currentPrice || "";
     sellPreview.style.display = "inline-block";
-    if (sellAmount < investment.quantity){
+    if (sellAmount <= investment.quantity){
       sellPreview.style.color = "green";
       sellPreview.innerHTML = "<br>Sell Value: £" + Number(sellValue / 100).toLocaleString();
     }
