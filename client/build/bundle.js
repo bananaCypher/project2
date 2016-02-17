@@ -136,8 +136,10 @@
 	  var shareSelect = document.getElementById('shareSelect');
 	  var portfolioButton = document.getElementById('portfolioView');
 	  var targetsButton = document.getElementById('targetsButton');
+	  var twitterButton = document.getElementById('twitterButton')
 	  var portfolioInfo = document.getElementById('portfolioInfo');
 	  var investmentInfo = document.getElementById('investmentInfo');
+	  var twitterInfo = document.getElementById('twitterInfo')
 	
 	  var errorList = document.getElementById('errorNotifications');
 	  var errorImage = document.getElementById('errorImage');
@@ -155,7 +157,6 @@
 	// ERRORLIST POPULATION
 	
 	  Object.observe(senseChecker.errorList, function(changes){
-	
 	    errorList.innerHTML = '';
 	    errorImage.style.display = "inline-block";
 	    var li = document.createElement('li');
@@ -176,10 +177,16 @@
 	    investmentInfo.style.display = "block";
 	    showInvestmentInfo(shareSelect.value, Barry);
 	  };
-	  
-	  portfolioButton.onclick = function(){
+	
+	  var hideAllInfoWindows = function(){
 	    investmentInfo.style.display = "none";
 	    targetsInfo.style.display = "none";
+	    portfolioInfo.style.display = "none";
+	    twitterInfo.style.display = "none";
+	  }
+	  
+	  portfolioButton.onclick = function(){
+	    hideAllInfoWindows();
 	    portfolioInfo.style.display = "block";
 	    targetsView.innerHTML = "";
 	    new pieChart(Barry.portfolio);
@@ -187,12 +194,16 @@
 	  };
 	
 	  targetsButton.onclick = function(){
-	    portfolioInfo.style.display = "none";
-	    investmentInfo.style.display = "none";
+	    hideAllInfoWindows();
 	    targetsInfo.style.display = "block";
 	    targetsView.innerHTML = "";
 	    showTargets();
 	  };
+	
+	  twitterButton.onclick = function(){
+	    hideAllInfoWindows();
+	    twitterInfo.style.display = "block";
+	  }
 	
 	  notificationArea = new NotificationArea();  
 	  __webpack_require__(16)(notificationArea, Barry);
@@ -210,9 +221,11 @@
 	//  object: myObj, //The object you want the target to be on.
 	//  property: 'myProperty', //This is the property of the object you want the target to be for, this can be a function as long as it requires no parameters.
 	//  check: 'gt', //This is the check you want to do gt is greater than, you can also use gte, eq, lt and lte.
-	//  target: 200, //This is the value you want to run 
-	// }, function(){
-	//
+	//  target: 200, //This is the value you want your target to reach.
+	//  checkTime: 1000, //The interval you want to check if you have reached your target in ms.
+	//  description: 'Get myProperty to above 200', //The description you want to give the Target, this will be returned with callback
+	// }, function(description){ 
+	//    console.log(description); //The callback function
 	// });
 	var Target = function(params, callback){
 	  this.object = params.object;
@@ -882,7 +895,6 @@
 /* 10 */
 /***/ function(module, exports) {
 
-	
 	var PieChart = function(portfolio){
 	  var container = document.getElementById("pieChart");
 	  var investmentData = []
@@ -911,6 +923,7 @@
 	}
 	
 	module.exports = PieChart;
+
 
 /***/ },
 /* 11 */

@@ -36,7 +36,20 @@
       <select id="shareSelect">
         <option selected="selected">View Investment Information:</option>
       </select> <button id="portfolioView">View Portfolio Information</button>
-      <button id="targetsButton">View My Targets</button><br>
+      <button id="targetsButton">View My Targets</button>
+      <button id="twitterButton">Show @stocktweets Twitter</button>
+      <br>
+
+      <div id="twitterInfo" style="display: none;">
+        <div class="grid-12">
+          <a  class="twitter-timeline" 
+              data-dnt="true" 
+              href="https://twitter.com/StockTwits" 
+              data-widget-id="699948581264953344">
+            Tweets by @StockTwits
+          </a>
+        </div>
+      </div>
 
       <div id="investmentInfo">
       <div class='col grid-6'>
@@ -94,10 +107,10 @@
           </fieldset>
         </div>
       </div>
-    </div>
 
-    
+    </div>
   </div>
 </div> 
-</body>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 </html>

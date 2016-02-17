@@ -90,8 +90,10 @@ var init = function(){
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
   var targetsButton = document.getElementById('targetsButton');
+  var twitterButton = document.getElementById('twitterButton')
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
+  var twitterInfo = document.getElementById('twitterInfo')
 
   var errorList = document.getElementById('errorNotifications');
   var errorImage = document.getElementById('errorImage');
@@ -109,7 +111,6 @@ var init = function(){
 // ERRORLIST POPULATION
 
   Object.observe(senseChecker.errorList, function(changes){
-
     errorList.innerHTML = '';
     errorImage.style.display = "inline-block";
     var li = document.createElement('li');
@@ -130,10 +131,16 @@ var init = function(){
     investmentInfo.style.display = "block";
     showInvestmentInfo(shareSelect.value, Barry);
   };
-  
-  portfolioButton.onclick = function(){
+
+  var hideAllInfoWindows = function(){
     investmentInfo.style.display = "none";
     targetsInfo.style.display = "none";
+    portfolioInfo.style.display = "none";
+    twitterInfo.style.display = "none";
+  }
+  
+  portfolioButton.onclick = function(){
+    hideAllInfoWindows();
     portfolioInfo.style.display = "block";
     targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
@@ -141,12 +148,16 @@ var init = function(){
   };
 
   targetsButton.onclick = function(){
-    portfolioInfo.style.display = "none";
-    investmentInfo.style.display = "none";
+    hideAllInfoWindows();
     targetsInfo.style.display = "block";
     targetsView.innerHTML = "";
     showTargets();
   };
+
+  twitterButton.onclick = function(){
+    hideAllInfoWindows();
+    twitterInfo.style.display = "block";
+  }
 
   notificationArea = new NotificationArea();  
   require('./targetForm.js')(notificationArea, Barry);
