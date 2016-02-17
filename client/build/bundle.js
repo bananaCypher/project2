@@ -205,6 +205,15 @@
 /* 1 */
 /***/ function(module, exports) {
 
+	// Target accepts an object and a callback to be run when the target has been met e.g.
+	// var target = new Target({
+	//  object: myObj, //The object you want the target to be on.
+	//  property: 'myProperty', //This is the property of the object you want the target to be for, this can be a function as long as it requires no parameters.
+	//  check: 'gt', //This is the check you want to do gt is greater than, you can also use gte, eq, lt and lte.
+	//  target: 200, //This is the value you want to run 
+	// }, function(){
+	//
+	// });
 	var Target = function(params, callback){
 	  this.object = params.object;
 	  this.property = params.property;
@@ -1431,7 +1440,6 @@
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//var Barry = require('../seedObjects.js')
 	var Barry;
 	var getUser = __webpack_require__(2);
 	getUser('Barry Manilow', function(user){
