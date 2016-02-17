@@ -22,6 +22,10 @@ h1, h2 {
   text-transform: uppercase;
 }
 
+h1#logo {
+  display: inline-block;
+}
+
 h1 {
   margin: 0;
   padding: 0;
@@ -45,6 +49,21 @@ h1 {
   vertical-align: top;
   margin-right: -4px;
   box-sizing: border-box;
+}
+
+.chart {
+  margin-top: 16px;
+}
+
+.col {
+  display: inline-block;
+  margin-right: -4px;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.col-padding-left {
+  padding-left: 20px;
 }
 
 .grid {
@@ -104,7 +123,7 @@ h1 {
 }
  
 /* BUTTONS */
-button, select,  #buySubmit, #sellSubmit {
+button, select,  #buySubmit, #sellSubmit, #sellShortSubmit, #buyShortSubmit, #crashStockSubmit, #pumpStockSubmit, #crashRegionSubmit, #pumpRegionSubmit {
   font-size: 16px;
   font-family: "Unica One";
   text-transform: uppercase;
@@ -116,27 +135,51 @@ button, select,  #buySubmit, #sellSubmit {
   padding: 2px 5px;
 }
 
-button, select, #buySubmit {
+button, select, #buySubmit, #buyShortSubmit {
   background-color: rgba(110,216,84, 0.7);
 }
 
-button:focus, select:focus, #buySubmit:focus {
+button:focus, select:focus, #buySubmit:focus, #buyShortSubmit:focus {
   outline: none;
   background-color: rgba(110,216,84, 1);
 }
 
-#sellSubmit {
+#sellSubmit, #sellShortSubmit {
   background-color: rgb(215,40,40);
 }
 
-#sellSubmit:focus {
+#crashStockSubmit, #pumpStockSubmit {
+  background-color: rgb(230,230,30);
+}
+
+#crashRegionSubmit, #pumpRegionSubmit {
+  background-color: rgb(255,69,0);
+}
+
+#sellSubmit:focus, #sellShortSubmit:focus {
   outline: none;
   background-color: rgb(223,82,82);
 }
 
+#crashStockSubmit:focus, #pumpStockSubmit:focus {
+  outline: none;
+  background-color: rgb(255,255,70);
+}
+
+#crashRegionSubmit:focus, #pumpRegionSubmit:focus {
+  outline: none;
+  background-color: rgb(255, 85, 10);
+}
+
 input[type=text] {
   padding: 2px;
-  font-size: 1em;
+  font-size: 0.8em;
+  width: 120px;
+}
+
+#targetValuePrice, #targetValueDays {
+  color: rgba(110,216,84, 0.7);
+  font-weight: bold;
 }
 
 /* Notification */
@@ -148,10 +191,43 @@ div#notifications {
   top: 2px;
   cursor: pointer;
 }
-div#notifications img {
-  height: 100%;
-  width: 100%;
+
+div#errorImage {
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  right: 65px;
+  top: 5px;
+  cursor: pointer;
+  display: none;
 }
+
+#errorNotifications {
+  float: right;
+  margin: 0 105px 0 0;
+  padding: 0;
+  width: 0;
+  display: inline-block;
+  transition: width 2s;
+}
+
+#errorNotifications li {
+  width: 285px;
+  display: none;
+  list-style: none;
+  line-height: 30px;
+  padding: 3px 20px;
+  font: bold 20px "Unica One";
+  text-transform: uppercase;
+  background-color: #323232;
+  border: 2px solid rgb(215,40,40);
+  border-radius: 25px;
+}
+
+div#notifications img, div#errorImage img {
+  height: 100%;
+}
+
 div#notifications span {
   position: relative;
   top: -55px;
@@ -210,9 +286,11 @@ div.notification-success {
   position: relative;
   border: 1px solid #286421;
   background-color: #bde6b5;
+  text-shadow: 1px 1px 5px #000000;
 }
 div.notification-success h2, div.notification-success span {
   color: #286421;
+  text-shadow: 0px 0px 0px #000000;
 }
 @keyframes pulse {
   0% {font-size: 1em;}
@@ -221,4 +299,9 @@ div.notification-success h2, div.notification-success span {
 }
 .pulse {
   animation: pulse linear 1.5s infinite;
+}
+ /* Targets */
+.completed-target {
+  text-decoration: line-through;  
+  color: #bde6b5;
 }

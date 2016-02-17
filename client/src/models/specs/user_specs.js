@@ -2,6 +2,7 @@ var User = require('../user.js');
 var Portfolio = require('../portfolio');
 var Investment = require('../investment.js');
 var Share = require('../share.js');
+var Target = require('../target.js');
 
 var chai = require('chai')
 var assert = chai.assert;
@@ -25,11 +26,12 @@ describe('User', function(){
     testInvestment = new Investment(testShare, testData);
     testPortfolio.investments = [testInvestment];
     testUser.portfolio = testPortfolio;
-    testUser.insideTrader = false;
     testBalance = testUser.accountBalance;
     testPortfolioBalance = testUser.portfolio.totalValue();
     testSharePrice = testShare.currentPrice;
   });
+
+  // BASIC MODEL ATTRIBUTES
 
   it('should have a name', function(){
     expect(testUser.name).to.equal('Barry');
@@ -41,7 +43,9 @@ describe('User', function(){
 
   it('should be able to have a portfolio', function(){
     expect(testUser.portfolio).to.equal(testPortfolio);
-  })
+  });
+
+  // MODEL FUNCTIONALITY
 
   it('should be able to buy shares', function(){
     testUser.buyShares(testShare, 1, testData);
@@ -50,7 +54,7 @@ describe('User', function(){
 
   it('should lose money appropriately on purchase', function(){
     testUser.buyShares(testShare, 1, testData);
-    expect(testUser.accountBalance).to.equal(testBalance - testSharePrice / 100);
+    expect(testUser.accountBalance).to.equal(testBalance - testSharePrice);
   });
 
   it('should be able to sell shares', function(){
@@ -59,9 +63,9 @@ describe('User', function(){
   });
 
   it('should gain money appropriately on sale', function(){
-    testUser.sellShares(testInvestment);
+    testUser.sellShares(testInvestment, 1000);
     expect(testUser.accountBalance).to.equal(testBalance +
-     (testSharePrice * testInvestment.quantity) / 100 );
+     (testSharePrice * 1000));
   });
 
   it('should be able to short sell shares', function(){
@@ -75,38 +79,42 @@ describe('User', function(){
     expect(testUser.accountBalance).to.equal(testBalance);
   });
 
-  it('should be unable to engage in insider trading without an opt-in', function(){
-    testUser.spreadRumours(testShare, 10);
-    expect(testShare.currentPrice).to.equal(testSharePrice);
-  });
-
-  it('should be able to see the projected results of insider trading only if it lacks opt-in', function(){
-    testUser.spreadRumours(testShare, 10);
-    expect(testUser.spreadRumours(testShare, 10)).to.equal(108);
-  })
-
-  it('should be able to engage in insider trading after opting in', function (){
-    testUser.insideTrader = true;
-    testUser.spreadRumours(testShare, 10);
-    expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
-  });
-
   it('should be able to inflate stocks', function(){
-    testUser.insideTrader = true;
     testUser.pumpStock(testShare, 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   });
 
   it('should be able to inflate stocks by region', function(){
-    testUser.insideTrader = true;
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.pumpRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 1.1);
   });
+  
   it('should be able to deflate stocks by region', function(){
-    testUser.insideTrader = true;
     var usaTotal = portfolio.totalValueOfRegion('USA');
     testUser.crashRegion('USA', 10);
     expect(testShare.currentPrice).to.equal(testSharePrice * 0.9);
-  })
+  });
+  it('should be able to have targets', function(){
+    var target = new Target({
+      object: testInvestment,
+      property: 'currentValue',
+      check: 'gt',
+      target: 30100
+    }, function(){});
+    testUser.targets.push(target);
+    expect(testUser.targets.length).to.equal(1);
+  });
+
+  it('should be unable to sell more shares than are in an investment', function(){
+    testUser.sellShares(testInvestment, 3000);
+    expect(testUser.portfolio.investments[0].quantity).to.equal(testInvestment.quantity);
+  });
+
+  // EDGE CASES
+
+  it('should not be able to buy negative number of shares', function(){
+    testUser.buyShares(testShare, -1, testData);
+    expect(testUser.portfolio.investments[1]).to.equal(undefined);
+  });
 })

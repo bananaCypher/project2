@@ -6,8 +6,8 @@
   <script src="http://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="http://code.highcharts.com/modules/exporting.js"></script> 
-  <script src="//rawgithub.com/phpepe/highcharts-regression/master/highcharts-regression.js"> </script>
   <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+  <script src="regressionLine.js"> </script>
   <script src="/bundle.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Unica+One">
@@ -15,6 +15,10 @@
 <body>
   <header>
     <h1 id="logo">Inside Trader</h1>
+    <ul id ="errorNotifications"></ul>
+    <div id="errorImage">
+    <img src="https://cdn2.iconfinder.com/data/icons/krispicons-modern-flat-icons-freebie/111/7.png">    
+    </div>
     <div id="notifications">
       <img src="https://cdn4.iconfinder.com/data/icons/web-icons-19/711/notification-icon-tm-512.png" alt="Notifications"/>
       <span></span>
@@ -28,19 +32,27 @@
       <div id="moreInfo" class="grid grid-4"></div>
       <div id="balanceInfo" class="grid grid-4"></div>
 
-
     </div> 
 
     <div class="row">
       <select id="shareSelect">
         <option selected="selected">View Investment Information:</option>
-      </select> <button id="portfolioView">View Portfolio Information</button><br>
+      </select> <button id="portfolioView">View Portfolio Information</button>
+      <button id="targetsButton">View My Targets</button><br>
 
       <div id="investmentInfo">
-        <div id="singleScatterChart" class="chart grid-6"></div>
-        <div class="grid grid-6">
-        <div id="investmentView" class="grid"></div>
-        <div id="buysellView" class="grid"></div> 
+      <div class='col grid-6'>
+        <div id="singleScatterChart" class="chart grid-12"></div>
+          <div id="targetsView"></div>
+          </div>
+       
+        <div class="col grid-6 col-padding-left">
+          <div id="investmentView" class="grid"></div>
+          <div id="buysellView" class="grid grid-8"></div> 
+          <div id="preview" class="grid grid-4">
+            <span id="buyPreview"></span><br><br>
+            <span id="sellPreview"></span><br>
+          </div>
         </div>
       </div>
 
@@ -49,11 +61,28 @@
         <div id="pieChart" class="chart grid-6"></div> 
       </div>
 
+      <div id="targetsInfo" style="display: none;">
+        <div class="grid-6">
+          <ul id="targets">
+          </ul>
+        </div>
+        <!--<div class="grid-6">
+          <select name="targetFormObject" id="targetFormObject">
+          </select> 
+          <select name="targetFormCheck" id="targetFormCheck">
+          </select>
+          <label for="targetFormValue">Target Value</label><input type="number" name="targetFormValue" value="" id="targetFormValue">
+          <button id="targetFormButton">Create Target</button>
+        </div>-->
+      </div>
     </div>
+
 
     <div class="row">
       <div id="gaugeChart" class="chart grid-6"></div>
     </div>
   </div> 
+
+
 </body>
 </html>

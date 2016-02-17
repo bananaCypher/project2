@@ -1,42 +1,34 @@
-var Barry = require('./seedObjects.js');
+var Target = require('./models/target.js')
+var Barry;
+var getUser = require('./getUser.js');
+getUser('Barry Manilow', function(user) {
+  Barry = user;
+  init();
+});
+
+var index = require('./basicDisplay.js');
 var scatterChart = require('./charts/scatterChart.js');
 var pieChart = require('./charts/pieChart.js');
 var gaugeChart = require('./charts/gaugeChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
-var showInvestmentInfo = require('./buy_sell.js');
+var senseChecker = require('./models/senseChecker.js');
+var showInvestmentInfo = require('./investmentInfo.js');
 var notificationArea;
 
-var displayLargestPercChange = function(){
-  var moreInfo = document.getElementById('moreInfo');
-  var p = document.createElement('p');
-  var largestPercChangeInvestment = Barry.portfolio.findLargestPercentageChange();
-  var largestPercChangeValue = largestPercChangeInvestment.valueChange('percentage');
-  p.innerHTML = "<h2>Best performing stock</h2>"
-  p.innerHTML += largestPercChangeInvestment.shareName + ": +" + Number(largestPercChangeValue).toLocaleString() + "%";
-  moreInfo.appendChild(p);
-}
 
-var displayCurrentPortfolioValue = function(){
-  var basicInfo = document.getElementById('basicInfo');
-  var p = document.createElement('p');
-  p.innerHTML = "<h2>Current Total Value</h2>£" + Number(Barry.portfolio.totalValue() / 100).toLocaleString();
-  basicInfo.appendChild(p);
-}
-
-var displayAccountBalance = function(){
-  var balanceInfo = document.getElementById('balanceInfo');
-  var p = document.createElement('p');
-  p.innerHTML = "<h2>Account Credit</h2>£" + Number(Barry.accountBalance).toLocaleString();
-  balanceInfo.appendChild(p);
-}
-
-var populateSelect = function(){
-  var shareSelect = document.getElementById('shareSelect');
-  for(investment of Barry.portfolio.investments){
-    var option = document.createElement('option');
-    option.innerText = investment.shareName;
-    shareSelect.appendChild(option);
+var showTargets = function(){
+  var targetsArea = document.getElementById('targets')
+  targetsArea.innerHTML = '';
+  for (var target of Barry.targets) {
+    var li = document.createElement('li');
+    if(target.complete == true){
+      li.classList.add('completed-target')
+    } else {
+      li.classList.add('incomplete-target');
+    }
+    li.innerText = target.description;
+    targetsArea.appendChild(li); 
   }
 }
 
@@ -70,50 +62,123 @@ var setUpPriceWatchers = function(){
         if(change.name == 'currentPrice') {
           var share = change.object;
           if (change.oldValue > share.currentPrice) {var type = 'error'} else {var type = 'success'}
-          notificationArea.newNotification({
-            title: share.epic + ' price changed',
-            content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
-            type: type
-          });
+            notificationArea.newNotification({
+              title: share.epic + ' price changed',
+              content: share.epic + ' has changed price from ' + change.oldValue + ' to ' + share.currentPrice,
+              type: type
+            });
         }
       }
+      Barry.save();
     });
   }
 }
 
 var init = function(){
   console.log('I have loaded');
-  console.log(Barry);
-
   var shareSelect = document.getElementById('shareSelect');
   var portfolioButton = document.getElementById('portfolioView');
+  var targetsButton = document.getElementById('targetsButton');
   var portfolioInfo = document.getElementById('portfolioInfo');
   var investmentInfo = document.getElementById('investmentInfo');
 
+  var errorList = document.getElementById('errorNotifications');
+  var errorImage = document.getElementById('errorImage');
+
+  errorImage.onclick = function(){
+    errorList.style.width = "295px";
+    errorList.firstChild.style.display = "inline-block";
+    errorImage.style.display = "none"
+    setTimeout(function(){
+     errorList.style.width = "0"; 
+     errorList.firstChild.style.display = "none"; 
+   }, 4000)
+  }
+
+// ERRORLIST POPULATION
+
+  Object.observe(senseChecker.errorList, function(changes){
+    
+        errorList.innerHTML = '';
+        errorImage.style.display = "inline-block";
+        var li = document.createElement('li');
+        li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+        errorList.appendChild(li);
+        }
+    );
+
+  var targetsView = document.getElementById('targetsView');
+  var targetsInfo = document.getElementById('targetsInfo');
+  var targetFormButton = document.getElementById('targetFormButton');
+
   Highcharts.setOptions(chartStyles);
 
-  populateSelect();
-  displayCurrentPortfolioValue();
-  displayLargestPercChange();
-  displayAccountBalance();
+  index.populateSelect(Barry);
+  index.displayCurrentPortfolioValue(Barry);
+  index.displayLargestPercChange(Barry);
+  index.displayAccountBalance(Barry);
 
   shareSelect.onchange = function(){
     portfolioInfo.style.display = "none";
+    targetsInfo.style.display = "none";
     investmentInfo.style.display = "block";
     showInvestmentInfo(shareSelect.value, Barry);
   };
+  
   portfolioButton.onclick = function(){
     investmentInfo.style.display = "none";
-    portfolioInfo.style.display = "block"
+    targetsInfo.style.display = "none";
+    portfolioInfo.style.display = "block";
+    targetsView.innerHTML = "";
     new pieChart(Barry.portfolio);
     new scatterChart();
     new gaugeChart();
+  }
+  targetsButton.onclick = function(){
+    portfolioInfo.style.display = "none";
+    investmentInfo.style.display = "none";
+    targetsInfo.style.display = "block";
+    targetsView.innerHTML = "";
+    showTargets();
   }
   notificationArea = new NotificationArea();  
   setUpPriceWatchers();
   window.setInterval(function(){
     getLatestShareInfo();
   }, 10000);
+  //Create Targets
+  var portfolioTarget = new Target({
+    description: 'Get portfolio value to above £65,000',
+    object: Barry.portfolio,
+    property: 'totalValue',
+    check: 'gt',
+    target: 6500000,
+    checkTime: 10000
+  }, function(){
+    showTargets();
+    notificationArea.newNotification({
+      title: 'Target reached!',
+      content: 'You have reached your target of getting your portfolio value to £65,000',
+      type: 'success'
+    });
+  })
+  Barry.targets.push(portfolioTarget);
+  var portfolioTarget = new Target({
+    description: 'Get portfolio value to above £100,000',
+    object: Barry.portfolio,
+    property: 'totalValue',
+    check: 'gt',
+    target: 10000000,
+    checkTime: 10000
+  }, function(){
+    showTargets();
+    notificationArea.newNotification({
+      title: 'Target reached!',
+      content: 'You have reached your target of getting your portfolio value to £100,000',
+      type: 'success'
+    });
+  })
+  Barry.targets.push(portfolioTarget);
 };
 
-window.onload = init;
+//window.onload = init;
