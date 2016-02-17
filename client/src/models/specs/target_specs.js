@@ -19,6 +19,26 @@ describe('Target', function(){
     share = new Share(investmentSample);
     investment = new Investment(share, investmentSample);
   });
+  it("should be able to check current value - property is an attribute", function(){
+    var target = new Target({
+      object: share,
+      property: 'currentPrice',
+      check: 'gt',
+      target: 400 
+    }, function(){
+    })
+    assert.equal(target.currentValue(), 301.00)
+  });
+  it("should be able to check current value - property is a function", function(){
+    var target = new Target({
+      object: investment,
+      property: 'currentValue',
+      check: 'gt',
+      target: 40000 
+    }, function(){
+    })
+    assert.equal(target.currentValue(), 301000)
+  });
   it("should do nothing if the price isn't changed enough", function(){
     var test = false;
     var target = new Target({
