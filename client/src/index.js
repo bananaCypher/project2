@@ -116,6 +116,7 @@ index.displayAccountBalance(Barry);
     targetsInfo.style.display = "none";
     investmentInfo.style.display = "block";
     showInvestmentInfo(shareSelect.value, Barry);
+    shareSelect.selectedIndex = 0;
   };
 
   var hideAllInfoWindows = function(){
