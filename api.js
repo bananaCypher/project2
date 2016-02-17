@@ -116,7 +116,3 @@ var updateShare = function(share){
     console.log(share.name, " ", share.price);
   })
 }
-
-//for (var share of sampleData) {
-//  updateShare(share);
-//};

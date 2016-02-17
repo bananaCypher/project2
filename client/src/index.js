@@ -12,7 +12,18 @@ var pieChart = require('./charts/pieChart.js');
 var chartStyles = require('./charts/chartStyles.js');
 var NotificationArea = require('./notification.js');
 var senseChecker = require('./models/senseChecker.js');
-var showInvestmentInfo = require('./investmentInfo.js');
+var timer = {
+  time: 10000,
+  timer: undefined,
+  startPriceUpdating: function(){
+    this.timer = setInterval(getLatestShareInfo, this.time);
+  },
+  stopPriceUpdating: function(){
+    console.log('stopping', this.timer);
+    clearInterval(this.timer);
+  }
+};
+var showInvestmentInfo = require('./investmentInfo.js')(timer);
 var notificationArea;
 
 
@@ -45,14 +56,6 @@ var updateShare = function(share){
   request.send(null);
 }
 
-var getLatestShareInfo = function(){
-  var investments = Barry.portfolio.investments;
-  for (var investment of investments) {
-    var share = investment.share;
-    updateShare(share);
-  }
-}
-
 var setUpPriceWatchers = function(){
   for (var investment of Barry.portfolio.investments) {
     var share = investment.share
@@ -72,6 +75,15 @@ var setUpPriceWatchers = function(){
     });
   }
 }
+
+var getLatestShareInfo = function(){
+  var investments = Barry.portfolio.investments;
+  for (var investment of investments) {
+    var share = investment.share;
+    updateShare(share);
+  }
+}
+
 
 var init = function(){
   console.log('I have loaded');
@@ -139,7 +151,5 @@ var init = function(){
   notificationArea = new NotificationArea();  
   require('./targetForm.js')(notificationArea, Barry);
   setUpPriceWatchers();
-  window.setInterval(function(){
-    getLatestShareInfo();
-  }, 10000);
+  timer.startPriceUpdating();
 };
