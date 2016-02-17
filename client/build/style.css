@@ -308,3 +308,11 @@ div.notification-success h2, div.notification-success span {
 div#targetFormFields {
   display: none;
 }
+
+/* Twitter */
+#twitterInfo{
+  width: 900px;
+}
+#twitter-widget-0{
+  width: 900px !important;
+}
