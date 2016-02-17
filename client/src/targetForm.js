@@ -1,3 +1,6 @@
+var gaugeChart = require('./charts/gaugeChart.js');
+var senseChecker = require('./models/senseChecker.js');
+
 module.exports = function(notificationArea, Barry){
   var Target = require('./models/target.js')
   var targetsView = document.getElementById('targetsView');
@@ -82,14 +85,14 @@ module.exports = function(notificationArea, Barry){
     var check = document.getElementById('targetFormCheck').value;
     var description = document.getElementById('targetFormDescription').value;
     var prop = document.getElementById('targetFormProp').value;
-    var target;
+    var newTarget;
     if (targetFormType.value == 'Portfolio'){
-      target = new Target({
+      newTarget = new Target({
         description: description,
         object: Barry.portfolio,
-        property: prop * 100,
+        property: prop,
         check: check,
-        target: value,
+        target: value * 100,
         checkTime: 10000
       }, function(){
         showTargets();
@@ -99,12 +102,13 @@ module.exports = function(notificationArea, Barry){
           type: 'success'
         });
       })
-      Barry.targets.push(target);
-      showTargets();
     } else if (targetFormType.value == 'Investment') {
       var investmentName = document.getElementById('targetFormObject').value;
       var investment = Barry.portfolio.findByName(investmentName);
-      target = new Target({
+      if(prop === "currentValue"){
+        value = value * 100;
+      }
+      newTarget = new Target({
         description: description,
         object: investment,
         property: prop,
@@ -119,14 +123,12 @@ module.exports = function(notificationArea, Barry){
           type: 'success'
         });
       })
-      Barry.targets.push(target);
-      showTargets();
     } else if (targetFormType.value == 'Share'){
       var shareName = document.getElementById('targetFormObject').value;
       var share = Barry.portfolio.findByName(shareName).share;
-      target = new Target({
+      newTarget = new Target({
         description: description,
-        object: investment,
+        object: share,
         property: prop,
         check: check,
         target: value,
@@ -139,9 +141,13 @@ module.exports = function(notificationArea, Barry){
           type: 'success'
         });
       })
-      Barry.targets.push(target);
-      showTargets();
     }
+    if(newTarget.complete){
+      senseChecker.errorList.push("Error: Target already completed");
+      return;
+    }
+    Barry.targets.push(newTarget);
+    showTargets();
     targetFormFields.style.display = 'none';
     targetFormType.selectedIndex = 0;
   }
@@ -149,16 +155,40 @@ module.exports = function(notificationArea, Barry){
   var showTargets = function(){
     var targetsArea = document.getElementById('targets')
       targetsArea.innerHTML = '';
-    for (var target of Barry.targets) {
+      for (target of Barry.targets) {
       var li = document.createElement('li');
       if(target.complete == true){
         li.classList.add('completed-target')
       } else {
         li.classList.add('incomplete-target');
       }
-      li.innerText = target.description;
+      li.innerHTML = target.description;
+      var button = document.createElement('button');
+      button.innerText = "Show Details";
+      li.appendChild(button);
+
+      var addClickEvent = function(target){
+        button.addEventListener("click", function(event){
+        showTargetDetails(target);
+      })
+      }
+      addClickEvent(target);
+
       targetsArea.appendChild(li); 
     }
+    var div = document.createElement('div');
+    div.id = "gaugeChart";
+    div.style.height = "200px";
+    div.style.display = "none";
+    targetsArea.appendChild(div);
+  }
+
+  var showTargetDetails = function(target){
+    console.log(target);
+    var div = document.getElementById('gaugeChart')
+    div.className = "chart grid-6";
+    div.style.display = "block";
+    new gaugeChart(target, div);
   }
 
   targetFormButton.onclick = submitTargetForm;
@@ -175,4 +205,7 @@ module.exports = function(notificationArea, Barry){
     showTargets();
   })
   Barry.targets.push(portfolioTarget);
+
+  return showTargets;
 };
+

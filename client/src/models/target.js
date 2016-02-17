@@ -53,12 +53,16 @@ Target.prototype = {
   setupWatcher: function(){
     setTimeout(this.observeFunction, this.checkTime);
   },
-  hasMetTarget: function(){
+  currentValue: function(){
     if (typeof(this.object[this.property]) == 'function') {
-      var property = this.object[this.property]();
+      var value = this.object[this.property]();
     } else {
-      var property = this.object[this.property];
+      var value = this.object[this.property];
     }
+    return value;
+  },
+  hasMetTarget: function(){
+    var property = this.currentValue();
     switch(this.check) {
       case 'gt':
         if(property > this.target){

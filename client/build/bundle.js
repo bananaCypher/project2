@@ -55,8 +55,9 @@
 	var index = __webpack_require__(9);
 	var scatterChart = __webpack_require__(10);
 	var pieChart = __webpack_require__(11);
-	var chartStyles = __webpack_require__(12);
-	var NotificationArea = __webpack_require__(13);
+	var gaugeChart = __webpack_require__(12);
+	var chartStyles = __webpack_require__(13);
+	var NotificationArea = __webpack_require__(14);
 	var senseChecker = __webpack_require__(5);
 	var timer = {
 	  time: 10000,
@@ -69,24 +70,9 @@
 	    clearInterval(this.timer);
 	  }
 	};
-	var showInvestmentInfo = __webpack_require__(14)(timer);
+	var showInvestmentInfo = __webpack_require__(15)(timer);
 	var notificationArea;
 	
-	
-	var showTargets = function(){
-	  var targetsArea = document.getElementById('targets')
-	  targetsArea.innerHTML = '';
-	  for (var target of Barry.targets) {
-	    var li = document.createElement('li');
-	    if(target.complete == true){
-	      li.classList.add('completed-target')
-	    } else {
-	      li.classList.add('incomplete-target');
-	    }
-	    li.innerText = target.description;
-	    targetsArea.appendChild(li); 
-	  }
-	}
 	
 	var updateShare = function(share){
 	  var request = new XMLHttpRequest();
@@ -154,50 +140,50 @@
 	
 	// ERRORLIST POPULATION
 	
-	  Object.observe(senseChecker.errorList, function(changes){
+	Object.observe(senseChecker.errorList, function(changes){
 	
-	    errorList.innerHTML = '';
-	    errorImage.style.display = "inline-block";
-	    var li = document.createElement('li');
-	    li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
-	    errorList.appendChild(li);
-	  });
+	  errorList.innerHTML = '';
+	  errorImage.style.display = "inline-block";
+	  var li = document.createElement('li');
+	  li.innerText = senseChecker.errorList[senseChecker.errorList.length - 1];
+	  errorList.appendChild(li);
+	});
 	
-	  Highcharts.setOptions(chartStyles);
+	Highcharts.setOptions(chartStyles);
 	
-	  index.populateSelect(Barry);
-	  index.displayCurrentPortfolioValue(Barry);
-	  index.displayLargestPercChange(Barry);
-	  index.displayAccountBalance(Barry);
+	index.populateSelect(Barry);
+	index.displayCurrentPortfolioValue(Barry);
+	index.displayLargestPercChange(Barry);
+	index.displayAccountBalance(Barry);
 	
-	  shareSelect.onchange = function(){
-	    portfolioInfo.style.display = "none";
-	    targetsInfo.style.display = "none";
-	    investmentInfo.style.display = "block";
-	    showInvestmentInfo(shareSelect.value, Barry);
-	  };
-	  
-	  portfolioButton.onclick = function(){
-	    investmentInfo.style.display = "none";
-	    targetsInfo.style.display = "none";
-	    portfolioInfo.style.display = "block";
-	    targetsView.innerHTML = "";
-	    new pieChart(Barry.portfolio);
-	    new scatterChart();
-	  };
+	shareSelect.onchange = function(){
+	  portfolioInfo.style.display = "none";
+	  targetsInfo.style.display = "none";
+	  investmentInfo.style.display = "block";
+	  showInvestmentInfo(shareSelect.value, Barry);
+	};
 	
-	  targetsButton.onclick = function(){
-	    portfolioInfo.style.display = "none";
-	    investmentInfo.style.display = "none";
-	    targetsInfo.style.display = "block";
-	    targetsView.innerHTML = "";
-	    showTargets();
-	  };
+	portfolioButton.onclick = function(){
+	  investmentInfo.style.display = "none";
+	  targetsInfo.style.display = "none";
+	  portfolioInfo.style.display = "block";
+	  targetsView.innerHTML = "";
+	  new pieChart(Barry.portfolio);
+	  new scatterChart();
+	};
 	
-	  notificationArea = new NotificationArea();  
-	  __webpack_require__(17)(notificationArea, Barry);
-	  setUpPriceWatchers();
-	  timer.startPriceUpdating();
+	targetsButton.onclick = function(){
+	  portfolioInfo.style.display = "none";
+	  investmentInfo.style.display = "none";
+	  targetsInfo.style.display = "block";
+	  targetsView.innerHTML = "";
+	  showTargets();
+	};
+	
+	notificationArea = new NotificationArea();  
+	var showTargets = __webpack_require__(18)(notificationArea, Barry);
+	setUpPriceWatchers();
+	timer.startPriceUpdating();
 	};
 
 
@@ -260,12 +246,16 @@
 	  setupWatcher: function(){
 	    setTimeout(this.observeFunction, this.checkTime);
 	  },
-	  hasMetTarget: function(){
+	  currentValue: function(){
 	    if (typeof(this.object[this.property]) == 'function') {
-	      var property = this.object[this.property]();
+	      var value = this.object[this.property]();
 	    } else {
-	      var property = this.object[this.property];
+	      var value = this.object[this.property];
 	    }
+	    return value;
+	  },
+	  hasMetTarget: function(){
+	    var property = this.currentValue();
 	    switch(this.check) {
 	      case 'gt':
 	        if(property > this.target){
@@ -526,7 +516,6 @@
 	        regionArray.push(entry.location);
 	      }
 	    }
-	    console.log(regionArray);
 	    return regionArray;
 	  },
 	
@@ -1038,6 +1027,125 @@
 
 /***/ },
 /* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Share = __webpack_require__(8);
+	
+	var GaugeChart = function(target, container){
+	  var title = target.description;
+	
+	  if(target.object instanceof Share || target.property === "sevenDayAverage"){
+	    var min = target.startingValue;
+	    var max = target.target;
+	    var current = parseFloat(target.currentValue().toFixed(2));
+	    var unit = "GMX";
+	  }
+	  else {
+	    var min = target.startingValue / 100;
+	    var max = target.target / 100;
+	    var current = target.currentValue() / 100;
+	    var unit = "£GBP";
+	  }
+	
+	  var chart = new Highcharts.Chart( {
+	
+	    chart: {
+	      type: 'solidgauge',
+	      renderTo: container,
+	    },
+	
+	    title: null,
+	
+	    pane: {
+	      center: ['50%', '85%'],
+	      size: '120%',
+	      startAngle: -90,
+	      endAngle: 90,
+	      background: {
+	        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+	        innerRadius: '60%',
+	        outerRadius: '100%',
+	        shape: 'arc'
+	      }
+	    },
+	
+	    tooltip: {
+	      enabled: false
+	    },
+	
+	        // the value axis
+	        yAxis: {
+	
+	          labels: {
+	            enabled: true
+	          },
+	          tickPositions: [min,max],
+	          min: min.toFixed(2),
+	          max: max,
+	          title: {
+	            text: title,
+	            style: {
+	              "fontSize": "18px"
+	            },
+	            y: -70
+	          },
+	
+	
+	
+	
+	          stops: [
+	                [0.1, '#DF5353'], // red
+	                [0.5, '#DDDF0D'], // yellow
+	                [0.9, '#55BF3B'] // green
+	                ],
+	                lineWidth: 0,
+	                minorTickInterval: null,
+	                tickPixelInterval: 400,
+	                tickWidth: 0,
+	               
+	                labels: {
+	                  y: 16
+	                }
+	              },
+	
+	              plotOptions: {
+	                solidgauge: {
+	                  dataLabels: {
+	                    y: 5,
+	                    borderWidth: 0,
+	                    useHTML: true
+	                  }
+	                }
+	              },
+	            
+	
+	
+	
+	            credits: {
+	              enabled: false
+	            },
+	
+	            series: [{
+	              name: 'Speed',
+	              data: [current],
+	              dataLabels: {
+	                format: '<div style="text-align:center"><span style="font-size:25px;color: white' +
+	                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+	                '<span style="font-size:12px;color:silver">' + unit + '</span></div>'
+	              },
+	              tooltip: {
+	                valueSuffix: unit
+	              }
+	            }],
+	
+	          })
+	}
+	
+	module.exports = GaugeChart;
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports) {
 
 	  var chartStyles = {
@@ -1245,7 +1353,7 @@
 	module.exports = chartStyles;
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	var Notification = function(notificationArea, params) {
@@ -1352,11 +1460,11 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var singleScatterChart = __webpack_require__(15);
-	var TargetChecker = __webpack_require__(16);
+	var singleScatterChart = __webpack_require__(16);
+	var TargetChecker = __webpack_require__(17);
 	var index = __webpack_require__(9);
 	
 	module.exports = function(timer){
@@ -1561,7 +1669,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//var Barry = require('../seedObjects.js')
@@ -1628,7 +1736,7 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	var TargetChecker = function(user, investment){
@@ -1643,7 +1751,7 @@
 	  var button = document.getElementById('targetValueButton');
 	  button.onclick = function(){
 	    var input = document.getElementById('targetValue').value;
-	    if(input === "" || isNan(input)){
+	    if(input === "" || isNaN(input)){
 	      return;
 	    }
 	    input = parseInt(input) * 100;
@@ -1678,9 +1786,12 @@
 	module.exports = TargetChecker;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var gaugeChart = __webpack_require__(12);
+	var senseChecker = __webpack_require__(5);
+	
 	module.exports = function(notificationArea, Barry){
 	  var Target = __webpack_require__(1)
 	  var targetsView = document.getElementById('targetsView');
@@ -1765,14 +1876,14 @@
 	    var check = document.getElementById('targetFormCheck').value;
 	    var description = document.getElementById('targetFormDescription').value;
 	    var prop = document.getElementById('targetFormProp').value;
-	    var target;
+	    var newTarget;
 	    if (targetFormType.value == 'Portfolio'){
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
 	        object: Barry.portfolio,
-	        property: prop * 100,
+	        property: prop,
 	        check: check,
-	        target: value,
+	        target: value * 100,
 	        checkTime: 10000
 	      }, function(){
 	        showTargets();
@@ -1782,12 +1893,13 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
-	      showTargets();
 	    } else if (targetFormType.value == 'Investment') {
 	      var investmentName = document.getElementById('targetFormObject').value;
 	      var investment = Barry.portfolio.findByName(investmentName);
-	      target = new Target({
+	      if(prop === "currentValue"){
+	        value = value * 100;
+	      }
+	      newTarget = new Target({
 	        description: description,
 	        object: investment,
 	        property: prop,
@@ -1802,14 +1914,12 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
-	      showTargets();
 	    } else if (targetFormType.value == 'Share'){
 	      var shareName = document.getElementById('targetFormObject').value;
 	      var share = Barry.portfolio.findByName(shareName).share;
-	      target = new Target({
+	      newTarget = new Target({
 	        description: description,
-	        object: investment,
+	        object: share,
 	        property: prop,
 	        check: check,
 	        target: value,
@@ -1822,9 +1932,13 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(target);
-	      showTargets();
 	    }
+	    if(newTarget.complete){
+	      senseChecker.errorList.push("Error: Target already completed");
+	      return;
+	    }
+	    Barry.targets.push(newTarget);
+	    showTargets();
 	    targetFormFields.style.display = 'none';
 	    targetFormType.selectedIndex = 0;
 	  }
@@ -1832,16 +1946,40 @@
 	  var showTargets = function(){
 	    var targetsArea = document.getElementById('targets')
 	      targetsArea.innerHTML = '';
-	    for (var target of Barry.targets) {
+	      for (target of Barry.targets) {
 	      var li = document.createElement('li');
 	      if(target.complete == true){
 	        li.classList.add('completed-target')
 	      } else {
 	        li.classList.add('incomplete-target');
 	      }
-	      li.innerText = target.description;
+	      li.innerHTML = target.description;
+	      var button = document.createElement('button');
+	      button.innerText = "Show Details";
+	      li.appendChild(button);
+	
+	      var addClickEvent = function(target){
+	        button.addEventListener("click", function(event){
+	        showTargetDetails(target);
+	      })
+	      }
+	      addClickEvent(target);
+	
 	      targetsArea.appendChild(li); 
 	    }
+	    var div = document.createElement('div');
+	    div.id = "gaugeChart";
+	    div.style.height = "200px";
+	    div.style.display = "none";
+	    targetsArea.appendChild(div);
+	  }
+	
+	  var showTargetDetails = function(target){
+	    console.log(target);
+	    var div = document.getElementById('gaugeChart')
+	    div.className = "chart grid-6";
+	    div.style.display = "block";
+	    new gaugeChart(target, div);
 	  }
 	
 	  targetFormButton.onclick = submitTargetForm;
@@ -1858,7 +1996,10 @@
 	    showTargets();
 	  })
 	  Barry.targets.push(portfolioTarget);
+	
+	  return showTargets;
 	};
+	
 
 
 /***/ }
