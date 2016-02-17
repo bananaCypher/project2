@@ -100,26 +100,31 @@ module.exports = function(timer){
         user.sellShort(investment.share, parseInt(value), investment);
         user.save();
         loadInfo(investment, user);
+        timer.stopPriceUpdating();
       }
       else if(option === "CrashStock"){
         user.spreadRumours(investment.share, parseInt(value));
         user.save();
         loadInfo(investment, user);
+        timer.stopPriceUpdating();
       }
       else if(option === "PumpStock"){
         user.pumpStock(investment.share, parseInt(value));
         user.save();
         loadInfo(investment, user);
+        timer.stopPriceUpdating();
       }   
       else if(option === "CrashRegion"){
         user.crashRegion(investment.share.location, parseInt(value));
         user.save();
         loadInfo(investment, user);
+        timer.stopPriceUpdating();
       }   
       else if(option === "PumpRegion"){
         user.pumpRegion(investment.share.location, parseInt(value));
         user.save();
         loadInfo(investment, user);
+        timer.stopPriceUpdating();
       }
     }
     return form;
