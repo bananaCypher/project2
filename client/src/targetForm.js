@@ -1,4 +1,5 @@
 var gaugeChart = require('./charts/gaugeChart.js');
+var senseChecker = require('./models/senseChecker.js');
 
 module.exports = function(notificationArea, Barry){
   var Target = require('./models/target.js')
@@ -101,11 +102,12 @@ module.exports = function(notificationArea, Barry){
           type: 'success'
         });
       })
-      Barry.targets.push(newTarget);
-      showTargets();
     } else if (targetFormType.value == 'Investment') {
       var investmentName = document.getElementById('targetFormObject').value;
       var investment = Barry.portfolio.findByName(investmentName);
+      if(prop === "currentValue"){
+        value = value * 100;
+      }
       newTarget = new Target({
         description: description,
         object: investment,
@@ -121,14 +123,12 @@ module.exports = function(notificationArea, Barry){
           type: 'success'
         });
       })
-      Barry.targets.push(newTarget);
-      showTargets();
     } else if (targetFormType.value == 'Share'){
       var shareName = document.getElementById('targetFormObject').value;
       var share = Barry.portfolio.findByName(shareName).share;
       newTarget = new Target({
         description: description,
-        object: investment,
+        object: share,
         property: prop,
         check: check,
         target: value,
@@ -141,9 +141,13 @@ module.exports = function(notificationArea, Barry){
           type: 'success'
         });
       })
-      Barry.targets.push(newTarget);
-      showTargets();
     }
+    if(newTarget.complete){
+      senseChecker.errorList.push("Error: Target already completed");
+      return;
+    }
+    Barry.targets.push(newTarget);
+    showTargets();
     targetFormFields.style.display = 'none';
     targetFormType.selectedIndex = 0;
   }
@@ -184,7 +188,7 @@ module.exports = function(notificationArea, Barry){
     var div = document.getElementById('gaugeChart')
     div.className = "chart grid-6";
     div.style.display = "block";
-    new gaugeChart(target.description, target.startingValue, target.target, 6800000, "£GBP", div);
+    new gaugeChart(target, div);
   }
 
   targetFormButton.onclick = submitTargetForm;

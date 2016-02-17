@@ -1,4 +1,21 @@
-var GaugeChart = function(title, min, max, current, unit, container){
+var Share = require('../models/share.js');
+
+var GaugeChart = function(target, container){
+  var title = target.description;
+
+  if(target.object instanceof Share || target.property === "sevenDayAverage"){
+    var min = target.startingValue;
+    var max = target.target;
+    var current = parseFloat(target.currentValue().toFixed(2));
+    var unit = "GMX";
+  }
+  else {
+    var min = target.startingValue / 100;
+    var max = target.target / 100;
+    var current = target.currentValue() / 100;
+    var unit = "£GBP";
+  }
+
   var chart = new Highcharts.Chart( {
 
     chart: {
@@ -32,7 +49,7 @@ var GaugeChart = function(title, min, max, current, unit, container){
             enabled: true
           },
           tickPositions: [min,max],
-          min: min,
+          min: min.toFixed(2),
           max: max,
           title: {
             text: title,

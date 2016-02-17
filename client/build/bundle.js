@@ -246,12 +246,16 @@
 	  setupWatcher: function(){
 	    setTimeout(this.observeFunction, this.checkTime);
 	  },
-	  hasMetTarget: function(){
+	  currentValue: function(){
 	    if (typeof(this.object[this.property]) == 'function') {
-	      var property = this.object[this.property]();
+	      var value = this.object[this.property]();
 	    } else {
-	      var property = this.object[this.property];
+	      var value = this.object[this.property];
 	    }
+	    return value;
+	  },
+	  hasMetTarget: function(){
+	    var property = this.currentValue();
 	    switch(this.check) {
 	      case 'gt':
 	        if(property > this.target){
@@ -891,9 +895,26 @@
 
 /***/ },
 /* 11 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var GaugeChart = function(title, min, max, current, unit, container){
+	var Share = __webpack_require__(7);
+	
+	var GaugeChart = function(target, container){
+	  var title = target.description;
+	
+	  if(target.object instanceof Share || target.property === "sevenDayAverage"){
+	    var min = target.startingValue;
+	    var max = target.target;
+	    var current = parseFloat(target.currentValue().toFixed(2));
+	    var unit = "GMX";
+	  }
+	  else {
+	    var min = target.startingValue / 100;
+	    var max = target.target / 100;
+	    var current = target.currentValue() / 100;
+	    var unit = "£GBP";
+	  }
+	
 	  var chart = new Highcharts.Chart( {
 	
 	    chart: {
@@ -927,7 +948,7 @@
 	            enabled: true
 	          },
 	          tickPositions: [min,max],
-	          min: min,
+	          min: min.toFixed(2),
 	          max: max,
 	          title: {
 	            text: title,
@@ -1598,7 +1619,7 @@
 	  var button = document.getElementById('targetValueButton');
 	  button.onclick = function(){
 	    var input = document.getElementById('targetValue').value;
-	    if(input === "" || isNan(input)){
+	    if(input === "" || isNaN(input)){
 	      return;
 	    }
 	    input = parseInt(input) * 100;
@@ -1637,6 +1658,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var gaugeChart = __webpack_require__(11);
+	var senseChecker = __webpack_require__(5);
 	
 	module.exports = function(notificationArea, Barry){
 	  var Target = __webpack_require__(1)
@@ -1739,11 +1761,12 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(newTarget);
-	      showTargets();
 	    } else if (targetFormType.value == 'Investment') {
 	      var investmentName = document.getElementById('targetFormObject').value;
 	      var investment = Barry.portfolio.findByName(investmentName);
+	      if(prop === "currentValue"){
+	        value = value * 100;
+	      }
 	      newTarget = new Target({
 	        description: description,
 	        object: investment,
@@ -1759,14 +1782,12 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(newTarget);
-	      showTargets();
 	    } else if (targetFormType.value == 'Share'){
 	      var shareName = document.getElementById('targetFormObject').value;
 	      var share = Barry.portfolio.findByName(shareName).share;
 	      newTarget = new Target({
 	        description: description,
-	        object: investment,
+	        object: share,
 	        property: prop,
 	        check: check,
 	        target: value,
@@ -1779,9 +1800,13 @@
 	          type: 'success'
 	        });
 	      })
-	      Barry.targets.push(newTarget);
-	      showTargets();
 	    }
+	    if(newTarget.complete){
+	      senseChecker.errorList.push("Error: Target already completed");
+	      return;
+	    }
+	    Barry.targets.push(newTarget);
+	    showTargets();
 	    targetFormFields.style.display = 'none';
 	    targetFormType.selectedIndex = 0;
 	  }
@@ -1822,7 +1847,7 @@
 	    var div = document.getElementById('gaugeChart')
 	    div.className = "chart grid-6";
 	    div.style.display = "block";
-	    new gaugeChart(target.description, target.startingValue, target.target, 6800000, "£GBP", div);
+	    new gaugeChart(target, div);
 	  }
 	
 	  targetFormButton.onclick = submitTargetForm;
