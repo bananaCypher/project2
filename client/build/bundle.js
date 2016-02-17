@@ -365,8 +365,8 @@
 	  this.name = name,
 	  this.id = id,
 	  this.portfolio = undefined,
-	  this.accountBalance = 500000
-	  this.targets = [];
+	  this.accountBalance = 500000,
+	  this.targets = []
 	};
 	
 	User.prototype = {
