@@ -1899,75 +1899,79 @@
 	    var prop = document.getElementById('targetFormProp').value;
 	    var newTarget;
 	    if (targetFormType.value == 'Portfolio'){
-	      newTarget = new Target({
+	      newTarget = {
 	        description: description,
 	        object: Barry.portfolio,
 	        property: prop,
 	        check: check,
 	        target: value * 100,
 	        checkTime: 10000
-	      }, function(){
-	        showTargets();
-	        notificationArea.newNotification({
-	          title: 'Target reached!',
-	          content: 'You have reached your target ' + description,
-	          type: 'success'
-	        });
-	      })
-	    } else if (targetFormType.value == 'Investment') {
+	      }
+	    } 
+	    else if (targetFormType.value == 'Investment') {
 	      var investmentName = document.getElementById('targetFormObject').value;
 	      var investment = Barry.portfolio.findByName(investmentName);
 	      if(prop === "currentValue"){
 	        value = value * 100;
 	      }
-	      newTarget = new Target({
+	      newTarget = {
 	        description: description,
 	        object: investment,
 	        property: prop,
 	        check: check,
 	        target: value,
 	        checkTime: 10000
-	      }, function(){
-	        showTargets();
-	        notificationArea.newNotification({
-	          title: 'Target reached!',
-	          content: 'You have reached your target ' + description,
-	          type: 'success'
-	        });
-	      })
-	    } else if (targetFormType.value == 'Share'){
+	      }
+	    }
+	    else if (targetFormType.value == 'Share'){
 	      var shareName = document.getElementById('targetFormObject').value;
 	      var share = Barry.portfolio.findByName(shareName).share;
-	      newTarget = new Target({
+	      newTarget = {
 	        description: description,
 	        object: share,
 	        property: prop,
 	        check: check,
 	        target: value,
 	        checkTime: 10000
-	      }, function(){
+	      }
+	    }
+	    
+	    var currentNewValue = function(){
+	      if (typeof(newTarget.object[newTarget.property]) == 'function') {
+	        var value = newTarget.object[newTarget.property]();
+	      } 
+	      else {
+	        var value = newTarget.object[newTarget.property];
+	      }
+	      return value;
+	    }
+	
+	    if(currentNewValue() >= newTarget.target){
+	      senseChecker.errorList.push("Error: Target already completed");
+	      return;
+	    }
+	
+	    new Target (newTarget, 
+	      function(description){
 	        showTargets();
 	        notificationArea.newNotification({
 	          title: 'Target reached!',
 	          content: 'You have reached your target ' + description,
 	          type: 'success'
 	        });
+	
+	        Barry.targets.push(newTarget);
+	        showTargets();
+	        targetFormFields.style.display = 'none';
+	        targetFormType.selectedIndex = 0;
 	      })
-	    }
-	    if(newTarget.complete){
-	      senseChecker.errorList.push("Error: Target already completed");
-	      return;
-	    }
-	    Barry.targets.push(newTarget);
-	    showTargets();
-	    targetFormFields.style.display = 'none';
-	    targetFormType.selectedIndex = 0;
+	
 	  }
 	
 	  var showTargets = function(){
 	    var targetsArea = document.getElementById('targets')
-	      targetsArea.innerHTML = '';
-	      for (target of Barry.targets) {
+	    targetsArea.innerHTML = '';
+	    for (target of Barry.targets) {
 	      var li = document.createElement('li');
 	      if(target.complete == true){
 	        li.classList.add('completed-target')
@@ -1981,8 +1985,8 @@
 	
 	      var addClickEvent = function(target){
 	        button.addEventListener("click", function(event){
-	        showTargetDetails(target);
-	      })
+	          showTargetDetails(target);
+	        })
 	      }
 	      addClickEvent(target);
 	
