@@ -162,6 +162,7 @@
 	    targetsInfo.style.display = "none";
 	    investmentInfo.style.display = "block";
 	    showInvestmentInfo(shareSelect.value, Barry);
+	    shareSelect.selectedIndex = 0;
 	  };
 	
 	  var hideAllInfoWindows = function(){
@@ -1659,7 +1660,10 @@
 	  var showInvestmentInfo = function(inputName, user){
 	    var investment = user.portfolio.find({shareName: inputName });
 	    var buysellView = document.getElementById('buysellView');
+	    var insideTradesView = document.getElementById('insideTradesView');
 	    buysellView.innerHTML = "";
+	    insideTradesView.innerHTML = "";
+	    insideTradesView.style.display = "none";
 	
 	    loadInfo(investment, user);
 	
@@ -1673,12 +1677,25 @@
 	    var pumpRegionForm = new TradeForm("PumpRegion", user, investment);
 	    buysellView.appendChild(buyForm); 
 	    buysellView.appendChild(sellForm); 
-	    buysellView.appendChild(buyShortForm); 
-	    buysellView.appendChild(sellShortForm); 
-	    buysellView.appendChild(crashStockForm); 
-	    buysellView.appendChild(pumpStockForm); 
-	    buysellView.appendChild(crashRegionForm); 
-	    buysellView.appendChild(pumpRegionForm); 
+	
+	    var insideTradesButton = document.createElement('img');
+	    insideTradesButton.src = "http://www.docurated.com/wp-content/uploads/2014/11/arrow-300x253.png";
+	    insideTradesButton.style.height = "30px";
+	    insideTradesButton.onclick = function(){
+	      insideTradesView.style.display = "block";
+	    }
+	    insideTradesButton.ondblclick = function(){
+	      insideTradesView.style.display = "none";
+	    }
+	
+	    buysellView.appendChild(insideTradesButton);
+	
+	    insideTradesView.appendChild(buyShortForm); 
+	    insideTradesView.appendChild(sellShortForm); 
+	    insideTradesView.appendChild(crashStockForm); 
+	    insideTradesView.appendChild(pumpStockForm); 
+	    insideTradesView.appendChild(crashRegionForm); 
+	    insideTradesView.appendChild(pumpRegionForm); 
 	
 	    new TargetChecker(user, investment);
 	
@@ -1764,8 +1781,16 @@
 	  var targetsView = document.getElementById('targetsView');
 	  targetsView.innerHTML = "";
 	
+	  var targetValue = "";
+	  var targets = user.findTargetsByShareName(investment.shareName);
+	  for(target of targets){
+	    if(target.property === "currentValue" && target.check === "gt"){
+	      targetValue = target.target / 100;
+	    }
+	  }
+	
 	  var p = document.createElement('p');
-	  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue'><button id='targetValueButton'>Check</button><br>Price required to meet this target with current share quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current trend continues: <span id='targetValueDays'></span>";
+	  p.innerHTML = "Target value for this investment (£): <input type='text' id='targetValue' value='" + targetValue + "''><button id='targetValueButton'>Check</button><br>Price required to meet this target with current quantity: <span id='targetValuePrice'></span><br><br>Days to hit target if current trend continues: <span id='targetValueDays'></span>";
 	
 	  targetsView.appendChild(p);
 	
@@ -1788,7 +1813,6 @@
 	      else {
 	        var difference = parseInt(input) - investment.currentValue();
 	        var averageIncrease = (investment.currentValue() - (investment.share.pastCloseOfDayPrices[0] * investment.quantity)) / 8;
-	        console.log(investment.share.pastCloseOfDayPrices[0] * investment.quantity)
 	        var days = difference / averageIncrease;
 	        if(days < 0){
 	          return "Investment value is currently decreasing."
